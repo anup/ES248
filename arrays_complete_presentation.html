@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arrays, Memory, and Pointers in C</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --python-color: #3776ab;
+            --c-color: #A8B9CC;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 28px;
+        }
+        
+        .reveal .slides section {
+            height: 100%;
+            overflow-y: auto !important;
+        }
+        
+        .reveal .slides section.stack {
+            overflow-y: visible !important;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            font-weight: 600;
+            text-transform: none;
+            margin-bottom: 0.6em;
+        }
+
+        .reveal h1 {
+            font-size: 2.2em;
+            line-height: 1.2;
+        }
+
+        .reveal h2 {
+            font-size: 1.6em;
+        }
+
+        .reveal h3 {
+            font-size: 1.3em;
+            margin-bottom: 0.4em;
+        }
+        
+        .reveal h4 {
+            font-size: 1.1em;
+            margin-bottom: 0.3em;
+        }
+
+        .reveal section {
+            text-align: left;
+            height: 100%;
+        }
+
+        .reveal .center-content {
+            text-align: center;
+        }
+
+        .reveal pre {
+            margin: 0.8em auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            font-size: 0.55em;
+            line-height: 1.4;
+        }
+
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            padding: 0.1em 0.3em;
+            background: var(--light-bg);
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        .reveal pre code {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 1em;
+            border-radius: 8px;
+            max-height: 450px;
+            overflow: auto;
+        }
+
+        .reveal .comparison-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5em;
+            margin: 1em 0;
+        }
+
+        .reveal .comparison-item {
+            background: var(--light-bg);
+            padding: 1em;
+            border-radius: 8px;
+        }
+
+        .reveal .python-tag {
+            background: var(--python-color);
+            color: white;
+            padding: 0.3em 0.8em;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.7em;
+            display: inline-block;
+            margin-bottom: 0.5em;
+        }
+
+        .reveal .c-tag {
+            background: var(--c-color);
+            color: white;
+            padding: 0.3em 0.8em;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.7em;
+            display: inline-block;
+            margin-bottom: 0.5em;
+        }
+
+        .reveal .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.8em 1.2em;
+            margin: 1em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .warning-box {
+            background: #ffe5e5;
+            border-left: 4px solid var(--warning-color);
+            padding: 0.8em 1.2em;
+            margin: 1em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--success-color);
+            padding: 0.8em 1.2em;
+            margin: 1em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .highlight {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .reveal ul {
+            margin: 0.8em 0;
+        }
+
+        .reveal li {
+            margin: 0.3em 0;
+            line-height: 1.5;
+        }
+        
+        .reveal ol {
+            margin: 0.8em 0;
+        }
+        
+        .reveal p {
+            margin: 0.5em 0;
+        }
+
+        .reveal .memory-diagram {
+            display: flex;
+            gap: 0.5em;
+            margin: 1.5em auto;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .reveal .memory-box {
+            border: 2px solid var(--accent-color);
+            padding: 0.8em 1.2em;
+            background: var(--light-bg);
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .reveal .memory-addr {
+            color: var(--accent-color);
+            font-size: 0.7em;
+            display: block;
+            margin-bottom: 0.5em;
+        }
+
+        .reveal .memory-value {
+            color: var(--main-color);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .reveal table {
+            margin: 1em auto;
+            border-collapse: collapse;
+            font-size: 0.7em;
+            width: 100%;
+        }
+
+        .reveal table th {
+            background: var(--main-color);
+            color: white;
+            padding: 0.6em;
+            border: none;
+        }
+
+        .reveal table td {
+            padding: 0.5em 0.6em;
+            border: 1px solid #dee2e6;
+        }
+
+        .reveal table tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        .reveal .three-column {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1em;
+            margin: 1em 0;
+        }
+
+        .reveal .card {
+            background: var(--light-bg);
+            padding: 1em;
+            border-radius: 8px;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        .reveal .small-text {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+
+        .reveal blockquote {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 0.8em 1.2em;
+            margin: 1em 0;
+            font-style: normal;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- Title Slide -->
+            <section class="center-content">
+                <h1>Arrays, Memory & Pointers</h1>
+                <h3 style="color: #7f8c8d;">From Python Lists to C Arrays</h3>
+                <p style="margin-top: 2em; font-size: 0.8em; color: #95a5a6;">ES 248: Data Structures and Algorithms</p>
+            </section>
+
+            <!-- Part 1: Arrays -->
+            <section class="center-content">
+                <h1>Part 1: Arrays</h1>
+                <p style="color: #7f8c8d;">Understanding the Fundamentals</p>
+            </section>
+
+            <!-- The Problem That Needs Arrays -->
+            <section>
+                <h2>A Problem We Can't Solve (Yet)</h2>
+                <div class="key-point">
+                    <strong>Challenge:</strong> Given n numbers, find how many numbers are <span class="highlight">greater than the average</span>.
+                </div>
+                <p style="margin-top: 1.5em;">Example: <code>85, 92, 78, 95, 88</code></p>
+                <div class="fragment">
+                    <p>Average = <code>(85+92+78+95+88)/5 = 87.6</code></p>
+                    <p>Numbers > 87.6: <code>92, 95, 88</code> → Answer: <span class="highlight">3</span></p>
+                </div>
+                <div class="warning-box fragment" style="margin-top: 1.5em;">
+                    <strong>The Problem:</strong> We need to see ALL numbers to calculate average, then check each number against it. We can't do this in one pass! We need to <span class="highlight">store</span> the numbers.
+                </div>
+            </section>
+
+            <!-- Python Lists -->
+            <section>
+                <h2>Python: What You Know</h2>
+                <div class="python-tag">PYTHON</div>
+                <pre><code class="language-python">scores = [85, 92, 78, 95, 88]
+
+print(len(scores))        # 5
+scores.append(90)         # Add to end
+print(scores[0])          # Access first: 85
+scores[2] = 80           # Modify third element
+
+for score in scores:      # Iterate directly
+    print(score)</code></pre>
+                <div class="success-box fragment">
+                    <strong>Key Features:</strong> Dynamic size, easy operations, flexible!
+                </div>
+            </section>
+
+            <!-- C Arrays Introduction -->
+            <section>
+                <h2>C: A Different World</h2>
+                <div class="c-tag">C</div>
+                <pre><code class="language-c">int scores[5] = {85, 92, 78, 95, 88};
+
+// No len() - calculate manually
+int size = sizeof(scores) / sizeof(scores[0]);
+
+printf("%d\n", scores[0]);  // Access first: 85
+scores[2] = 80;             // Modify third element
+
+// No "for item in array" - must use index
+for (int i = 0; i < size; i++) {
+    printf("%d\n", scores[i]);
+}</code></pre>
+            </section>
+
+            <!-- Key Difference 1 -->
+            <section>
+                <h2>Difference #1: Size Declaration</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python"># Starts empty
+scores = []
+
+# Grows dynamically
+scores.append(85)
+scores.append(92)
+# Size: 2</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">// Must declare size
+int scores[100];
+
+// Fixed size!
+// Can't grow
+// Can't shrink
+// Size: 100 (always)</code></pre>
+                    </div>
+                </div>
+                <div class="key-point">
+                    Python: <span class="highlight">Dynamic</span> (grows as needed)<br>
+                    C: <span class="highlight">Fixed</span> (size decided at declaration)
+                </div>
+            </section>
+
+            <!-- Key Difference 2 -->
+            <section>
+                <h2>Difference #2: Type Restrictions</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python"># Mixed types OK!
+data = [42, "hello", 3.14, True]
+
+print(data[0])  # 42
+print(data[1])  # hello</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">// Same type only!
+int numbers[5];
+char letters[5];
+float prices[5];
+
+// Can't mix types
+// ❌ Not allowed</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Difference 3: Getting Length -->
+            <section>
+                <h2>Difference #3: Getting Array Size</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python">scores = [85, 92, 78]
+
+# Built-in function
+length = len(scores)
+print(length)  # 3</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">int scores[5] = {85, 92, 78};
+
+// Calculate with sizeof
+int size = sizeof(scores) / 
+           sizeof(scores[0]);
+
+// size = 5 (array capacity)
+// NOT 3 (filled elements)</code></pre>
+                    </div>
+                </div>
+                <div class="warning-box">
+                    <strong>Important:</strong> In C, you often need to <span class="highlight">track the number of elements</span> separately from the array capacity!
+                </div>
+            </section>
+
+            <!-- Difference 4: Bounds Checking -->
+            <section>
+                <h2>Difference #4: Safety & Bounds</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python">scores = [85, 92, 78]
+
+# This raises IndexError
+print(scores[10])
+
+# Python protects you!</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">int scores[3] = {85, 92, 78};
+
+// This compiles!
+printf("%d", scores[10]);
+
+// Undefined behavior
+// Could crash
+// Could print garbage
+// NO ERROR!</code></pre>
+                    </div>
+                </div>
+                <div class="warning-box">
+                    ⚠️ <strong>C will not protect you!</strong> Accessing out-of-bounds is your responsibility.
+                </div>
+            </section>
+
+            <!-- Part 2: Memory -->
+            <section class="center-content">
+                <h1>Part 2: Memory</h1>
+                <p style="color: #7f8c8d;">What's Really Happening?</p>
+            </section>
+
+            <!-- Memory Layout -->
+            <section>
+                <h2>Arrays in Memory: Contiguous Storage</h2>
+                <p>When you declare: <code>int arr[5] = {10, 20, 30, 40, 50};</code></p>
+                <div class="memory-diagram">
+                    <div class="memory-box">
+                        <span class="memory-addr">1000</span>
+                        <span class="memory-value">10</span>
+                    </div>
+                    <div class="memory-box">
+                        <span class="memory-addr">1004</span>
+                        <span class="memory-value">20</span>
+                    </div>
+                    <div class="memory-box">
+                        <span class="memory-addr">1008</span>
+                        <span class="memory-value">30</span>
+                    </div>
+                    <div class="memory-box">
+                        <span class="memory-addr">1012</span>
+                        <span class="memory-value">40</span>
+                    </div>
+                    <div class="memory-box">
+                        <span class="memory-addr">1016</span>
+                        <span class="memory-value">50</span>
+                    </div>
+                </div>
+                <div class="key-point">
+                    Arrays are stored in <span class="highlight">consecutive memory locations</span>. Each <code>int</code> takes 4 bytes (on most systems).
+                </div>
+            </section>
+
+            <!-- Why Contiguous? -->
+            <section>
+                <h2>Why Contiguous Memory Matters</h2>
+                <p>When you access <code>arr[3]</code>:</p>
+                <ol>
+                    <li class="fragment">Start at base address: <code>1000</code></li>
+                    <li class="fragment">Calculate offset: <code>3 × 4 = 12</code> bytes</li>
+                    <li class="fragment">Jump to: <code>1000 + 12 = 1012</code></li>
+                    <li class="fragment">Read value: <code>40</code></li>
+                </ol>
+                <div class="success-box fragment" style="margin-top: 1.5em;">
+                    <strong>This is why array access is O(1)!</strong><br>
+                    Direct calculation, no searching needed.
+                </div>
+            </section>
+
+            <!-- Memory Comparison: Python vs C -->
+            <section>
+                <h2>Memory: Python vs C</h2>
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>Python Lists</th>
+                        <th>C Arrays</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Storage</strong></td>
+                        <td>References to objects</td>
+                        <td>Actual values</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Location</strong></td>
+                        <td>Scattered in heap</td>
+                        <td>Contiguous block</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Overhead</strong></td>
+                        <td>Extra metadata</td>
+                        <td>Just the data</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Resizing</strong></td>
+                        <td>Can grow/shrink</td>
+                        <td>Fixed size</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cache</strong></td>
+                        <td>Less cache-friendly</td>
+                        <td>Very cache-friendly</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- Why Track Size? -->
+            <section>
+                <h2>Why Track Size Separately?</h2>
+                <pre><code class="language-c">#include <stdio.h>
+
+int main() {
+    int scores[100];  // Capacity: 100
+    int count = 0;     // Actual elements: 0
+    
+    // User enters 5 scores
+    for (int i = 0; i < 5; i++) {
+        scanf("%d", &scores[i]);
+        count++;
+    }
+    
+    // Now: capacity = 100, count = 5
+    // We need count to loop correctly!
+    for (int i = 0; i < count; i++) {
+        printf("%d\n", scores[i]);
+    }
+    
+    return 0;
+}</code></pre>
+            </section>
+
+            <!-- Part 3: Pointers Preview -->
+            <section class="center-content">
+                <h1>Part 3: Pointers</h1>
+                <p style="color: #7f8c8d;">The Connection to Arrays</p>
+            </section>
+
+            <!-- What is a Pointer? -->
+            <section>
+                <h2>What is a Pointer?</h2>
+                <div class="key-point">
+                    A pointer is a variable that <span class="highlight">stores a memory address</span>.
+                </div>
+                <pre><code class="language-c">int x = 42;
+int *ptr = &x;  // ptr stores the address of x
+
+printf("Value of x: %d\n", x);       // 42
+printf("Address of x: %p\n", &x);    // e.g., 0x7fff5fbff8ac
+printf("Value of ptr: %p\n", ptr);   // Same as &x
+printf("Value at address: %d\n", *ptr);  // 42 (dereference)</code></pre>
+                <p style="margin-top: 1em;"><code>&</code> = "address of"<br><code>*</code> = "value at"</p>
+            </section>
+
+            <!-- Arrays and Pointers Connection -->
+            <section>
+                <h2>Arrays ARE Pointers!</h2>
+                <p>This is a fundamental truth in C:</p>
+                <pre><code class="language-c">int arr[5] = {10, 20, 30, 40, 50};
+
+printf("%p\n", arr);      // Address of first element
+printf("%p\n", &arr[0]);  // Same address!
+
+// These are equivalent:
+printf("%d\n", arr[0]);   // 10
+printf("%d\n", *arr);     // 10 (dereference)</code></pre>
+                <div class="success-box">
+                    The array name <code>arr</code> is a pointer to the first element!
+                </div>
+            </section>
+
+            <!-- Pointer Arithmetic -->
+            <section>
+                <h2>Pointer Arithmetic</h2>
+                <pre><code class="language-c">int arr[5] = {10, 20, 30, 40, 50};
+
+int *ptr = arr;  // Points to arr[0]
+
+printf("%d\n", *ptr);       // 10
+printf("%d\n", *(ptr + 1)); // 20
+printf("%d\n", *(ptr + 2)); // 30
+
+// These are the same:
+arr[i]  ==  *(arr + i)
+&arr[i] ==  arr + i</code></pre>
+                <div class="key-point" style="margin-top: 1em;">
+                    <code>ptr + 1</code> doesn't add 1 byte, it adds <code>sizeof(int)</code> bytes!
+                </div>
+            </section>
+
+            <!-- Functions and Arrays -->
+            <section>
+                <h2>Passing Arrays to Functions</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python">def process(arr):
+    # len() works
+    print(len(arr))
+    
+scores = [85, 92, 78]
+process(scores)</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">void process(int arr[], int size) {
+    // MUST pass size!
+    for (int i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+}
+
+int scores[] = {85, 92, 78};
+process(scores, 3);</code></pre>
+                    </div>
+                </div>
+                <div class="warning-box">
+                    Arrays "decay" to pointers when passed to functions. <code>sizeof</code> won't work!
+                </div>
+            </section>
+
+            <!-- The Comprehensive Problem -->
+            <section class="center-content">
+                <h1>Putting It All Together</h1>
+                <p style="color: #7f8c8d;">Student Marks Management System</p>
+            </section>
+
+            <!-- Problem Overview -->
+            <section>
+                <h2>The Challenge</h2>
+                <p>Build a system that manages student test scores with these operations:</p>
+                <div class="three-column">
+                    <div class="card">
+                        <h4>Basic</h4>
+                        <ul style="font-size: 0.85em;">
+                            <li>Input scores</li>
+                            <li>Display all</li>
+                            <li>Calculate stats</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Operations</h4>
+                        <ul style="font-size: 0.85em;">
+                            <li>Add score</li>
+                            <li>Insert at position</li>
+                            <li>Remove score</li>
+                            <li>Search</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Advanced</h4>
+                        <ul style="font-size: 0.85em;">
+                            <li>Sort scores</li>
+                            <li>Reverse</li>
+                            <li>Copy/Merge</li>
+                            <li>Compare</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="key-point" style="margin-top: 1.5em;">
+                    This problem will expose <span class="highlight">ALL the differences</span> between Python lists and C arrays!
+                </div>
+            </section>
+
+            <!-- Python: One-liner Operations -->
+            <section>
+                <h2>In Python: It's Easy!</h2>
+                <div class="python-tag">PYTHON</div>
+                <pre><code class="language-python">scores = [85, 92, 78, 95, 88]
+
+# Add
+scores.append(90)
+
+# Insert
+scores.insert(2, 80)
+
+# Remove
+scores.remove(78)
+
+# Search
+if 95 in scores:
+    print("Found!")
+
+# Sort
+scores.sort()
+
+# Reverse
+reversed = scores[::-1]</code></pre>
+                <p style="text-align: center; margin-top: 1em;">All operations: <span class="highlight">built-in, one line!</span></p>
+            </section>
+
+            <!-- C: Manual Work -->
+            <section>
+                <h2>In C: You Do The Work!</h2>
+                <div class="c-tag">C</div>
+                <pre><code class="language-c">#define MAX_STUDENTS 100
+
+typedef struct {
+    int scores[MAX_STUDENTS];
+    int size;  // Track count manually!
+} MarksManager;
+
+// Every operation needs:
+// 1. Size checking
+// 2. Manual loops
+// 3. Error handling
+// 4. Pointer management</code></pre>
+                <div class="warning-box">
+                    What's 1 line in Python → 10-20 lines in C!
+                </div>
+            </section>
+
+            <!-- Example: Add Operation -->
+            <section>
+                <h2>Example: Adding a Score</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python">scores.append(90)
+
+# That's it!</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">int add_score(MarksManager *m, int score) {
+    // Check if full
+    if (m->size >= MAX_STUDENTS) {
+        printf("Array is full!\n");
+        return 0;
+    }
+    
+    // Add manually
+    m->scores[m->size] = score;
+    m->size++;
+    return 1;
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Example: Insert Operation -->
+            <section>
+                <h2>Example: Inserting at Position</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python">scores.insert(2, 80)
+
+# Done!</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">int insert(MarksManager *m, int pos, int score) {
+    if (m->size >= MAX_STUDENTS) return 0;
+    
+    // Shift everything right
+    for (int i = m->size; i > pos; i--) {
+        m->scores[i] = m->scores[i-1];
+    }
+    
+    m->scores[pos] = score;
+    m->size++;
+    return 1;
+}</code></pre>
+                    </div>
+                </div>
+                <div class="key-point">
+                    Need to <span class="highlight">manually shift</span> all elements to make space!
+                </div>
+            </section>
+
+            <!-- Example: Search Operation -->
+            <section>
+                <h2>Example: Searching</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python">if 95 in scores:
+    pos = scores.index(95)
+    print(f"Found at {pos}")
+
+# Built-in!</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">void search(MarksManager *m, int score) {
+    // Manual loop
+    for (int i = 0; i < m->size; i++) {
+        if (m->scores[i] == score) {
+            printf("Found at %d\n", i);
+            return;
+        }
+    }
+    printf("Not found\n");
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Complete Comparison Table -->
+            <section>
+                <h2>Complete Comparison</h2>
+                <table>
+                    <tr>
+                        <th>Operation</th>
+                        <th>Python</th>
+                        <th>C</th>
+                    </tr>
+                    <tr>
+                        <td>Append</td>
+                        <td><code>list.append(x)</code></td>
+                        <td>Manual + size check</td>
+                    </tr>
+                    <tr>
+                        <td>Insert</td>
+                        <td><code>list.insert(i, x)</code></td>
+                        <td>Manual shift loop</td>
+                    </tr>
+                    <tr>
+                        <td>Remove</td>
+                        <td><code>list.remove(x)</code></td>
+                        <td>Find + shift loop</td>
+                    </tr>
+                    <tr>
+                        <td>Search</td>
+                        <td><code>x in list</code></td>
+                        <td>Manual loop</td>
+                    </tr>
+                    <tr>
+                        <td>Sort</td>
+                        <td><code>list.sort()</code></td>
+                        <td>Implement algorithm</td>
+                    </tr>
+                    <tr>
+                        <td>Length</td>
+                        <td><code>len(list)</code></td>
+                        <td>Track manually</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- Common Pitfalls -->
+            <section>
+                <h2>⚠️ Common Pitfalls</h2>
+                <div class="three-column">
+                    <div class="card" style="border-top-color: var(--warning-color);">
+                        <h4>Out of Bounds</h4>
+                        <pre style="font-size: 0.7em;"><code class="language-c">int arr[5];
+arr[10] = 42; // ❌
+// No error!
+// Crashes or garbage</code></pre>
+                    </div>
+                    <div class="card" style="border-top-color: var(--warning-color);">
+                        <h4>Uninitialized</h4>
+                        <pre style="font-size: 0.7em;"><code class="language-c">int arr[5];
+printf("%d", arr[0]);
+// Garbage value!
+// Always initialize</code></pre>
+                    </div>
+                    <div class="card" style="border-top-color: var(--warning-color);">
+                        <h4>sizeof in Functions</h4>
+                        <pre style="font-size: 0.7em;"><code class="language-c">void f(int arr[]) {
+    int s = sizeof(arr);
+    // Wrong! Returns
+    // pointer size, not
+    // array size</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Your Assignment -->
+            <section>
+                <h2>Your Assignment</h2>
+                <div class="success-box">
+                    <h3 style="margin-top: 0;">Build the Marks Management System</h3>
+                    <p><strong>Beginner Level:</strong> Implement these 5 functions</p>
+                    <ul>
+                        <li>Input scores from user</li>
+                        <li>Display all scores</li>
+                        <li>Calculate average, max, min</li>
+                        <li>Add a new score</li>
+                        <li>Search for a score</li>
+                    </ul>
+                </div>
+                <div class="key-point" style="margin-top: 1em;">
+                    <strong>Intermediate:</strong> Add insert, remove, sort<br>
+                    <strong>Advanced:</strong> Complete all operations with error handling
+                </div>
+            </section>
+
+            <!-- Key Insights -->
+            <section>
+                <h2>What You'll Learn</h2>
+                <ol style="font-size: 0.95em;">
+                    <li>Python abstracts away complexity</li>
+                    <li>C gives control but requires work</li>
+                    <li>Fixed vs dynamic size tradeoffs</li>
+                    <li>Memory is contiguous and efficient</li>
+                    <li>Pointers and arrays are connected</li>
+                    <li>Built-in operations aren't free (O(n) work)</li>
+                    <li>Manual memory management teaches discipline</li>
+                </ol>
+            </section>
+
+            <!-- Summary -->
+            <section>
+                <h2>Summary</h2>
+                <div class="three-column">
+                    <div class="card">
+                        <h4>Arrays</h4>
+                        <ul style="font-size: 0.85em;">
+                            <li>Fixed size</li>
+                            <li>Same type</li>
+                            <li>No bounds checking</li>
+                            <li>Track size manually</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Memory</h4>
+                        <ul style="font-size: 0.85em;">
+                            <li>Contiguous storage</li>
+                            <li>Direct access O(1)</li>
+                            <li>Cache-friendly</li>
+                            <li>No overhead</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Pointers</h4>
+                        <ul style="font-size: 0.85em;">
+                            <li>Store addresses</li>
+                            <li>Arrays decay to pointers</li>
+                            <li>Pass size separately</li>
+                            <li>Pointer arithmetic</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Closing -->
+            <section class="center-content">
+                <h1>Ready to Build?</h1>
+                <p style="font-size: 1.5em; color: var(--accent-color); margin-top: 1em;">
+                    Let's implement that Marks Management System! 🚀
+                </p>
+                <div style="margin-top: 3em; font-size: 0.9em; color: #6c757d;">
+                    <p>Compile, test, debug, repeat.</p>
+                    <p>Happy coding! 💻</p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            center: false,
+            slideNumber: true,
+            transition: 'slide',
+            width: 1280,
+            height: 720,
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 2.0,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
