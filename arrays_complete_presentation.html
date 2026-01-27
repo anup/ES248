@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arrays, Memory, and Pointers in C</title>
+    <title>Arrays and Memory in C</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
@@ -267,30 +267,30 @@
             
             <!-- Title Slide -->
             <section class="center-content">
-                <h1>Arrays, Memory & Pointers</h1>
+                <h1>Arrays & Memory</h1>
                 <h3 style="color: #7f8c8d;">From Python Lists to C Arrays</h3>
-                <p style="margin-top: 2em; font-size: 0.8em; color: #95a5a6;">ES 248: Data Structures and Algorithms</p>
+                <p style="margin-top: 2em; font-size: 0.8em; color: #95a5a6;">Introduction to DSA (C Programming)</p>
             </section>
 
             <!-- Part 1: Arrays -->
             <section class="center-content">
                 <h1>Part 1: Arrays</h1>
-                <p style="color: #7f8c8d;">Understanding the Fundamentals</p>
+                <p style="color: #7f8c8d;">Python Lists vs C Arrays</p>
             </section>
 
             <!-- The Problem That Needs Arrays -->
             <section>
-                <h2>A Problem We Can't Solve (Yet)</h2>
+                <h2>An Array Problem</h2>
                 <div class="key-point">
-                    <strong>Challenge:</strong> Given n numbers, find how many numbers are <span class="highlight">greater than the average</span>.
+                    <strong>Problem:</strong> Given n numbers, find how many numbers are <span class="highlight">greater than the average</span>.
                 </div>
                 <p style="margin-top: 1.5em;">Example: <code>85, 92, 78, 95, 88</code></p>
                 <div class="fragment">
                     <p>Average = <code>(85+92+78+95+88)/5 = 87.6</code></p>
                     <p>Numbers > 87.6: <code>92, 95, 88</code> → Answer: <span class="highlight">3</span></p>
                 </div>
-                <div class="warning-box fragment" style="margin-top: 1.5em;">
-                    <strong>The Problem:</strong> We need to see ALL numbers to calculate average, then check each number against it. We can't do this in one pass! We need to <span class="highlight">store</span> the numbers.
+                <div class="key-point fragment" style="margin-top: 1.5em;">
+                    You know how to solve this in Python using lists. Now let's see how to do it in C with arrays.
                 </div>
             </section>
 
@@ -561,73 +561,137 @@ int main() {
 }</code></pre>
             </section>
 
-            <!-- Part 3: Pointers Preview -->
-            <section class="center-content">
-                <h1>Part 3: Pointers</h1>
-                <p style="color: #7f8c8d;">The Connection to Arrays</p>
-            </section>
-
-            <!-- What is a Pointer? -->
+            <!-- Difference 5: Slicing -->
             <section>
-                <h2>What is a Pointer?</h2>
-                <div class="key-point">
-                    A pointer is a variable that <span class="highlight">stores a memory address</span>.
-                </div>
-                <pre><code class="language-c">int x = 42;
-int *ptr = &x;  // ptr stores the address of x
+                <h2>Difference #5: Slicing</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python">scores = [85, 92, 78, 95, 88]
 
-printf("Value of x: %d\n", x);       // 42
-printf("Address of x: %p\n", &x);    // e.g., 0x7fff5fbff8ac
-printf("Value of ptr: %p\n", ptr);   // Same as &x
-printf("Value at address: %d\n", *ptr);  // 42 (dereference)</code></pre>
-                <p style="margin-top: 1em;"><code>&</code> = "address of"<br><code>*</code> = "value at"</p>
-            </section>
+# Get middle three
+middle = scores[1:4]
+# [92, 78, 95]
 
-            <!-- Arrays and Pointers Connection -->
-            <section>
-                <h2>Arrays ARE Pointers!</h2>
-                <p>This is a fundamental truth in C:</p>
-                <pre><code class="language-c">int arr[5] = {10, 20, 30, 40, 50};
+# Get every other
+evens = scores[::2]
+# [85, 78, 88]</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">int scores[5] = {85, 92, 78, 95, 88};
 
-printf("%p\n", arr);      // Address of first element
-printf("%p\n", &arr[0]);  // Same address!
+// No slicing - manual copy
+int middle[3];
+for (int i = 0; i < 3; i++) {
+    middle[i] = scores[i + 1];
+}
 
-// These are equivalent:
-printf("%d\n", arr[0]);   // 10
-printf("%d\n", *arr);     // 10 (dereference)</code></pre>
-                <div class="success-box">
-                    The array name <code>arr</code> is a pointer to the first element!
+// Must create new array
+// and copy element by element</code></pre>
+                    </div>
                 </div>
             </section>
 
-            <!-- Pointer Arithmetic -->
+            <!-- Difference 6: Concatenation -->
             <section>
-                <h2>Pointer Arithmetic</h2>
-                <pre><code class="language-c">int arr[5] = {10, 20, 30, 40, 50};
+                <h2>Difference #6: Concatenation</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python">list1 = [1, 2, 3]
+list2 = [4, 5, 6]
 
-int *ptr = arr;  // Points to arr[0]
+# Just use +
+combined = list1 + list2
+# [1, 2, 3, 4, 5, 6]</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">int arr1[3] = {1, 2, 3};
+int arr2[3] = {4, 5, 6};
 
-printf("%d\n", *ptr);       // 10
-printf("%d\n", *(ptr + 1)); // 20
-printf("%d\n", *(ptr + 2)); // 30
-
-// These are the same:
-arr[i]  ==  *(arr + i)
-&arr[i] ==  arr + i</code></pre>
-                <div class="key-point" style="margin-top: 1em;">
-                    <code>ptr + 1</code> doesn't add 1 byte, it adds <code>sizeof(int)</code> bytes!
+// Cannot concatenate!
+// Must create new array & copy
+int combined[6];
+for (int i = 0; i < 3; i++)
+    combined[i] = arr1[i];
+for (int i = 0; i < 3; i++)
+    combined[3 + i] = arr2[i];</code></pre>
+                    </div>
                 </div>
             </section>
 
-            <!-- Functions and Arrays -->
+            <!-- Difference 7: Copying -->
             <section>
-                <h2>Passing Arrays to Functions</h2>
+                <h2>Difference #7: Copying Arrays</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python">original = [1, 2, 3, 4, 5]
+
+# Multiple ways
+copy1 = original.copy()
+copy2 = original[:]
+copy3 = list(original)</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">int original[5] = {1, 2, 3, 4, 5};
+int copy[5];
+
+// Manual element-by-element
+for (int i = 0; i < 5; i++) {
+    copy[i] = original[i];
+}
+
+// Or use memcpy (advanced)
+// memcpy(copy, original, 
+//        5 * sizeof(int));</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Difference 8: Reversal -->
+            <section>
+                <h2>Difference #8: Reversing</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python">scores = [1, 2, 3, 4, 5]
+
+# In-place
+scores.reverse()
+
+# Or create new
+reversed = scores[::-1]</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">int scores[5] = {1, 2, 3, 4, 5};
+
+// Manual swap from both ends
+for (int i = 0; i < 5/2; i++) {
+    int temp = scores[i];
+    scores[i] = scores[4 - i];
+    scores[4 - i] = temp;
+}
+
+// Or copy to new array reversed</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Difference 9: Passing to Functions -->
+            <section>
+                <h2>Difference #9: Passing to Functions</h2>
                 <div class="comparison-box">
                     <div class="comparison-item">
                         <div class="python-tag">PYTHON</div>
                         <pre><code class="language-python">def process(arr):
-    # len() works
-    print(len(arr))
+    # len() works!
+    for i in range(len(arr)):
+        print(arr[i])
     
 scores = [85, 92, 78]
 process(scores)</code></pre>
@@ -635,19 +699,232 @@ process(scores)</code></pre>
                     <div class="comparison-item">
                         <div class="c-tag">C</div>
                         <pre><code class="language-c">void process(int arr[], int size) {
-    // MUST pass size!
+    // MUST pass size separately
     for (int i = 0; i < size; i++) {
         printf("%d ", arr[i]);
     }
 }
 
 int scores[] = {85, 92, 78};
-process(scores, 3);</code></pre>
+process(scores, 3);  // size!</code></pre>
                     </div>
                 </div>
                 <div class="warning-box">
-                    Arrays "decay" to pointers when passed to functions. <code>sizeof</code> won't work!
+                    In C, arrays decay to pointers when passed. <code>sizeof</code> doesn't work inside functions!
                 </div>
+            </section>
+
+            <!-- Difference 10: Returning from Functions -->
+            <section>
+                <h2>Difference #10: Returning Arrays</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python">def get_scores():
+    return [85, 92, 78, 95]
+
+scores = get_scores()
+print(scores)</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">// Cannot return arrays!
+// Use output parameter instead
+
+void get_scores(int result[], 
+                int *size) {
+    result[0] = 85;
+    result[1] = 92;
+    result[2] = 78;
+    result[3] = 95;
+    *size = 4;
+}
+
+int scores[100];
+int size;
+get_scores(scores, &size);</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Difference 11: Initialization -->
+            <section>
+                <h2>Difference #11: Initialization</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python"># Starts empty, no garbage
+scores = []
+
+# Or with values
+scores = [0, 0, 0, 0, 0]
+
+# Or using multiplication
+scores = [0] * 5</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">// Uninitialized = GARBAGE!
+int scores[5];
+printf("%d", scores[0]); // ???
+
+// Must initialize
+int scores[5] = {0};  // All zeros
+int scores[5] = {85, 92, 78, 95, 88};
+
+// Or loop to initialize
+for (int i = 0; i < 5; i++)
+    scores[i] = 0;</code></pre>
+                    </div>
+                </div>
+                <div class="warning-box">
+                    <strong>Critical:</strong> Uninitialized arrays contain garbage values!
+                </div>
+            </section>
+
+            <!-- Difference 12: Resizing -->
+            <section>
+                <h2>Difference #12: Resizing</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <div class="python-tag">PYTHON</div>
+                        <pre><code class="language-python">scores = [85, 92, 78]
+
+# Grows automatically
+scores.append(95)
+scores.append(88)
+# Now size is 5
+
+# Can also shrink
+scores.pop()
+# Now size is 4</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="c-tag">C</div>
+                        <pre><code class="language-c">int scores[100];  // Fixed!
+int count = 3;
+
+// Can "add" if within capacity
+if (count < 100) {
+    scores[count++] = 95;
+}
+
+// But array size NEVER changes
+// If full, you're stuck!
+// Must allocate new array (advanced)</code></pre>
+                    </div>
+                </div>
+                <div class="key-point">
+                    Python: Dynamic resizing<br>
+                    C: Fixed size forever (unless using malloc/realloc)
+                </div>
+            </section>
+
+            <!-- All Differences Summary -->
+            <section>
+                <h2>All 20 Key Differences</h2>
+                <table style="font-size: 0.65em;">
+                    <tr>
+                        <th>Category</th>
+                        <th>Python Lists</th>
+                        <th>C Arrays</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Size</strong></td>
+                        <td>Dynamic (grow/shrink)</td>
+                        <td>Fixed at declaration</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Types</strong></td>
+                        <td>Can mix types</td>
+                        <td>Must be homogeneous</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memory</strong></td>
+                        <td>References (scattered)</td>
+                        <td>Contiguous values</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bounds</strong></td>
+                        <td>IndexError exception</td>
+                        <td>No checks (undefined)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Length</strong></td>
+                        <td>len() function</td>
+                        <td>sizeof trick / manual</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Append</strong></td>
+                        <td>append(x) auto-resize</td>
+                        <td>Manual + size check</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Insert</strong></td>
+                        <td>insert(i,x) auto-shift</td>
+                        <td>Manual shift loop</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Delete</strong></td>
+                        <td>remove(x) auto-shift</td>
+                        <td>Manual shift left</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Search</strong></td>
+                        <td>x in list, index(x)</td>
+                        <td>Manual loop</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sort</strong></td>
+                        <td>sort() or sorted()</td>
+                        <td>Implement algorithm</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reverse</strong></td>
+                        <td>reverse() or [::-1]</td>
+                        <td>Manual swap loop</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Concatenate</strong></td>
+                        <td>list1 + list2</td>
+                        <td>Manual copy both</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slicing</strong></td>
+                        <td>list[1:4] creates new</td>
+                        <td>Manual copy elements</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Copy</strong></td>
+                        <td>copy() or [:]</td>
+                        <td>Element-by-element</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pass to Func</strong></td>
+                        <td>Knows size</td>
+                        <td>Must pass size too</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Return</strong></td>
+                        <td>Can return lists</td>
+                        <td>Use output parameter</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Initialization</strong></td>
+                        <td>[] is empty/clean</td>
+                        <td>Garbage if uninitialized</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memory Mgmt</strong></td>
+                        <td>Automatic GC</td>
+                        <td>Manual (stack/malloc)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Resizing</strong></td>
+                        <td>Automatic when needed</td>
+                        <td>Impossible (fixed)</td>
+                    </tr>
+                </table>
             </section>
 
             <!-- The Comprehensive Problem -->
@@ -921,15 +1198,16 @@ printf("%d", arr[0]);
 
             <!-- Key Insights -->
             <section>
-                <h2>What You'll Learn</h2>
+                <h2>Key Takeaways</h2>
                 <ol style="font-size: 0.95em;">
-                    <li>Python abstracts away complexity</li>
-                    <li>C gives control but requires work</li>
-                    <li>Fixed vs dynamic size tradeoffs</li>
-                    <li>Memory is contiguous and efficient</li>
-                    <li>Pointers and arrays are connected</li>
-                    <li>Built-in operations aren't free (O(n) work)</li>
-                    <li>Manual memory management teaches discipline</li>
+                    <li>Python abstracts away complexity that C makes explicit</li>
+                    <li>C gives you control but requires more manual work</li>
+                    <li>Fixed size in C vs dynamic size in Python</li>
+                    <li>C arrays: contiguous memory, efficient access</li>
+                    <li>Every Python built-in requires manual loops in C</li>
+                    <li>Understanding what Python does behind the scenes</li>
+                    <li>Tradeoffs: convenience (Python) vs control (C)</li>
+                    <li>No bounds checking in C - you're responsible!</li>
                 </ol>
             </section>
 
@@ -941,9 +1219,10 @@ printf("%d", arr[0]);
                         <h4>Arrays</h4>
                         <ul style="font-size: 0.85em;">
                             <li>Fixed size</li>
-                            <li>Same type</li>
+                            <li>Same type only</li>
                             <li>No bounds checking</li>
                             <li>Track size manually</li>
+                            <li>No automatic resizing</li>
                         </ul>
                     </div>
                     <div class="card">
@@ -952,16 +1231,18 @@ printf("%d", arr[0]);
                             <li>Contiguous storage</li>
                             <li>Direct access O(1)</li>
                             <li>Cache-friendly</li>
-                            <li>No overhead</li>
+                            <li>No metadata overhead</li>
+                            <li>Garbage values if uninitialized</li>
                         </ul>
                     </div>
                     <div class="card">
-                        <h4>Pointers</h4>
+                        <h4>Operations</h4>
                         <ul style="font-size: 0.85em;">
-                            <li>Store addresses</li>
-                            <li>Arrays decay to pointers</li>
-                            <li>Pass size separately</li>
-                            <li>Pointer arithmetic</li>
+                            <li>No built-in methods</li>
+                            <li>Manual loops for everything</li>
+                            <li>Pass size to functions</li>
+                            <li>Can't return arrays</li>
+                            <li>No slicing/concatenation</li>
                         </ul>
                     </div>
                 </div>
