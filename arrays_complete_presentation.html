@@ -820,6 +820,90 @@ if (count < 100) {
                 </div>
             </section>
 
+            <!-- Detailed: Insertion -->
+            <section>
+                <h2>How Insertion Works in C</h2>
+                <p>Let's insert <code>50</code> at position <code>2</code> in: <code>[10, 20, 30, 40]</code></p>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <h4 style="font-size: 1em;">Step 1: Shift Right</h4>
+                        <pre><code class="language-c">// Start from end, shift right
+for (int i = size; i > pos; i--) {
+    arr[i] = arr[i-1];
+}
+
+// [10, 20, 30, 40, __]
+// [10, 20, 30, 40, 40]
+// [10, 20, 30, 30, 40]</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <h4 style="font-size: 1em;">Step 2: Insert</h4>
+                        <pre><code class="language-c">// Now insert at position
+arr[pos] = 50;
+size++;
+
+// [10, 20, 50, 30, 40]
+// size = 5</code></pre>
+                    </div>
+                </div>
+                <div class="warning-box" style="margin-top: 1em;">
+                    <strong>Important:</strong> Shift from END to position, not beginning to end! Otherwise you'll overwrite data.
+                </div>
+            </section>
+
+            <!-- Detailed: Deletion -->
+            <section>
+                <h2>How Deletion Works in C</h2>
+                <p>Let's delete value <code>30</code> from: <code>[10, 20, 30, 40, 50]</code></p>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <h4 style="font-size: 1em;">Step 1: Find</h4>
+                        <pre><code class="language-c">// Search for value
+int pos = -1;
+for (int i = 0; i < size; i++) {
+    if (arr[i] == 30) {
+        pos = i;  // Found at index 2
+        break;
+    }
+}</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <h4 style="font-size: 1em;">Step 2: Shift Left</h4>
+                        <pre><code class="language-c">// Shift everything left
+for (int i = pos; i < size-1; i++) {
+    arr[i] = arr[i+1];
+}
+size--;
+
+// [10, 20, 40, 50, 50]
+// [10, 20, 40, 50] (size=4)</code></pre>
+                    </div>
+                </div>
+                <div class="key-point" style="margin-top: 1em;">
+                    Deletion = Find + Shift Left. Both operations are O(n).
+                </div>
+            </section>
+
+            <!-- Sort Example -->
+            <section>
+                <h2>Sorting in C (Bubble Sort Example)</h2>
+                <div class="c-tag">C</div>
+                <pre><code class="language-c">void bubble_sort(int arr[], int size) {
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = 0; j < size - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                // Swap
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}</code></pre>
+                <p style="margin-top: 1em;">Python: <code>list.sort()</code> ✨<br>
+                C: Must implement sorting algorithm yourself!</p>
+            </section>
+
             <!-- All Differences Summary -->
             <section>
                 <h2>All 20 Key Differences</h2>
@@ -927,226 +1011,6 @@ if (count < 100) {
                 </table>
             </section>
 
-            <!-- The Comprehensive Problem -->
-            <section class="center-content">
-                <h1>Putting It All Together</h1>
-                <p style="color: #7f8c8d;">Student Marks Management System</p>
-            </section>
-
-            <!-- Problem Overview -->
-            <section>
-                <h2>The Challenge</h2>
-                <p>Build a system that manages student test scores with these operations:</p>
-                <div class="three-column">
-                    <div class="card">
-                        <h4>Basic</h4>
-                        <ul style="font-size: 0.85em;">
-                            <li>Input scores</li>
-                            <li>Display all</li>
-                            <li>Calculate stats</li>
-                        </ul>
-                    </div>
-                    <div class="card">
-                        <h4>Operations</h4>
-                        <ul style="font-size: 0.85em;">
-                            <li>Add score</li>
-                            <li>Insert at position</li>
-                            <li>Remove score</li>
-                            <li>Search</li>
-                        </ul>
-                    </div>
-                    <div class="card">
-                        <h4>Advanced</h4>
-                        <ul style="font-size: 0.85em;">
-                            <li>Sort scores</li>
-                            <li>Reverse</li>
-                            <li>Copy/Merge</li>
-                            <li>Compare</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="key-point" style="margin-top: 1.5em;">
-                    This problem will expose <span class="highlight">ALL the differences</span> between Python lists and C arrays!
-                </div>
-            </section>
-
-            <!-- Python: One-liner Operations -->
-            <section>
-                <h2>In Python: It's Easy!</h2>
-                <div class="python-tag">PYTHON</div>
-                <pre><code class="language-python">scores = [85, 92, 78, 95, 88]
-
-# Add
-scores.append(90)
-
-# Insert
-scores.insert(2, 80)
-
-# Remove
-scores.remove(78)
-
-# Search
-if 95 in scores:
-    print("Found!")
-
-# Sort
-scores.sort()
-
-# Reverse
-reversed = scores[::-1]</code></pre>
-                <p style="text-align: center; margin-top: 1em;">All operations: <span class="highlight">built-in, one line!</span></p>
-            </section>
-
-            <!-- C: Manual Work -->
-            <section>
-                <h2>In C: You Do The Work!</h2>
-                <div class="c-tag">C</div>
-                <pre><code class="language-c">#define MAX_STUDENTS 100
-
-typedef struct {
-    int scores[MAX_STUDENTS];
-    int size;  // Track count manually!
-} MarksManager;
-
-// Every operation needs:
-// 1. Size checking
-// 2. Manual loops
-// 3. Error handling
-// 4. Pointer management</code></pre>
-                <div class="warning-box">
-                    What's 1 line in Python → 10-20 lines in C!
-                </div>
-            </section>
-
-            <!-- Example: Add Operation -->
-            <section>
-                <h2>Example: Adding a Score</h2>
-                <div class="comparison-box">
-                    <div class="comparison-item">
-                        <div class="python-tag">PYTHON</div>
-                        <pre><code class="language-python">scores.append(90)
-
-# That's it!</code></pre>
-                    </div>
-                    <div class="comparison-item">
-                        <div class="c-tag">C</div>
-                        <pre><code class="language-c">int add_score(MarksManager *m, int score) {
-    // Check if full
-    if (m->size >= MAX_STUDENTS) {
-        printf("Array is full!\n");
-        return 0;
-    }
-    
-    // Add manually
-    m->scores[m->size] = score;
-    m->size++;
-    return 1;
-}</code></pre>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Example: Insert Operation -->
-            <section>
-                <h2>Example: Inserting at Position</h2>
-                <div class="comparison-box">
-                    <div class="comparison-item">
-                        <div class="python-tag">PYTHON</div>
-                        <pre><code class="language-python">scores.insert(2, 80)
-
-# Done!</code></pre>
-                    </div>
-                    <div class="comparison-item">
-                        <div class="c-tag">C</div>
-                        <pre><code class="language-c">int insert(MarksManager *m, int pos, int score) {
-    if (m->size >= MAX_STUDENTS) return 0;
-    
-    // Shift everything right
-    for (int i = m->size; i > pos; i--) {
-        m->scores[i] = m->scores[i-1];
-    }
-    
-    m->scores[pos] = score;
-    m->size++;
-    return 1;
-}</code></pre>
-                    </div>
-                </div>
-                <div class="key-point">
-                    Need to <span class="highlight">manually shift</span> all elements to make space!
-                </div>
-            </section>
-
-            <!-- Example: Search Operation -->
-            <section>
-                <h2>Example: Searching</h2>
-                <div class="comparison-box">
-                    <div class="comparison-item">
-                        <div class="python-tag">PYTHON</div>
-                        <pre><code class="language-python">if 95 in scores:
-    pos = scores.index(95)
-    print(f"Found at {pos}")
-
-# Built-in!</code></pre>
-                    </div>
-                    <div class="comparison-item">
-                        <div class="c-tag">C</div>
-                        <pre><code class="language-c">void search(MarksManager *m, int score) {
-    // Manual loop
-    for (int i = 0; i < m->size; i++) {
-        if (m->scores[i] == score) {
-            printf("Found at %d\n", i);
-            return;
-        }
-    }
-    printf("Not found\n");
-}</code></pre>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Complete Comparison Table -->
-            <section>
-                <h2>Complete Comparison</h2>
-                <table>
-                    <tr>
-                        <th>Operation</th>
-                        <th>Python</th>
-                        <th>C</th>
-                    </tr>
-                    <tr>
-                        <td>Append</td>
-                        <td><code>list.append(x)</code></td>
-                        <td>Manual + size check</td>
-                    </tr>
-                    <tr>
-                        <td>Insert</td>
-                        <td><code>list.insert(i, x)</code></td>
-                        <td>Manual shift loop</td>
-                    </tr>
-                    <tr>
-                        <td>Remove</td>
-                        <td><code>list.remove(x)</code></td>
-                        <td>Find + shift loop</td>
-                    </tr>
-                    <tr>
-                        <td>Search</td>
-                        <td><code>x in list</code></td>
-                        <td>Manual loop</td>
-                    </tr>
-                    <tr>
-                        <td>Sort</td>
-                        <td><code>list.sort()</code></td>
-                        <td>Implement algorithm</td>
-                    </tr>
-                    <tr>
-                        <td>Length</td>
-                        <td><code>len(list)</code></td>
-                        <td>Track manually</td>
-                    </tr>
-                </table>
-            </section>
-
             <!-- Common Pitfalls -->
             <section>
                 <h2>⚠️ Common Pitfalls</h2>
@@ -1176,24 +1040,19 @@ printf("%d", arr[0]);
                 </div>
             </section>
 
-            <!-- Your Assignment -->
+            <!-- Practice -->
             <section>
-                <h2>Your Assignment</h2>
-                <div class="success-box">
-                    <h3 style="margin-top: 0;">Build the Marks Management System</h3>
-                    <p><strong>Beginner Level:</strong> Implement these 5 functions</p>
-                    <ul>
-                        <li>Input scores from user</li>
-                        <li>Display all scores</li>
-                        <li>Calculate average, max, min</li>
-                        <li>Add a new score</li>
-                        <li>Search for a score</li>
-                    </ul>
-                </div>
-                <div class="key-point" style="margin-top: 1em;">
-                    <strong>Intermediate:</strong> Add insert, remove, sort<br>
-                    <strong>Advanced:</strong> Complete all operations with error handling
-                </div>
+                <h2>Practice Problems</h2>
+                <p>Try implementing these operations in C with arrays:</p>
+                <ul style="font-size: 0.9em;">
+                    <li>Find the maximum and minimum values in an array</li>
+                    <li>Calculate the average of all elements</li>
+                    <li>Count how many elements are greater than average</li>
+                    <li>Reverse an array in-place</li>
+                    <li>Insert an element at a given position</li>
+                    <li>Delete an element by value</li>
+                </ul>
+                <p style="margin-top: 1.5em; text-align: center;">Practice on <strong>Quala</strong> for more array problems!</p>
             </section>
 
             <!-- Key Insights -->
@@ -1250,13 +1109,14 @@ printf("%d", arr[0]);
 
             <!-- Closing -->
             <section class="center-content">
-                <h1>Ready to Build?</h1>
-                <p style="font-size: 1.5em; color: var(--accent-color); margin-top: 1em;">
-                    Let's implement that Marks Management System! 🚀
+                <h1>Arrays in C</h1>
+                <p style="font-size: 1.3em; color: var(--accent-color); margin-top: 1em;">
+                    Now you know the differences!
                 </p>
                 <div style="margin-top: 3em; font-size: 0.9em; color: #6c757d;">
-                    <p>Compile, test, debug, repeat.</p>
-                    <p>Happy coding! 💻</p>
+                    <p>Python makes it easy.</p>
+                    <p>C gives you control.</p>
+                    <p style="margin-top: 1em;">Practice on <strong>Quala</strong>! 💻</p>
                 </div>
             </section>
 
