@@ -499,66 +499,161 @@ printf("%d", scores[10]);
                 </div>
             </section>
 
-            <!-- Memory Comparison: Python vs C -->
+            <!-- Memory Map Comparison -->
             <section>
-                <h2>Memory: Python vs C</h2>
-                <table>
-                    <tr>
-                        <th></th>
-                        <th>Python Lists</th>
-                        <th>C Arrays</th>
-                    </tr>
-                    <tr>
-                        <td><strong>Storage</strong></td>
-                        <td>References to objects</td>
-                        <td>Actual values</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Location</strong></td>
-                        <td>Scattered in heap</td>
-                        <td>Contiguous block</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Overhead</strong></td>
-                        <td>Extra metadata</td>
-                        <td>Just the data</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Resizing</strong></td>
-                        <td>Can grow/shrink</td>
-                        <td>Fixed size</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Cache</strong></td>
-                        <td>Less cache-friendly</td>
-                        <td>Very cache-friendly</td>
-                    </tr>
-                </table>
+                <h2>Memory Map: Python List vs C Array</h2>
+                <div style="margin-top: 2em;">
+                    <h3 style="font-size: 1.1em; color: var(--c-color);">C Array: <code>int arr[4] = {10, 20, 30, 40};</code></h3>
+                    <div style="background: var(--light-bg); padding: 1.5em; border-radius: 8px; margin: 1em 0;">
+                        <div style="display: flex; gap: 0.5em; justify-content: center;">
+                            <div style="border: 2px solid var(--accent-color); padding: 0.8em 1em; background: white; border-radius: 4px; text-align: center;">
+                                <div style="font-size: 0.7em; color: var(--accent-color);">1000</div>
+                                <div style="font-weight: bold;">10</div>
+                            </div>
+                            <div style="border: 2px solid var(--accent-color); padding: 0.8em 1em; background: white; border-radius: 4px; text-align: center;">
+                                <div style="font-size: 0.7em; color: var(--accent-color);">1004</div>
+                                <div style="font-weight: bold;">20</div>
+                            </div>
+                            <div style="border: 2px solid var(--accent-color); padding: 0.8em 1em; background: white; border-radius: 4px; text-align: center;">
+                                <div style="font-size: 0.7em; color: var(--accent-color);">1008</div>
+                                <div style="font-weight: bold;">30</div>
+                            </div>
+                            <div style="border: 2px solid var(--accent-color); padding: 0.8em 1em; background: white; border-radius: 4px; text-align: center;">
+                                <div style="font-size: 0.7em; color: var(--accent-color);">1012</div>
+                                <div style="font-weight: bold;">40</div>
+                            </div>
+                        </div>
+                        <p style="text-align: center; margin-top: 1em; font-size: 0.85em;"><strong>Contiguous:</strong> Values stored directly, one after another</p>
+                    </div>
+
+                    <h3 style="font-size: 1.1em; color: var(--python-color); margin-top: 2em;">Python List: <code>lst = [10, 20, 30, 40]</code></h3>
+                    <div style="background: var(--light-bg); padding: 1.5em; border-radius: 8px; margin: 1em 0;">
+                        <div style="text-align: center; margin-bottom: 1em;">
+                            <div style="display: inline-block; border: 2px solid var(--python-color); padding: 0.8em 1.2em; background: white; border-radius: 4px;">
+                                <div style="font-size: 0.75em; font-weight: bold;">List Object</div>
+                                <div style="font-size: 0.7em; margin-top: 0.3em;">size: 4</div>
+                                <div style="font-size: 0.7em;">capacity: 8</div>
+                                <div style="font-size: 0.7em;">type: list</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin: 1em 0; color: var(--python-color);">↓</div>
+                        <div style="display: flex; gap: 0.5em; justify-content: center; margin-bottom: 1em;">
+                            <div style="border: 2px solid var(--python-color); padding: 0.6em 0.8em; background: white; border-radius: 4px; text-align: center; font-size: 0.85em;">
+                                <div style="font-size: 0.7em; color: var(--python-color);">ref</div>
+                                <div>→2000</div>
+                            </div>
+                            <div style="border: 2px solid var(--python-color); padding: 0.6em 0.8em; background: white; border-radius: 4px; text-align: center; font-size: 0.85em;">
+                                <div style="font-size: 0.7em; color: var(--python-color);">ref</div>
+                                <div>→3000</div>
+                            </div>
+                            <div style="border: 2px solid var(--python-color); padding: 0.6em 0.8em; background: white; border-radius: 4px; text-align: center; font-size: 0.85em;">
+                                <div style="font-size: 0.7em; color: var(--python-color);">ref</div>
+                                <div>→4000</div>
+                            </div>
+                            <div style="border: 2px solid var(--python-color); padding: 0.6em 0.8em; background: white; border-radius: 4px; text-align: center; font-size: 0.85em;">
+                                <div style="font-size: 0.7em; color: var(--python-color);">ref</div>
+                                <div>→5000</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin: 1em 0; color: var(--python-color);">↓ Scattered in heap</div>
+                        <div style="display: flex; gap: 2em; justify-content: center; flex-wrap: wrap;">
+                            <div style="border: 2px dashed var(--python-color); padding: 0.6em 1em; background: white; border-radius: 4px; text-align: center;">
+                                <div style="font-size: 0.7em; color: var(--python-color);">@2000</div>
+                                <div style="font-weight: bold;">10</div>
+                            </div>
+                            <div style="border: 2px dashed var(--python-color); padding: 0.6em 1em; background: white; border-radius: 4px; text-align: center;">
+                                <div style="font-size: 0.7em; color: var(--python-color);">@3000</div>
+                                <div style="font-weight: bold;">20</div>
+                            </div>
+                            <div style="border: 2px dashed var(--python-color); padding: 0.6em 1em; background: white; border-radius: 4px; text-align: center;">
+                                <div style="font-size: 0.7em; color: var(--python-color);">@4000</div>
+                                <div style="font-weight: bold;">30</div>
+                            </div>
+                            <div style="border: 2px dashed var(--python-color); padding: 0.6em 1em; background: white; border-radius: 4px; text-align: center;">
+                                <div style="font-size: 0.7em; color: var(--python-color);">@5000</div>
+                                <div style="font-weight: bold;">40</div>
+                            </div>
+                        </div>
+                        <p style="text-align: center; margin-top: 1em; font-size: 0.85em;"><strong>Scattered:</strong> List stores references, actual objects elsewhere</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Key Differences in Memory -->
+            <section>
+                <h2>Why This Matters</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <h4>C Arrays</h4>
+                        <ul style="font-size: 0.85em;">
+                            <li><strong>Direct values:</strong> No indirection</li>
+                            <li><strong>Cache-friendly:</strong> CPU can prefetch</li>
+                            <li><strong>Fast access:</strong> Just offset calculation</li>
+                            <li><strong>No overhead:</strong> Just the data</li>
+                            <li><strong>Fixed size:</strong> Can't grow</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>Python Lists</h4>
+                        <ul style="font-size: 0.85em;">
+                            <li><strong>References:</strong> Extra pointer hop</li>
+                            <li><strong>Less cache-friendly:</strong> Scattered data</li>
+                            <li><strong>Slower access:</strong> Two memory reads</li>
+                            <li><strong>Metadata overhead:</strong> Size, capacity, type</li>
+                            <li><strong>Dynamic:</strong> Can grow and shrink</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="key-point" style="margin-top: 1em;">
+                    <strong>The tradeoff:</strong> C is faster and more memory-efficient. Python is flexible and easier to use.
+                </div>
             </section>
 
             <!-- Why Track Size? -->
             <section>
                 <h2>Why Track Size Separately?</h2>
-                <pre><code class="language-c">#include <stdio.h>
+                <div class="key-point">
+                    <strong>The Problem:</strong> Array capacity ≠ Number of elements filled
+                </div>
+                
+                <div style="margin-top: 2em; background: var(--light-bg); padding: 1.5em; border-radius: 8px;">
+                    <h4 style="margin-bottom: 1em;">Example: User Input</h4>
+                    <pre><code class="language-c">int scores[100];  // Space for 100 numbers
+int count = 0;     // How many actually filled?
 
-int main() {
-    int scores[100];  // Capacity: 100
-    int count = 0;     // Actual elements: 0
-    
-    // User enters 5 scores
-    for (int i = 0; i < 5; i++) {
-        scanf("%d", &scores[i]);
-        count++;
-    }
-    
-    // Now: capacity = 100, count = 5
-    // We need count to loop correctly!
-    for (int i = 0; i < count; i++) {
-        printf("%d\n", scores[i]);
-    }
-    
-    return 0;
+// User enters only 5 numbers
+for (int i = 0; i < 5; i++) {
+    scanf("%d", &scores[i]);
+    count++;  // count = 5
 }</code></pre>
+                </div>
+
+                <div style="margin-top: 1.5em;">
+                    <div class="comparison-box">
+                        <div class="comparison-item">
+                            <h4>✅ Correct</h4>
+                            <pre><code class="language-c">// Loop using count
+for (int i = 0; i < count; i++) {
+    printf("%d ", scores[i]);
+}
+// Prints 5 numbers</code></pre>
+                        </div>
+                        <div class="comparison-item">
+                            <h4>❌ Wrong</h4>
+                            <pre><code class="language-c">// Loop using capacity
+for (int i = 0; i < 100; i++) {
+    printf("%d ", scores[i]);
+}
+// Prints 5 + 95 garbage!</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box" style="margin-top: 1.5em;">
+                    <strong>Why?</strong> Array declared size = 100 (capacity)<br>
+                    But only 5 positions filled (count)<br>
+                    Positions 5-99 contain <span class="highlight">garbage values</span> (uninitialized)
+                </div>
             </section>
 
             <!-- Difference 5: Slicing -->
