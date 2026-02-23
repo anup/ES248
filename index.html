@@ -8,73 +8,158 @@
       :root {
         --main-color: #2c3e50;
         --accent-color: #3498db;
+        --border: #e0e0e0;
+        --muted: #7f8c8d;
+        --section-bg: #f8f9fa;
+        --upcoming-bg: #fafafa;
+        --upcoming-text: #bbb;
       }
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
         background: white;
         min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2em;
+        padding: 2em 1em;
       }
       .container {
-        max-width: 600px;
+        max-width: 560px;
         width: 100%;
-        text-align: center;
       }
       h1 {
         color: var(--main-color);
-        font-size: 2em;
-        font-weight: 600;
-        margin-bottom: 0.5em;
+        font-size: 1.7em;
+        font-weight: 700;
+        margin-bottom: 0.25em;
       }
       .subtitle {
-        color: #7f8c8d;
-        font-size: 1em;
-        margin-bottom: 3em;
+        color: var(--muted);
+        font-size: 0.95em;
+        margin-bottom: 2.5em;
       }
-      .links {
+
+      /* exam block */
+      .exam-block {
+        margin-bottom: 2em;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .exam-block.upcoming {
+        border-color: var(--border);
+        opacity: 0.5;
+      }
+
+      .exam-header {
+        background: var(--section-bg);
+        padding: 0.8em 1.2em;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .exam-header h2 {
+        font-size: 0.85em;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .exam-header .badge {
+        font-size: 0.75em;
+        padding: 0.2em 0.6em;
+        border-radius: 20px;
+        background: #e8f4fd;
+        color: var(--accent-color);
+        font-weight: 600;
+      }
+      .exam-header .badge.soon {
+        background: #f0f0f0;
+        color: var(--muted);
+      }
+
+      .exam-body {
+        padding: 1em 1.2em;
         display: flex;
         flex-direction: column;
-        gap: 1.5em;
-        align-items: center;
+        gap: 0.5em;
       }
+
+      /* sub-groups inside an exam block */
+      .group-label {
+        font-size: 0.75em;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-top: 0.8em;
+        margin-bottom: 0.2em;
+        padding-left: 0.2em;
+      }
+      .group-label:first-child { margin-top: 0; }
+
       .link-item {
         display: block;
         color: var(--accent-color);
         text-decoration: none;
-        font-size: 1.1em;
-        padding: 0.8em 2em;
-        border: 2px solid var(--accent-color);
+        font-size: 0.95em;
+        padding: 0.65em 1em;
+        border: 1px solid var(--border);
         border-radius: 6px;
-        transition: all 0.3s ease;
-        min-width: 300px;
+        background: white;
+        transition: all 0.2s ease;
       }
       .link-item:hover {
         background: var(--accent-color);
         color: white;
+        border-color: var(--accent-color);
+      }
+      .link-item.primary {
+        border-color: var(--accent-color);
+        font-weight: 600;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>Introduction to DSA (C Programming)</h1>
-      <p class="subtitle">Course Presentations</p>
+      <h1>ES 248</h1>
+      <p class="subtitle">Introduction to DSA in C Programming</p>
 
-      <div class="links">
-        <a href="for_loop_lesson.html" class="link-item">For Loops in C</a>
-        <a href="arrays_complete_presentation.html" class="link-item">Arrays & Memory</a>
-        <a href="pointers_improved.html" class="link-item">Pointers & Memory</a>
-        <a href="strings.html" class="link-item">Strings in C</a>
+      <!-- MID-SEMESTER -->
+      <div class="exam-block">
+        <div class="exam-header">
+          <h2>Mid-Semester</h2>
+          <span class="badge">Current</span>
+        </div>
+        <div class="exam-body">
+
+          <span class="group-label">Curriculum &amp; Exam</span>
+          <a href="curriculum.html" class="link-item primary">Mid-Semester Curriculum &amp; Exam Format</a>
+
+          <span class="group-label">Slides</span>
+          <a href="for_loop_lesson.html" class="link-item">For Loops in C</a>
+          <a href="arrays_complete_presentation.html" class="link-item">Arrays &amp; Memory</a>
+          <a href="pointers-I.html" class="link-item">Pointers &amp; Memory</a>
+          <a href="strings.html" class="link-item">Strings in C</a>
+
+        </div>
       </div>
+
+      <!-- END-SEMESTER (placeholder) -->
+      <div class="exam-block upcoming">
+        <div class="exam-header">
+          <h2>End-Semester</h2>
+          <span class="badge soon">Coming soon</span>
+        </div>
+        <div class="exam-body">
+          <a href="#" class="link-item" style="pointer-events:none; color: var(--muted);">Curriculum &amp; Exam Format</a>
+          <a href="#" class="link-item" style="pointer-events:none; color: var(--muted);">Slides</a>
+        </div>
+      </div>
+
     </div>
   </body>
 </html>
