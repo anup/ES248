@@ -22,9 +22,15 @@
       }
 
       .container {
-        max-width: 900px;
+        max-width: 100%;
         width: 100%;
         margin: 0 auto;
+        padding: 0 1em;
+      }
+
+      header {
+        max-width: 900px;
+        margin: 0 auto 1.5em;
       }
 
       h1 {
@@ -45,7 +51,7 @@
         color: var(--accent-color);
         text-decoration: none;
         font-size: 0.85em;
-        margin-bottom: 1.5em;
+        margin-bottom: 0.5em;
       }
       .back-link:hover { text-decoration: underline; }
 
@@ -55,7 +61,12 @@
         margin-bottom: 1.5em;
       }
 
-      /* Tabs — styled like group-labels with underline */
+      .controls {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      /* Tabs */
       .tabs {
         display: flex;
         gap: 0;
@@ -96,17 +107,63 @@
       .search-bar input:focus { border-color: var(--accent-color); }
       .search-bar input::placeholder { color: #bbb; }
 
-      /* Table block — matches exam-block style */
+      /* Scroll wrapper */
+      .scroll-wrap {
+        position: relative;
+      }
+
+      .scroll-arrow {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 2;
+        color: var(--muted);
+        font-size: 1.2em;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+      }
+      .scroll-arrow.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .scroll-arrow:hover { color: var(--main-color); }
+      .scroll-arrow-left {
+        left: 0;
+        background: linear-gradient(to right, white 60%, transparent);
+        padding-right: 8px;
+      }
+      .scroll-arrow-right {
+        right: 0;
+        background: linear-gradient(to left, white 60%, transparent);
+        padding-left: 8px;
+      }
+
+      /* Table block */
       .table-block {
         border: 1px solid var(--border);
         border-radius: 8px;
-        overflow: hidden;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+      }
+      .table-block::-webkit-scrollbar { height: 6px; }
+      .table-block::-webkit-scrollbar-track { background: transparent; }
+      .table-block::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.88em;
+        font-size: 0.84em;
       }
 
       thead th {
@@ -115,8 +172,8 @@
         font-size: 0.72em;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.07em;
-        padding: 0.9em 0.8em;
+        letter-spacing: 0.05em;
+        padding: 0.8em 0.6em;
         text-align: left;
         border-bottom: 1px solid var(--border);
         cursor: pointer;
@@ -128,7 +185,7 @@
       thead th:hover { color: var(--main-color); }
       thead th .arrow {
         font-size: 0.8em;
-        margin-left: 3px;
+        margin-left: 2px;
         opacity: 0.3;
       }
       thead th.sorted .arrow {
@@ -136,21 +193,58 @@
         color: var(--main-color);
       }
 
+      /* Tooltip on column headers */
+      thead th[title] {
+        position: relative;
+      }
+      thead th .tip {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--main-color);
+        color: white;
+        font-size: 1.5em;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+        padding: 0.4em 0.7em;
+        border-radius: 4px;
+        white-space: nowrap;
+        z-index: 10;
+        margin-top: 4px;
+        pointer-events: none;
+        max-width: 280px;
+        white-space: normal;
+        line-height: 1.4;
+      }
+      thead th:hover .tip { display: block; }
+
       tbody tr { border-bottom: 1px solid #f0f0f0; }
       tbody tr:last-child { border-bottom: none; }
       tbody tr:hover { background: var(--section-bg); }
 
       tbody td {
-        padding: 0.7em 0.8em;
+        padding: 0.6em 0.6em;
         white-space: nowrap;
         color: var(--main-color);
         font-size: 0.95em;
       }
 
+      /* Compact email */
+      .email-cell {
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.9em;
+        color: var(--muted);
+      }
+
       .rank-cell {
         font-weight: 700;
         text-align: center;
-        min-width: 44px;
+        min-width: 36px;
       }
       .rank-1 { color: #c9a227; }
       .rank-2 { color: #8a9197; }
@@ -190,28 +284,33 @@
 
       @media (max-width: 600px) {
         body { padding: 1em 0.5em; }
+        .container { padding: 0 0.5em; }
         h1 { font-size: 1.4em; }
-        table { font-size: 0.8em; }
-        thead th, tbody td { padding: 0.6em 0.5em; }
+        table { font-size: 0.78em; }
+        thead th, tbody td { padding: 0.5em 0.4em; }
         .tab { padding: 0.6em 0.8em; font-size: 0.7em; }
+        .email-cell { max-width: 120px; }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>ES 248</h1>
-      <p class="subtitle">Introduction to DSA in C Programming</p>
-      <a href="index.html" class="back-link">&larr; Back to course materials</a>
+      <header>
+        <h1>ES 248</h1>
+        <p class="subtitle">Introduction to DSA in C Programming</p>
+        <a href="index.html" class="back-link">&larr; Back to course materials</a>
+        <div class="last-updated" id="last-updated"></div>
+      </header>
 
-      <div class="last-updated" id="last-updated"></div>
+      <div class="controls">
+        <div class="tabs">
+          <div class="tab active" data-view="leaderboard">Leaderboard</div>
+          <div class="tab" data-view="grades">Detailed Grades</div>
+        </div>
 
-      <div class="tabs">
-        <div class="tab active" data-view="leaderboard">Leaderboard</div>
-        <div class="tab" data-view="grades">Detailed Grades</div>
-      </div>
-
-      <div class="search-bar">
-        <input type="text" id="search" placeholder="Search by name, roll no, or email...">
+        <div class="search-bar">
+          <input type="text" id="search" placeholder="Search by name, roll no, or email...">
+        </div>
       </div>
 
       <div id="leaderboard-view">
@@ -219,8 +318,12 @@
           <div class="spinner"></div><br>Loading leaderboard...
         </div>
         <div class="error-msg hide" id="lb-error"></div>
-        <div class="table-block hide" id="lb-table">
-          <table><thead><tr id="lb-head"></tr></thead><tbody id="lb-body"></tbody></table>
+        <div class="scroll-wrap hide" id="lb-scroll-wrap">
+          <div class="scroll-arrow scroll-arrow-left" id="lb-arrow-left">&lsaquo;</div>
+          <div class="scroll-arrow scroll-arrow-right" id="lb-arrow-right">&rsaquo;</div>
+          <div class="table-block" id="lb-table">
+            <table><thead><tr id="lb-head"></tr></thead><tbody id="lb-body"></tbody></table>
+          </div>
         </div>
       </div>
 
@@ -229,8 +332,12 @@
           <div class="spinner"></div><br>Loading grades...
         </div>
         <div class="error-msg hide" id="gr-error"></div>
-        <div class="table-block hide" id="gr-table">
-          <table><thead><tr id="gr-head"></tr></thead><tbody id="gr-body"></tbody></table>
+        <div class="scroll-wrap hide" id="gr-scroll-wrap">
+          <div class="scroll-arrow scroll-arrow-left" id="gr-arrow-left">&lsaquo;</div>
+          <div class="scroll-arrow scroll-arrow-right" id="gr-arrow-right">&rsaquo;</div>
+          <div class="table-block" id="gr-table">
+            <table><thead><tr id="gr-head"></tr></thead><tbody id="gr-body"></tbody></table>
+          </div>
         </div>
       </div>
     </div>
@@ -242,6 +349,41 @@
       var currentView = "leaderboard";
       var sortState = { leaderboard: { col: 0, asc: true }, grades: { col: -1, asc: true } };
 
+      // Column descriptions for tooltips
+      var TOOLTIPS = {
+        "rank": "Position based on total score (assignment + practice)",
+        "name": "Student name",
+        "roll no": "Student roll number",
+        "email": "Student email address",
+        "assignment": "Best 2 of 4 assignment contest scores, 10 marks each",
+        "practice": "1.4 marks per contest with 1+ problem solved, capped at 20. Requires 10 contests in C language.",
+        "total": "Assignment + Practice marks",
+        "assign": "Problems solved in this assignment contest",
+        "marks": "Marks awarded using scale: 4+ solved = 10, 3 = 9, 2 = 7, 1 = 4, 0 = 2, DNP = 0",
+        "best": "Sum of the top 2 assignment contest scores (max 20)",
+        "c contests": "Number of practice contests where C language was used",
+        "non-c contests": "Practice contests without C (includes all LeetCode contests)",
+        "c req met": "Whether 10+ C-language contests requirement is met (Yes/No)",
+        "practice contests counted": "Contests counted toward practice marks. If C req met: all contests (max 15). If not: only C contests.",
+        "practice marks": "Counted contests x 1.4, capped at 20"
+      };
+
+      function getTooltip(header) {
+        var h = header.toLowerCase();
+        // Exact matches first
+        for (var key in TOOLTIPS) {
+          if (h === key || h.indexOf(key) === 0) return TOOLTIPS[key];
+        }
+        // Partial matches
+        if (h.match(/assign.*solved/)) return "Problems solved in this assignment contest";
+        if (h.match(/assign.*marks/)) return "Marks for this contest: 4+=10, 3=9, 2=7, 1=4, 0=2, DNP=0";
+        if (h.match(/best.*assignment/)) return "Sum of top 2 assignment scores (max 20)";
+        if (h.match(/practice.*mark/)) return "Counted contests x 1.4, capped at 20";
+        if (h.match(/total/)) return "Assignment + Practice marks";
+        return "";
+      }
+
+      // Tab switching
       document.querySelectorAll(".tab").forEach(function(tab) {
         tab.addEventListener("click", function() {
           currentView = this.dataset.view;
@@ -265,11 +407,38 @@
         });
       }
 
+      // Scroll arrows
+      function setupScrollArrows(prefix) {
+        var tableEl = document.getElementById(prefix + "-table");
+        var leftArrow = document.getElementById(prefix + "-arrow-left");
+        var rightArrow = document.getElementById(prefix + "-arrow-right");
+
+        function updateArrows() {
+          var canLeft = tableEl.scrollLeft > 5;
+          var canRight = tableEl.scrollLeft < (tableEl.scrollWidth - tableEl.clientWidth - 5);
+          leftArrow.classList.toggle("visible", canLeft);
+          rightArrow.classList.toggle("visible", canRight);
+        }
+
+        tableEl.addEventListener("scroll", updateArrows);
+        window.addEventListener("resize", updateArrows);
+        setTimeout(updateArrows, 100);
+
+        leftArrow.addEventListener("click", function() {
+          tableEl.scrollBy({ left: -200, behavior: "smooth" });
+        });
+        rightArrow.addEventListener("click", function() {
+          tableEl.scrollBy({ left: 200, behavior: "smooth" });
+        });
+      }
+
+      // Fetch data
       function fetchData(view) {
         var url = API_BASE + "?view=" + view;
         var loadingId = view === "leaderboard" ? "lb-loading" : "gr-loading";
         var errorId = view === "leaderboard" ? "lb-error" : "gr-error";
-        var tableId = view === "leaderboard" ? "lb-table" : "gr-table";
+        var wrapId = view === "leaderboard" ? "lb-scroll-wrap" : "gr-scroll-wrap";
+        var prefix = view === "leaderboard" ? "lb" : "gr";
 
         fetch(url)
           .then(function(r) { return r.json(); })
@@ -278,11 +447,12 @@
             if (data.lastUpdated) {
               document.getElementById("last-updated").textContent = "Last updated: " + data.lastUpdated;
             }
-            var headId = view === "leaderboard" ? "lb-head" : "gr-head";
-            var bodyId = view === "leaderboard" ? "lb-body" : "gr-body";
+            var headId = prefix + "-head";
+            var bodyId = prefix + "-body";
             renderTable(headId, bodyId, data.headers, data.rows, view);
             document.getElementById(loadingId).classList.add("hide");
-            document.getElementById(tableId).classList.remove("hide");
+            document.getElementById(wrapId).classList.remove("hide");
+            setupScrollArrows(prefix);
           })
           .catch(function() {
             document.getElementById(loadingId).classList.add("hide");
@@ -296,7 +466,9 @@
         head.innerHTML = "";
         headers.forEach(function(h, i) {
           var th = document.createElement("th");
-          th.innerHTML = esc(h) + ' <span class="arrow">&#9650;</span>';
+          var tip = getTooltip(h);
+          var tipHtml = tip ? '<span class="tip">' + esc(tip) + '</span>' : '';
+          th.innerHTML = esc(h) + ' <span class="arrow">&#9650;</span>' + tipHtml;
           th.addEventListener("click", function() { sortTable(view, i); });
           head.appendChild(th);
         });
@@ -307,10 +479,11 @@
         var body = document.getElementById(bodyId);
         body.innerHTML = "";
 
-        var rankCol = -1, numCols = {};
+        var rankCol = -1, numCols = {}, emailCol = -1;
         headers.forEach(function(h, i) {
           var hl = h.toLowerCase();
           if (hl === "rank") rankCol = i;
+          if (hl === "email") emailCol = i;
           if (hl.match(/mark|total|solved|contest|assign|practice|rank/) || hl.match(/\/\d+/)) numCols[i] = true;
         });
 
@@ -324,6 +497,9 @@
               if (cell === 1) td.classList.add("rank-1");
               else if (cell === 2) td.classList.add("rank-2");
               else if (cell === 3) td.classList.add("rank-3");
+            } else if (i === emailCol) {
+              td.className = "email-cell";
+              td.title = cell;
             } else if (numCols[i]) {
               td.className = "num-cell";
             }
