@@ -81,17 +81,32 @@
         text-transform: uppercase;
         letter-spacing: 0.08em;
         cursor: pointer;
+        border: none;
         border-bottom: 2px solid transparent;
+        background: none;
         transition: all 0.2s;
       }
       .tab:hover { color: var(--main-color); }
-      .tab.active {
+      .tab:focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: -2px;
+      }
+      .tab[aria-selected="true"] {
         color: var(--main-color);
         border-bottom-color: var(--main-color);
       }
 
       /* Search */
       .search-bar { margin-bottom: 1em; }
+      .search-bar label {
+        display: block;
+        font-size: 0.75em;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.4em;
+      }
       .search-bar input {
         width: 100%;
         max-width: 360px;
@@ -108,9 +123,7 @@
       .search-bar input::placeholder { color: #bbb; }
 
       /* Scroll wrapper */
-      .scroll-wrap {
-        position: relative;
-      }
+      .scroll-wrap { position: relative; }
 
       .scroll-arrow {
         position: absolute;
@@ -127,12 +140,19 @@
         opacity: 0;
         transition: opacity 0.2s;
         pointer-events: none;
+        border: none;
+        background: none;
       }
       .scroll-arrow.visible {
         opacity: 1;
         pointer-events: auto;
       }
       .scroll-arrow:hover { color: var(--main-color); }
+      .scroll-arrow:focus-visible {
+        outline: 2px solid var(--accent-color);
+        opacity: 1;
+        pointer-events: auto;
+      }
       .scroll-arrow-left {
         left: 0;
         background: linear-gradient(to right, white 60%, transparent);
@@ -183,20 +203,18 @@
         top: 0;
       }
       thead th:hover { color: var(--main-color); }
+      thead th:focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: -2px;
+      }
       thead th .arrow {
         font-size: 0.8em;
         margin-left: 2px;
         opacity: 0.3;
       }
-      thead th.sorted .arrow {
-        opacity: 1;
-        color: var(--main-color);
-      }
+      thead th[aria-sort] .arrow { opacity: 1; color: var(--main-color); }
 
       /* Tooltip on column headers */
-      thead th[title] {
-        position: relative;
-      }
       thead th .tip {
         display: none;
         position: absolute;
@@ -211,7 +229,6 @@
         letter-spacing: 0;
         padding: 0.4em 0.7em;
         border-radius: 4px;
-        white-space: nowrap;
         z-index: 10;
         margin-top: 4px;
         pointer-events: none;
@@ -219,7 +236,9 @@
         white-space: normal;
         line-height: 1.4;
       }
-      thead th:hover .tip { display: block; }
+      thead th { position: relative; }
+      thead th:hover .tip,
+      thead th:focus-visible .tip { display: block; }
 
       tbody tr { border-bottom: 1px solid #f0f0f0; }
       tbody tr:last-child { border-bottom: none; }
@@ -232,7 +251,6 @@
         font-size: 0.95em;
       }
 
-      /* Compact email */
       .email-cell {
         max-width: 180px;
         overflow: hidden;
@@ -282,6 +300,18 @@
 
       .hide { display: none; }
 
+      /* Live region for screen readers */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0,0,0,0);
+        border: 0;
+      }
+
       @media (max-width: 600px) {
         body { padding: 1em 0.5em; }
         .container { padding: 0 0.5em; }
@@ -299,47 +329,50 @@
         <h1>ES 248</h1>
         <p class="subtitle">Introduction to DSA in C Programming</p>
         <a href="index.html" class="back-link">&larr; Back to course materials</a>
-        <div class="last-updated" id="last-updated"></div>
+        <div class="last-updated" id="last-updated" aria-live="polite"></div>
       </header>
 
       <div class="controls">
-        <div class="tabs">
-          <div class="tab active" data-view="leaderboard">Leaderboard</div>
-          <div class="tab" data-view="grades">Detailed Grades</div>
+        <div class="tabs" role="tablist" aria-label="View selection">
+          <button class="tab" role="tab" aria-selected="true" aria-controls="leaderboard-view" id="tab-leaderboard" data-view="leaderboard">Leaderboard</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="grades-view" id="tab-grades" data-view="grades">Detailed Grades</button>
         </div>
 
         <div class="search-bar">
-          <input type="text" id="search" placeholder="Search by name, roll no, or email...">
+          <label for="search">Search</label>
+          <input type="text" id="search" placeholder="Name, roll no, or email..." aria-label="Search students">
         </div>
       </div>
 
-      <div id="leaderboard-view">
-        <div class="loading" id="lb-loading">
-          <div class="spinner"></div><br>Loading leaderboard...
+      <div id="leaderboard-view" role="tabpanel" aria-labelledby="tab-leaderboard">
+        <div class="loading" id="lb-loading" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div><br>Loading leaderboard...
         </div>
-        <div class="error-msg hide" id="lb-error"></div>
+        <div class="error-msg hide" id="lb-error" role="alert"></div>
         <div class="scroll-wrap hide" id="lb-scroll-wrap">
-          <div class="scroll-arrow scroll-arrow-left" id="lb-arrow-left">&lsaquo;</div>
-          <div class="scroll-arrow scroll-arrow-right" id="lb-arrow-right">&rsaquo;</div>
-          <div class="table-block" id="lb-table">
-            <table><thead><tr id="lb-head"></tr></thead><tbody id="lb-body"></tbody></table>
+          <button class="scroll-arrow scroll-arrow-left" id="lb-arrow-left" aria-label="Scroll table left">&lsaquo;</button>
+          <button class="scroll-arrow scroll-arrow-right" id="lb-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
+          <div class="table-block" id="lb-table" tabindex="0" aria-label="Leaderboard table, scrollable">
+            <table aria-label="Leaderboard"><thead><tr id="lb-head"></tr></thead><tbody id="lb-body"></tbody></table>
           </div>
         </div>
       </div>
 
-      <div id="grades-view" class="hide">
-        <div class="loading" id="gr-loading">
-          <div class="spinner"></div><br>Loading grades...
+      <div id="grades-view" class="hide" role="tabpanel" aria-labelledby="tab-grades">
+        <div class="loading hide" id="gr-loading" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div><br>Loading grades...
         </div>
-        <div class="error-msg hide" id="gr-error"></div>
+        <div class="error-msg hide" id="gr-error" role="alert"></div>
         <div class="scroll-wrap hide" id="gr-scroll-wrap">
-          <div class="scroll-arrow scroll-arrow-left" id="gr-arrow-left">&lsaquo;</div>
-          <div class="scroll-arrow scroll-arrow-right" id="gr-arrow-right">&rsaquo;</div>
-          <div class="table-block" id="gr-table">
-            <table><thead><tr id="gr-head"></tr></thead><tbody id="gr-body"></tbody></table>
+          <button class="scroll-arrow scroll-arrow-left" id="gr-arrow-left" aria-label="Scroll table left">&lsaquo;</button>
+          <button class="scroll-arrow scroll-arrow-right" id="gr-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
+          <div class="table-block" id="gr-table" tabindex="0" aria-label="Grades table, scrollable">
+            <table aria-label="Detailed Grades"><thead><tr id="gr-head"></tr></thead><tbody id="gr-body"></tbody></table>
           </div>
         </div>
       </div>
+
+      <div id="status" class="sr-only" aria-live="polite"></div>
     </div>
 
     <script src="config.js"></script>
@@ -356,45 +389,62 @@
         "roll no": "Student roll number",
         "email": "Student email address",
         "assignment": "Best 2 of 4 assignment contest scores, 10 marks each",
-        "practice": "1.4 marks per contest with 1+ problem solved, capped at 20. Requires 10 contests in C language.",
+        "practice": "1.4 marks per contest with 1+ problem solved, capped at 20. Requires 10 contests in C.",
         "total": "Assignment + Practice marks",
-        "assign": "Problems solved in this assignment contest",
-        "marks": "Marks awarded using scale: 4+ solved = 10, 3 = 9, 2 = 7, 1 = 4, 0 = 2, DNP = 0",
-        "best": "Sum of the top 2 assignment contest scores (max 20)",
         "c contests": "Number of practice contests where C language was used",
-        "non-c contests": "Practice contests without C (includes all LeetCode contests)",
+        "non-c contests": "Practice contests without C (includes all LeetCode)",
         "c req met": "Whether 10+ C-language contests requirement is met (Yes/No)",
-        "practice contests counted": "Contests counted toward practice marks. If C req met: all contests (max 15). If not: only C contests.",
-        "practice marks": "Counted contests x 1.4, capped at 20"
+        "practice contests counted": "Contests counted toward practice. If C req met: all (max 15). If not: only C."
       };
 
       function getTooltip(header) {
         var h = header.toLowerCase();
-        // Exact matches first
         for (var key in TOOLTIPS) {
           if (h === key || h.indexOf(key) === 0) return TOOLTIPS[key];
         }
-        // Partial matches
         if (h.match(/assign.*solved/)) return "Problems solved in this assignment contest";
-        if (h.match(/assign.*marks/)) return "Marks for this contest: 4+=10, 3=9, 2=7, 1=4, 0=2, DNP=0";
+        if (h.match(/assign.*marks/)) return "Marks: 4+ solved=10, 3=9, 2=7, 1=4, 0 participated=2, DNP=0";
         if (h.match(/best.*assignment/)) return "Sum of top 2 assignment scores (max 20)";
         if (h.match(/practice.*mark/)) return "Counted contests x 1.4, capped at 20";
         if (h.match(/total/)) return "Assignment + Practice marks";
         return "";
       }
 
+      function announce(msg) {
+        document.getElementById("status").textContent = msg;
+      }
+
+      // Prefetch both views on page load
+      fetchData("leaderboard");
+      fetchData("grades");
+
       // Tab switching
       document.querySelectorAll(".tab").forEach(function(tab) {
-        tab.addEventListener("click", function() {
-          currentView = this.dataset.view;
-          document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("active"); });
-          this.classList.add("active");
-          document.getElementById("leaderboard-view").classList.toggle("hide", currentView !== "leaderboard");
-          document.getElementById("grades-view").classList.toggle("hide", currentView !== "grades");
-          if (!cache[currentView]) fetchData(currentView);
-          applySearch();
+        tab.addEventListener("click", function() { switchTab(this.dataset.view); });
+        tab.addEventListener("keydown", function(e) {
+          var tabs = Array.from(document.querySelectorAll(".tab"));
+          var idx = tabs.indexOf(this);
+          if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+            e.preventDefault();
+            var next = e.key === "ArrowRight" ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
+            tabs[next].focus();
+            switchTab(tabs[next].dataset.view);
+          }
         });
       });
+
+      function switchTab(view) {
+        currentView = view;
+        document.querySelectorAll(".tab").forEach(function(t) {
+          var isActive = t.dataset.view === view;
+          t.setAttribute("aria-selected", isActive ? "true" : "false");
+          t.setAttribute("tabindex", isActive ? "0" : "-1");
+        });
+        document.getElementById("leaderboard-view").classList.toggle("hide", view !== "leaderboard");
+        document.getElementById("grades-view").classList.toggle("hide", view !== "grades");
+        applySearch();
+        announce(view === "leaderboard" ? "Showing leaderboard" : "Showing detailed grades");
+      }
 
       document.getElementById("search").addEventListener("input", applySearch);
 
@@ -402,9 +452,13 @@
         var q = document.getElementById("search").value.toLowerCase();
         var bodyId = currentView === "leaderboard" ? "lb-body" : "gr-body";
         var rows = document.getElementById(bodyId).querySelectorAll("tr");
+        var visible = 0;
         rows.forEach(function(row) {
-          row.style.display = row.textContent.toLowerCase().indexOf(q) !== -1 ? "" : "none";
+          var show = row.textContent.toLowerCase().indexOf(q) !== -1;
+          row.style.display = show ? "" : "none";
+          if (show) visible++;
         });
+        if (q) announce(visible + " result" + (visible !== 1 ? "s" : "") + " found");
       }
 
       // Scroll arrows
@@ -418,6 +472,8 @@
           var canRight = tableEl.scrollLeft < (tableEl.scrollWidth - tableEl.clientWidth - 5);
           leftArrow.classList.toggle("visible", canLeft);
           rightArrow.classList.toggle("visible", canRight);
+          leftArrow.setAttribute("aria-hidden", !canLeft);
+          rightArrow.setAttribute("aria-hidden", !canRight);
         }
 
         tableEl.addEventListener("scroll", updateArrows);
@@ -432,13 +488,17 @@
         });
       }
 
-      // Fetch data
       function fetchData(view) {
         var url = API_BASE + "?view=" + view;
-        var loadingId = view === "leaderboard" ? "lb-loading" : "gr-loading";
-        var errorId = view === "leaderboard" ? "lb-error" : "gr-error";
-        var wrapId = view === "leaderboard" ? "lb-scroll-wrap" : "gr-scroll-wrap";
         var prefix = view === "leaderboard" ? "lb" : "gr";
+        var loadingId = prefix + "-loading";
+        var errorId = prefix + "-error";
+        var wrapId = prefix + "-scroll-wrap";
+
+        // Show loading only for the active tab
+        if (view === currentView) {
+          document.getElementById(loadingId).classList.remove("hide");
+        }
 
         fetch(url)
           .then(function(r) { return r.json(); })
@@ -447,17 +507,17 @@
             if (data.lastUpdated) {
               document.getElementById("last-updated").textContent = "Last updated: " + data.lastUpdated;
             }
-            var headId = prefix + "-head";
-            var bodyId = prefix + "-body";
-            renderTable(headId, bodyId, data.headers, data.rows, view);
+            renderTable(prefix + "-head", prefix + "-body", data.headers, data.rows, view);
             document.getElementById(loadingId).classList.add("hide");
             document.getElementById(wrapId).classList.remove("hide");
             setupScrollArrows(prefix);
+            if (view === currentView) announce("Data loaded, " + data.rows.length + " students");
           })
           .catch(function() {
             document.getElementById(loadingId).classList.add("hide");
-            document.getElementById(errorId).textContent = "Failed to load data. Please try again later.";
-            document.getElementById(errorId).classList.remove("hide");
+            var errEl = document.getElementById(errorId);
+            errEl.textContent = "Failed to load data. Please try again later.";
+            errEl.classList.remove("hide");
           });
       }
 
@@ -466,10 +526,17 @@
         head.innerHTML = "";
         headers.forEach(function(h, i) {
           var th = document.createElement("th");
+          th.setAttribute("scope", "col");
+          th.setAttribute("tabindex", "0");
+          th.setAttribute("role", "columnheader");
           var tip = getTooltip(h);
-          var tipHtml = tip ? '<span class="tip">' + esc(tip) + '</span>' : '';
-          th.innerHTML = esc(h) + ' <span class="arrow">&#9650;</span>' + tipHtml;
+          if (tip) th.setAttribute("title", tip);
+          var tipHtml = tip ? '<span class="tip" role="tooltip">' + esc(tip) + '</span>' : '';
+          th.innerHTML = esc(h) + ' <span class="arrow" aria-hidden="true">&#9650;</span>' + tipHtml;
           th.addEventListener("click", function() { sortTable(view, i); });
+          th.addEventListener("keydown", function(e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sortTable(view, i); }
+          });
           head.appendChild(th);
         });
         fillBody(bodyId, headers, rows, view);
@@ -528,16 +595,22 @@
           return 0;
         });
 
-        var bodyId = view === "leaderboard" ? "lb-body" : "gr-body";
-        var headId = view === "leaderboard" ? "lb-head" : "gr-head";
-        fillBody(bodyId, data.headers, sorted, view);
+        var prefix = view === "leaderboard" ? "lb" : "gr";
+        fillBody(prefix + "-body", data.headers, sorted, view);
 
-        var ths = document.getElementById(headId).querySelectorAll("th");
+        // Update sort indicators
+        var ths = document.getElementById(prefix + "-head").querySelectorAll("th");
         ths.forEach(function(th, i) {
-          th.classList.toggle("sorted", i === colIdx);
+          if (i === colIdx) {
+            th.setAttribute("aria-sort", state.asc ? "ascending" : "descending");
+          } else {
+            th.removeAttribute("aria-sort");
+          }
           var arrow = th.querySelector(".arrow");
           arrow.innerHTML = (i === colIdx) ? (state.asc ? "&#9650;" : "&#9660;") : "&#9650;";
         });
+
+        announce("Sorted by " + data.headers[colIdx] + ", " + (state.asc ? "ascending" : "descending"));
         applySearch();
       }
 
@@ -546,8 +619,6 @@
         d.textContent = s;
         return d.innerHTML;
       }
-
-      fetchData("leaderboard");
     </script>
   </body>
 </html>
