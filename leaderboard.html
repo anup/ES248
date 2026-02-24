@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ES 248 — Leaderboard</title>
+    <title>ES 248 — Scores & Leaderboard</title>
     <style>
       :root {
         --main-color: #2c3e50;
@@ -45,7 +45,7 @@
         color: var(--accent-color);
         text-decoration: none;
         font-size: 0.85em;
-        margin-bottom: 2em;
+        margin-bottom: 1.5em;
       }
       .back-link:hover { text-decoration: underline; }
 
@@ -55,7 +55,7 @@
         margin-bottom: 1.5em;
       }
 
-      /* Tabs */
+      /* Tabs — styled like group-labels with underline */
       .tabs {
         display: flex;
         gap: 0;
@@ -64,7 +64,7 @@
       }
       .tab {
         padding: 0.7em 1.5em;
-        font-size: 0.85em;
+        font-size: 0.75em;
         font-weight: 600;
         color: var(--muted);
         text-transform: uppercase;
@@ -75,14 +75,12 @@
       }
       .tab:hover { color: var(--main-color); }
       .tab.active {
-        color: var(--accent-color);
-        border-bottom-color: var(--accent-color);
+        color: var(--main-color);
+        border-bottom-color: var(--main-color);
       }
 
       /* Search */
-      .search-bar {
-        margin-bottom: 1em;
-      }
+      .search-bar { margin-bottom: 1em; }
       .search-bar input {
         width: 100%;
         max-width: 360px;
@@ -91,12 +89,14 @@
         border-radius: 6px;
         font-size: 0.9em;
         font-family: inherit;
+        color: var(--main-color);
         outline: none;
         transition: border-color 0.2s;
       }
       .search-bar input:focus { border-color: var(--accent-color); }
+      .search-bar input::placeholder { color: #bbb; }
 
-      /* Table block */
+      /* Table block — matches exam-block style */
       .table-block {
         border: 1px solid var(--border);
         border-radius: 8px;
@@ -112,7 +112,7 @@
       thead th {
         background: var(--section-bg);
         color: var(--muted);
-        font-size: 0.75em;
+        font-size: 0.72em;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.07em;
@@ -126,17 +126,25 @@
         top: 0;
       }
       thead th:hover { color: var(--main-color); }
-      thead th .arrow { font-size: 0.8em; margin-left: 3px; opacity: 0.4; }
-      thead th.sorted .arrow { opacity: 1; color: var(--accent-color); }
+      thead th .arrow {
+        font-size: 0.8em;
+        margin-left: 3px;
+        opacity: 0.3;
+      }
+      thead th.sorted .arrow {
+        opacity: 1;
+        color: var(--main-color);
+      }
 
-      tbody tr { border-bottom: 1px solid var(--border); }
+      tbody tr { border-bottom: 1px solid #f0f0f0; }
       tbody tr:last-child { border-bottom: none; }
-      tbody tr:hover { background: #f0f7ff; }
+      tbody tr:hover { background: var(--section-bg); }
 
       tbody td {
-        padding: 0.75em 0.8em;
+        padding: 0.7em 0.8em;
         white-space: nowrap;
         color: var(--main-color);
+        font-size: 0.95em;
       }
 
       .rank-cell {
@@ -144,9 +152,9 @@
         text-align: center;
         min-width: 44px;
       }
-      .rank-1 { color: #d4a017; }
-      .rank-2 { color: #95a5a6; }
-      .rank-3 { color: #cd7f32; }
+      .rank-1 { color: #c9a227; }
+      .rank-2 { color: #8a9197; }
+      .rank-3 { color: #a0653a; }
       .num-cell {
         text-align: right;
         font-variant-numeric: tabular-nums;
@@ -157,13 +165,14 @@
         text-align: center;
         padding: 4em 1em;
         color: var(--muted);
+        font-size: 0.95em;
       }
       .spinner {
         display: inline-block;
-        width: 24px;
-        height: 24px;
-        border: 3px solid var(--border);
-        border-top-color: var(--accent-color);
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border);
+        border-top-color: var(--muted);
         border-radius: 50%;
         animation: spin 0.7s linear infinite;
         margin-bottom: 10px;
@@ -173,8 +182,8 @@
       .error-msg {
         text-align: center;
         padding: 3em 1em;
-        color: #e74c3c;
-        font-size: 0.95em;
+        color: #c0392b;
+        font-size: 0.9em;
       }
 
       .hide { display: none; }
@@ -184,7 +193,7 @@
         h1 { font-size: 1.4em; }
         table { font-size: 0.8em; }
         thead th, tbody td { padding: 0.6em 0.5em; }
-        .tab { padding: 0.6em 1em; font-size: 0.78em; }
+        .tab { padding: 0.6em 0.8em; font-size: 0.7em; }
       }
     </style>
   </head>
@@ -228,14 +237,11 @@
 
     <script src="config.js"></script>
     <script>
-      // ── CONFIG ──────────────────────────────────────────────────────
       var API_BASE = ES248_CONFIG.API_BASE;
-
       var cache = {};
       var currentView = "leaderboard";
       var sortState = { leaderboard: { col: 0, asc: true }, grades: { col: -1, asc: true } };
 
-      // ── TABS ────────────────────────────────────────────────────────
       document.querySelectorAll(".tab").forEach(function(tab) {
         tab.addEventListener("click", function() {
           currentView = this.dataset.view;
@@ -243,13 +249,11 @@
           this.classList.add("active");
           document.getElementById("leaderboard-view").classList.toggle("hide", currentView !== "leaderboard");
           document.getElementById("grades-view").classList.toggle("hide", currentView !== "grades");
-
           if (!cache[currentView]) fetchData(currentView);
           applySearch();
         });
       });
 
-      // ── SEARCH ──────────────────────────────────────────────────────
       document.getElementById("search").addEventListener("input", applySearch);
 
       function applySearch() {
@@ -261,7 +265,6 @@
         });
       }
 
-      // ── FETCH DATA ──────────────────────────────────────────────────
       function fetchData(view) {
         var url = API_BASE + "?view=" + view;
         var loadingId = view === "leaderboard" ? "lb-loading" : "gr-loading";
@@ -281,14 +284,13 @@
             document.getElementById(loadingId).classList.add("hide");
             document.getElementById(tableId).classList.remove("hide");
           })
-          .catch(function(err) {
+          .catch(function() {
             document.getElementById(loadingId).classList.add("hide");
             document.getElementById(errorId).textContent = "Failed to load data. Please try again later.";
             document.getElementById(errorId).classList.remove("hide");
           });
       }
 
-      // ── RENDER ──────────────────────────────────────────────────────
       function renderTable(headId, bodyId, headers, rows, view) {
         var head = document.getElementById(headId);
         head.innerHTML = "";
@@ -331,7 +333,6 @@
         });
       }
 
-      // ── SORT ────────────────────────────────────────────────────────
       function sortTable(view, colIdx) {
         var state = sortState[view];
         if (state.col === colIdx) { state.asc = !state.asc; }
@@ -370,7 +371,6 @@
         return d.innerHTML;
       }
 
-      // ── INIT ────────────────────────────────────────────────────────
       fetchData("leaderboard");
     </script>
   </body>
