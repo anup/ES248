@@ -341,7 +341,7 @@
 
         <div class="search-bar">
           <label for="search">Search</label>
-          <input type="text" id="search" placeholder="Name or roll no..." aria-label="Search students">
+          <input type="text" id="search" placeholder="Search by code..." aria-label="Search by anonymous code">
         </div>
       </div>
 
@@ -413,6 +413,7 @@
         TOOLTIPS = {
           "rank": "Position based on total score (assignment + practice)",
           "name": "Student name",
+          "code": "Your private anonymous code (sent via email)",
           "roll no": "Student roll number",
           "c contests": "Number of practice contests where C language was used",
           "non-c contests": "Practice contests without C (includes all LeetCode)",
@@ -571,7 +572,7 @@
       function renderTable(headId, bodyId, headers, rows, view) {
         var head = document.getElementById(headId);
         head.innerHTML = "";
-        var TEXT_HEADERS = ["name", "platform", "languages", "c req met", "roll no"];
+        var TEXT_HEADERS = ["code", "name", "platform", "languages", "c req met", "roll no"];
         headers.forEach(function(h, i) {
           var th = document.createElement("th");
           th.setAttribute("scope", "col");
@@ -603,7 +604,7 @@
         headers.forEach(function(h, i) {
           var hl = h.toLowerCase();
           if (hl === "rank") rankCol = i;
-          if (hl === "name" || hl === "platform" ||
+          if (hl === "code" || hl === "name" || hl === "platform" ||
               hl === "languages" || hl === "c req met" || hl === "roll no") {
             textCols[i] = true;
           }
