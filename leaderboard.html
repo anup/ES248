@@ -336,6 +336,7 @@
         <div class="tabs" role="tablist" aria-label="View selection">
           <button class="tab" role="tab" aria-selected="true" aria-controls="leaderboard-view" id="tab-leaderboard" data-view="leaderboard">Leaderboard</button>
           <button class="tab" role="tab" aria-selected="false" aria-controls="grades-view" id="tab-grades" data-view="grades">Detailed Grades</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="performance-view" id="tab-performance" data-view="performance">Contest Performance</button>
         </div>
 
         <div class="search-bar">
@@ -372,6 +373,20 @@
         </div>
       </div>
 
+      <div id="performance-view" class="hide" role="tabpanel" aria-labelledby="tab-performance">
+        <div class="loading hide" id="pf-loading" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div><br>Loading performance...
+        </div>
+        <div class="error-msg hide" id="pf-error" role="alert"></div>
+        <div class="scroll-wrap hide" id="pf-scroll-wrap">
+          <button class="scroll-arrow scroll-arrow-left" id="pf-arrow-left" aria-label="Scroll table left">&lsaquo;</button>
+          <button class="scroll-arrow scroll-arrow-right" id="pf-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
+          <div class="table-block" id="pf-table" tabindex="0" aria-label="Performance table, scrollable">
+            <table aria-label="Contest Performance"><thead><tr id="pf-head"></tr></thead><tbody id="pf-body"></tbody></table>
+          </div>
+        </div>
+      </div>
+
       <div id="status" class="sr-only" aria-live="polite"></div>
     </div>
 
@@ -380,7 +395,7 @@
       var API_BASE = ES248_CONFIG.API_BASE;
       var cache = {};
       var currentView = "leaderboard";
-      var sortState = { leaderboard: { col: 0, asc: true }, grades: { col: -1, asc: true } };
+      var sortState = { leaderboard: { col: 0, asc: true }, grades: { col: -1, asc: true }, performance: { col: -1, asc: true } };
 
       // Column descriptions for tooltips
       var TOOLTIPS = {
@@ -394,7 +409,12 @@
         "c contests": "Number of practice contests where C language was used",
         "non-c contests": "Practice contests without C (includes all LeetCode)",
         "c req met": "Whether 10+ C-language contests requirement is met (Yes/No)",
-        "practice contests counted": "Contests counted toward practice. If C req met: all (max 15). If not: only C."
+        "practice contests counted": "Contests counted toward practice. If C req met: all (max 15). If not: only C.",
+        "platform": "Contest platform (LeetCode, CodeChef, AtCoder, Codeforces)",
+        "contest": "Contest identifier/code",
+        "score": "Total score achieved in the contest",
+        "solved": "Number of problems solved",
+        "languages": "Programming languages used in submissions"
       };
 
       function getTooltip(header) {
@@ -414,9 +434,10 @@
         document.getElementById("status").textContent = msg;
       }
 
-      // Prefetch both views on page load
+      // Prefetch all views on page load
       fetchData("leaderboard");
       fetchData("grades");
+      fetchData("performance");
 
       // Tab switching
       document.querySelectorAll(".tab").forEach(function(tab) {
@@ -442,15 +463,19 @@
         });
         document.getElementById("leaderboard-view").classList.toggle("hide", view !== "leaderboard");
         document.getElementById("grades-view").classList.toggle("hide", view !== "grades");
+        document.getElementById("performance-view").classList.toggle("hide", view !== "performance");
         applySearch();
-        announce(view === "leaderboard" ? "Showing leaderboard" : "Showing detailed grades");
+        var labels = { leaderboard: "Showing leaderboard", grades: "Showing detailed grades", performance: "Showing contest performance" };
+        announce(labels[view]);
       }
 
       document.getElementById("search").addEventListener("input", applySearch);
 
+      var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf" };
+
       function applySearch() {
         var q = document.getElementById("search").value.toLowerCase();
-        var bodyId = currentView === "leaderboard" ? "lb-body" : "gr-body";
+        var bodyId = VIEW_PREFIX[currentView] + "-body";
         var rows = document.getElementById(bodyId).querySelectorAll("tr");
         var visible = 0;
         rows.forEach(function(row) {
@@ -490,7 +515,7 @@
 
       function fetchData(view) {
         var url = API_BASE + "?view=" + view;
-        var prefix = view === "leaderboard" ? "lb" : "gr";
+        var prefix = VIEW_PREFIX[view];
         var loadingId = prefix + "-loading";
         var errorId = prefix + "-error";
         var wrapId = prefix + "-scroll-wrap";
@@ -595,7 +620,7 @@
           return 0;
         });
 
-        var prefix = view === "leaderboard" ? "lb" : "gr";
+        var prefix = VIEW_PREFIX[view];
         fillBody(prefix + "-body", data.headers, sorted, view);
 
         // Update sort indicators
