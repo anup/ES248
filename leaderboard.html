@@ -268,6 +268,14 @@
         text-align: left;
       }
 
+      .lang-cell {
+        text-align: left;
+        white-space: normal;
+        max-width: 160px;
+        font-size: 0.82em;
+        line-height: 1.4;
+      }
+
 
       .rank-1 { color: #c9a227; }
       .rank-2 { color: #8a9197; }
@@ -600,10 +608,12 @@
 
         // Identify text columns (left-aligned), everything else right-aligned
         var textCols = {};
+        var langCol = -1;
         var rankCol = -1;
         headers.forEach(function(h, i) {
           var hl = h.toLowerCase();
           if (hl === "rank") rankCol = i;
+          if (hl === "languages") langCol = i;
           if (hl === "code" || hl === "name" || hl === "platform" ||
               hl === "languages" || hl === "c req met" || hl === "roll no") {
             textCols[i] = true;
@@ -615,7 +625,9 @@
           row.forEach(function(cell, i) {
             var td = document.createElement("td");
             td.textContent = cell;
-            if (textCols[i]) {
+            if (i === langCol) {
+              td.className = "lang-cell";
+            } else if (textCols[i]) {
               td.className = "text-cell";
             }
             if (i === rankCol) {
