@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ES 248 — Leaderboard</title>
+    <style>
+      :root {
+        --main-color: #2c3e50;
+        --accent-color: #3498db;
+        --border: #e0e0e0;
+        --muted: #7f8c8d;
+        --section-bg: #f8f9fa;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: white;
+        min-height: 100vh;
+        padding: 2em 1em;
+      }
+
+      .container {
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      h1 {
+        color: var(--main-color);
+        font-size: 1.7em;
+        font-weight: 700;
+        margin-bottom: 0.25em;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        font-size: 0.95em;
+        margin-bottom: 0.5em;
+      }
+
+      .back-link {
+        display: inline-block;
+        color: var(--accent-color);
+        text-decoration: none;
+        font-size: 0.85em;
+        margin-bottom: 2em;
+      }
+      .back-link:hover { text-decoration: underline; }
+
+      .last-updated {
+        color: var(--muted);
+        font-size: 0.8em;
+        margin-bottom: 1.5em;
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        gap: 0;
+        margin-bottom: 1.5em;
+        border-bottom: 1px solid var(--border);
+      }
+      .tab {
+        padding: 0.7em 1.5em;
+        font-size: 0.85em;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+      }
+      .tab:hover { color: var(--main-color); }
+      .tab.active {
+        color: var(--accent-color);
+        border-bottom-color: var(--accent-color);
+      }
+
+      /* Search */
+      .search-bar {
+        margin-bottom: 1em;
+      }
+      .search-bar input {
+        width: 100%;
+        max-width: 360px;
+        padding: 0.6em 1em;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 0.9em;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .search-bar input:focus { border-color: var(--accent-color); }
+
+      /* Table block */
+      .table-block {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88em;
+      }
+
+      thead th {
+        background: var(--section-bg);
+        color: var(--muted);
+        font-size: 0.75em;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        padding: 0.9em 0.8em;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+      }
+      thead th:hover { color: var(--main-color); }
+      thead th .arrow { font-size: 0.8em; margin-left: 3px; opacity: 0.4; }
+      thead th.sorted .arrow { opacity: 1; color: var(--accent-color); }
+
+      tbody tr { border-bottom: 1px solid var(--border); }
+      tbody tr:last-child { border-bottom: none; }
+      tbody tr:hover { background: #f0f7ff; }
+
+      tbody td {
+        padding: 0.75em 0.8em;
+        white-space: nowrap;
+        color: var(--main-color);
+      }
+
+      .rank-cell {
+        font-weight: 700;
+        text-align: center;
+        min-width: 44px;
+      }
+      .rank-1 { color: #d4a017; }
+      .rank-2 { color: #95a5a6; }
+      .rank-3 { color: #cd7f32; }
+      .num-cell {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Loading */
+      .loading {
+        text-align: center;
+        padding: 4em 1em;
+        color: var(--muted);
+      }
+      .spinner {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        border: 3px solid var(--border);
+        border-top-color: var(--accent-color);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        margin-bottom: 10px;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .error-msg {
+        text-align: center;
+        padding: 3em 1em;
+        color: #e74c3c;
+        font-size: 0.95em;
+      }
+
+      .hide { display: none; }
+
+      @media (max-width: 600px) {
+        body { padding: 1em 0.5em; }
+        h1 { font-size: 1.4em; }
+        table { font-size: 0.8em; }
+        thead th, tbody td { padding: 0.6em 0.5em; }
+        .tab { padding: 0.6em 1em; font-size: 0.78em; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>ES 248</h1>
+      <p class="subtitle">Introduction to DSA in C Programming</p>
+      <a href="index.html" class="back-link">&larr; Back to course materials</a>
+
+      <div class="last-updated" id="last-updated"></div>
+
+      <div class="tabs">
+        <div class="tab active" data-view="leaderboard">Leaderboard</div>
+        <div class="tab" data-view="grades">Detailed Grades</div>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="search" placeholder="Search by name, roll no, or email...">
+      </div>
+
+      <div id="leaderboard-view">
+        <div class="loading" id="lb-loading">
+          <div class="spinner"></div><br>Loading leaderboard...
+        </div>
+        <div class="error-msg hide" id="lb-error"></div>
+        <div class="table-block hide" id="lb-table">
+          <table><thead><tr id="lb-head"></tr></thead><tbody id="lb-body"></tbody></table>
+        </div>
+      </div>
+
+      <div id="grades-view" class="hide">
+        <div class="loading" id="gr-loading">
+          <div class="spinner"></div><br>Loading grades...
+        </div>
+        <div class="error-msg hide" id="gr-error"></div>
+        <div class="table-block hide" id="gr-table">
+          <table><thead><tr id="gr-head"></tr></thead><tbody id="gr-body"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+      // ── CONFIG ──────────────────────────────────────────────────────
+      var API_BASE = ES248_CONFIG.API_BASE;
+
+      var cache = {};
+      var currentView = "leaderboard";
+      var sortState = { leaderboard: { col: 0, asc: true }, grades: { col: -1, asc: true } };
+
+      // ── TABS ────────────────────────────────────────────────────────
+      document.querySelectorAll(".tab").forEach(function(tab) {
+        tab.addEventListener("click", function() {
+          currentView = this.dataset.view;
+          document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("active"); });
+          this.classList.add("active");
+          document.getElementById("leaderboard-view").classList.toggle("hide", currentView !== "leaderboard");
+          document.getElementById("grades-view").classList.toggle("hide", currentView !== "grades");
+
+          if (!cache[currentView]) fetchData(currentView);
+          applySearch();
+        });
+      });
+
+      // ── SEARCH ──────────────────────────────────────────────────────
+      document.getElementById("search").addEventListener("input", applySearch);
+
+      function applySearch() {
+        var q = document.getElementById("search").value.toLowerCase();
+        var bodyId = currentView === "leaderboard" ? "lb-body" : "gr-body";
+        var rows = document.getElementById(bodyId).querySelectorAll("tr");
+        rows.forEach(function(row) {
+          row.style.display = row.textContent.toLowerCase().indexOf(q) !== -1 ? "" : "none";
+        });
+      }
+
+      // ── FETCH DATA ──────────────────────────────────────────────────
+      function fetchData(view) {
+        var url = API_BASE + "?view=" + view;
+        var loadingId = view === "leaderboard" ? "lb-loading" : "gr-loading";
+        var errorId = view === "leaderboard" ? "lb-error" : "gr-error";
+        var tableId = view === "leaderboard" ? "lb-table" : "gr-table";
+
+        fetch(url)
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            cache[view] = data;
+            if (data.lastUpdated) {
+              document.getElementById("last-updated").textContent = "Last updated: " + data.lastUpdated;
+            }
+            var headId = view === "leaderboard" ? "lb-head" : "gr-head";
+            var bodyId = view === "leaderboard" ? "lb-body" : "gr-body";
+            renderTable(headId, bodyId, data.headers, data.rows, view);
+            document.getElementById(loadingId).classList.add("hide");
+            document.getElementById(tableId).classList.remove("hide");
+          })
+          .catch(function(err) {
+            document.getElementById(loadingId).classList.add("hide");
+            document.getElementById(errorId).textContent = "Failed to load data. Please try again later.";
+            document.getElementById(errorId).classList.remove("hide");
+          });
+      }
+
+      // ── RENDER ──────────────────────────────────────────────────────
+      function renderTable(headId, bodyId, headers, rows, view) {
+        var head = document.getElementById(headId);
+        head.innerHTML = "";
+        headers.forEach(function(h, i) {
+          var th = document.createElement("th");
+          th.innerHTML = esc(h) + ' <span class="arrow">&#9650;</span>';
+          th.addEventListener("click", function() { sortTable(view, i); });
+          head.appendChild(th);
+        });
+        fillBody(bodyId, headers, rows, view);
+      }
+
+      function fillBody(bodyId, headers, rows, view) {
+        var body = document.getElementById(bodyId);
+        body.innerHTML = "";
+
+        var rankCol = -1, numCols = {};
+        headers.forEach(function(h, i) {
+          var hl = h.toLowerCase();
+          if (hl === "rank") rankCol = i;
+          if (hl.match(/mark|total|solved|contest|assign|practice|rank/) || hl.match(/\/\d+/)) numCols[i] = true;
+        });
+
+        rows.forEach(function(row) {
+          var tr = document.createElement("tr");
+          row.forEach(function(cell, i) {
+            var td = document.createElement("td");
+            td.textContent = cell;
+            if (i === rankCol) {
+              td.className = "rank-cell";
+              if (cell === 1) td.classList.add("rank-1");
+              else if (cell === 2) td.classList.add("rank-2");
+              else if (cell === 3) td.classList.add("rank-3");
+            } else if (numCols[i]) {
+              td.className = "num-cell";
+            }
+            tr.appendChild(td);
+          });
+          body.appendChild(tr);
+        });
+      }
+
+      // ── SORT ────────────────────────────────────────────────────────
+      function sortTable(view, colIdx) {
+        var state = sortState[view];
+        if (state.col === colIdx) { state.asc = !state.asc; }
+        else { state.col = colIdx; state.asc = true; }
+
+        var data = cache[view];
+        if (!data) return;
+
+        var sorted = data.rows.slice().sort(function(a, b) {
+          var va = a[colIdx], vb = b[colIdx];
+          if (typeof va === "number" && typeof vb === "number")
+            return state.asc ? va - vb : vb - va;
+          va = String(va).toLowerCase();
+          vb = String(vb).toLowerCase();
+          if (va < vb) return state.asc ? -1 : 1;
+          if (va > vb) return state.asc ? 1 : -1;
+          return 0;
+        });
+
+        var bodyId = view === "leaderboard" ? "lb-body" : "gr-body";
+        var headId = view === "leaderboard" ? "lb-head" : "gr-head";
+        fillBody(bodyId, data.headers, sorted, view);
+
+        var ths = document.getElementById(headId).querySelectorAll("th");
+        ths.forEach(function(th, i) {
+          th.classList.toggle("sorted", i === colIdx);
+          var arrow = th.querySelector(".arrow");
+          arrow.innerHTML = (i === colIdx) ? (state.asc ? "&#9650;" : "&#9660;") : "&#9650;";
+        });
+        applySearch();
+      }
+
+      function esc(s) {
+        var d = document.createElement("div");
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      // ── INIT ────────────────────────────────────────────────────────
+      fetchData("leaderboard");
+    </script>
+  </body>
+</html>
