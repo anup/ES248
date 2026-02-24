@@ -400,6 +400,7 @@
       var cache = {};
       var currentView = "leaderboard";
       var sortState = { leaderboard: { col: 0, asc: true }, grades: { col: -1, asc: true }, performance: { col: -1, asc: true } };
+      var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf" };
 
       // Column descriptions for tooltips
       var TOOLTIPS = {
@@ -472,8 +473,6 @@
       }
 
       document.getElementById("search").addEventListener("input", applySearch);
-
-      var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf" };
 
       function applySearch() {
         var q = document.getElementById("search").value.toLowerCase();
