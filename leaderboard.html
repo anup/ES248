@@ -438,10 +438,8 @@
         document.getElementById("status").textContent = msg;
       }
 
-      // Prefetch all views on page load
-      fetchData("leaderboard");
-      fetchData("grades");
-      fetchData("performance");
+      // Fetch all data in a single API call
+      fetchAllData();
 
       // Tab switching
       document.querySelectorAll(".tab").forEach(function(tab) {
@@ -517,36 +515,39 @@
         });
       }
 
-      function fetchData(view) {
-        var url = API_BASE + "?view=" + view;
-        var prefix = VIEW_PREFIX[view];
-        var loadingId = prefix + "-loading";
-        var errorId = prefix + "-error";
-        var wrapId = prefix + "-scroll-wrap";
+      function fetchAllData() {
+        var url = API_BASE + "?view=all";
 
-        // Show loading only for the active tab
-        if (view === currentView) {
-          document.getElementById(loadingId).classList.remove("hide");
-        }
+        // Show loading on active tab
+        document.getElementById(VIEW_PREFIX[currentView] + "-loading").classList.remove("hide");
 
         fetch(url)
           .then(function(r) { return r.json(); })
-          .then(function(data) {
-            cache[view] = data;
-            if (data.lastUpdated) {
-              document.getElementById("last-updated").textContent = "Last updated: " + data.lastUpdated;
+          .then(function(allData) {
+            ["leaderboard", "grades", "performance"].forEach(function(view) {
+              var data = allData[view];
+              if (!data) return;
+              cache[view] = data;
+
+              var prefix = VIEW_PREFIX[view];
+              renderTable(prefix + "-head", prefix + "-body", data.headers, data.rows, view);
+              document.getElementById(prefix + "-loading").classList.add("hide");
+              document.getElementById(prefix + "-scroll-wrap").classList.remove("hide");
+              setupScrollArrows(prefix);
+            });
+
+            if (allData.leaderboard && allData.leaderboard.lastUpdated) {
+              document.getElementById("last-updated").textContent = "Last updated: " + allData.leaderboard.lastUpdated;
             }
-            renderTable(prefix + "-head", prefix + "-body", data.headers, data.rows, view);
-            document.getElementById(loadingId).classList.add("hide");
-            document.getElementById(wrapId).classList.remove("hide");
-            setupScrollArrows(prefix);
-            if (view === currentView) announce("Data loaded, " + data.rows.length + " students");
+            announce("Data loaded");
           })
           .catch(function() {
-            document.getElementById(loadingId).classList.add("hide");
-            var errEl = document.getElementById(errorId);
-            errEl.textContent = "Failed to load data. Please try again later.";
-            errEl.classList.remove("hide");
+            ["lb", "gr", "pf"].forEach(function(prefix) {
+              document.getElementById(prefix + "-loading").classList.add("hide");
+              var errEl = document.getElementById(prefix + "-error");
+              errEl.textContent = "Failed to load data. Please try again later.";
+              errEl.classList.remove("hide");
+            });
           });
       }
 
