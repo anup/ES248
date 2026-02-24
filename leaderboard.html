@@ -408,7 +408,7 @@
         "name": "Student name",
         "roll no": "Student roll number",
         "email": "Student email address",
-        "assignment": "Best 2 of 4 assignment contest scores, 10 marks each",
+        "assignment": "Best 2 assignment contest scores, 10 marks each",
         "practice": "1.4 marks per contest with 1+ problem solved, capped at 20. Requires 10 contests in C.",
         "total": "Assignment + Practice marks",
         "c contests": "Number of practice contests where C language was used",
@@ -521,7 +521,10 @@
         document.getElementById(VIEW_PREFIX[currentView] + "-loading").classList.remove("hide");
 
         fetch(url)
-          .then(function(r) { return r.json(); })
+          .then(function(r) {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+          })
           .then(function(allData) {
             ["leaderboard", "grades", "performance"].forEach(function(view) {
               var data = allData[view];
