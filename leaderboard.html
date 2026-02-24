@@ -261,14 +261,6 @@
         text-align: left;
       }
 
-      .email-cell {
-        text-align: left;
-        max-width: 180px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 0.9em;
-        color: var(--muted);
-      }
 
       .rank-1 { color: #c9a227; }
       .rank-2 { color: #8a9197; }
@@ -321,7 +313,6 @@
         table { font-size: 0.78em; }
         thead th, tbody td { padding: 0.5em 0.4em; }
         .tab { padding: 0.6em 0.8em; font-size: 0.7em; }
-        .email-cell { max-width: 120px; }
       }
     </style>
   </head>
@@ -343,7 +334,7 @@
 
         <div class="search-bar">
           <label for="search">Search</label>
-          <input type="text" id="search" placeholder="Name, roll no, or email..." aria-label="Search students">
+          <input type="text" id="search" placeholder="Name or roll no..." aria-label="Search students">
         </div>
       </div>
 
@@ -416,7 +407,6 @@
           "rank": "Position based on total score (assignment + practice)",
           "name": "Student name",
           "roll no": "Student roll number",
-          "email": "Student email address",
           "c contests": "Number of practice contests where C language was used",
           "non-c contests": "Practice contests without C (includes all LeetCode)",
           "c req met": "Whether " + cReq + "+ C-language contests requirement is met (Yes/No)",
@@ -574,7 +564,7 @@
       function renderTable(headId, bodyId, headers, rows, view) {
         var head = document.getElementById(headId);
         head.innerHTML = "";
-        var TEXT_HEADERS = ["name", "email", "platform", "languages", "c req met", "roll no"];
+        var TEXT_HEADERS = ["name", "platform", "languages", "c req met", "roll no"];
         headers.forEach(function(h, i) {
           var th = document.createElement("th");
           th.setAttribute("scope", "col");
@@ -602,13 +592,11 @@
 
         // Identify text columns (left-aligned), everything else right-aligned
         var textCols = {};
-        var emailCol = -1;
         var rankCol = -1;
         headers.forEach(function(h, i) {
           var hl = h.toLowerCase();
           if (hl === "rank") rankCol = i;
-          if (hl === "email") emailCol = i;
-          if (hl === "name" || hl === "email" || hl === "platform" ||
+          if (hl === "name" || hl === "platform" ||
               hl === "languages" || hl === "c req met" || hl === "roll no") {
             textCols[i] = true;
           }
@@ -619,10 +607,7 @@
           row.forEach(function(cell, i) {
             var td = document.createElement("td");
             td.textContent = cell;
-            if (i === emailCol) {
-              td.className = "email-cell";
-              td.title = cell;
-            } else if (textCols[i]) {
+            if (textCols[i]) {
               td.className = "text-cell";
             }
             if (i === rankCol) {
