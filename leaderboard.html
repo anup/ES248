@@ -245,8 +245,9 @@
       thead th:focus-visible .tip { display: block; }
 
       tbody tr { border-bottom: 1px solid #f0f0f0; }
+      tbody tr:nth-child(even) { background: #fafafa; }
       tbody tr:last-child { border-bottom: none; }
-      tbody tr:hover { background: var(--section-bg); }
+      tbody tr:hover { background: #f0f4f8; }
 
       tbody td {
         padding: 0.6em 0.6em;
@@ -399,36 +400,54 @@
       var sortState = { leaderboard: { col: 0, asc: true }, grades: { col: -1, asc: true }, performance: { col: -1, asc: true } };
       var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf" };
 
-      // Column descriptions for tooltips
-      var TOOLTIPS = {
-        "rank": "Position based on total score (assignment + practice)",
-        "name": "Student name",
-        "roll no": "Student roll number",
-        "email": "Student email address",
-        "assignment": "Best 2 assignment contest scores, 10 marks each",
-        "practice": "1.4 marks per contest with 1+ problem solved, capped at 20. Requires 10 contests in C.",
-        "total": "Assignment + Practice marks",
-        "c contests": "Number of practice contests where C language was used",
-        "non-c contests": "Practice contests without C (includes all LeetCode)",
-        "c req met": "Whether 10+ C-language contests requirement is met (Yes/No)",
-        "practice contests counted": "Contests counted toward practice. If C req met: all (max 15). If not: only C.",
-        "platform": "Contest platform (LeetCode, CodeChef, AtCoder, Codeforces)",
-        "contest": "Contest identifier/code",
-        "score": "Total score achieved in the contest",
-        "solved": "Number of problems solved",
-        "languages": "Programming languages used in submissions"
-      };
+      // Column descriptions for tooltips (dynamic values filled after API load)
+      var TOOLTIPS = {};
+      var TOOLTIP_PATTERNS = [];
+
+      function initTooltips(cfg) {
+        var bestOf = cfg ? cfg.assignmentBestOf : 2;
+        var maxPer = cfg ? cfg.assignmentMaxPerContest : 10;
+        var mpc = cfg ? cfg.practiceMarksPerContest : 1.4;
+        var maxMarks = cfg ? cfg.practiceMaxMarks : 20;
+        var maxContests = cfg ? cfg.practiceMaxContests : 15;
+        var cReq = cfg ? cfg.cContestsRequired : 10;
+
+        TOOLTIPS = {
+          "rank": "Position based on total score (assignment + practice)",
+          "name": "Student name",
+          "roll no": "Student roll number",
+          "email": "Student email address",
+          "c contests": "Number of practice contests where C language was used",
+          "non-c contests": "Practice contests without C (includes all LeetCode)",
+          "c req met": "Whether " + cReq + "+ C-language contests requirement is met (Yes/No)",
+          "platform": "Contest platform (LeetCode, CodeChef, AtCoder, Codeforces)",
+          "contest": "Contest identifier/code",
+          "score": "Total score achieved in the contest",
+          "solved": "Number of problems solved",
+          "languages": "Programming languages used in submissions"
+        };
+
+        TOOLTIP_PATTERNS = [
+          { re: /^assignment/,          tip: "Best " + bestOf + " assignment contest scores, " + maxPer + " marks each" },
+          { re: /^practice\b(?!.*counted)/, tip: mpc + " marks per contest with 1+ problem solved, capped at " + maxMarks + ". Requires " + cReq + " contests in C." },
+          { re: /^total/,               tip: "Assignment + Practice marks" },
+          { re: /assign.*c solved/,     tip: "Problems solved in C in this assignment contest" },
+          { re: /assign.*marks/,        tip: "Marks: 4+ solved=10, 3=9, 2=7, 1=4, 0 participated=2, DNP=0" },
+          { re: /best.*assignment/,     tip: "Sum of top " + bestOf + " assignment scores (max " + (bestOf * maxPer) + ")" },
+          { re: /practice.*mark/,       tip: "Counted contests x " + mpc + ", capped at " + maxMarks },
+          { re: /practice.*counted/,    tip: "Contests counted toward practice. If C req met: all (max " + maxContests + "). If not: only C." }
+        ];
+      }
+
+      // Initialize with defaults (updated after API load)
+      initTooltips(null);
 
       function getTooltip(header) {
         var h = header.toLowerCase();
-        for (var key in TOOLTIPS) {
-          if (h === key || h.indexOf(key) === 0) return TOOLTIPS[key];
+        if (TOOLTIPS[h]) return TOOLTIPS[h];
+        for (var i = 0; i < TOOLTIP_PATTERNS.length; i++) {
+          if (TOOLTIP_PATTERNS[i].re.test(h)) return TOOLTIP_PATTERNS[i].tip;
         }
-        if (h.match(/assign.*solved/)) return "Problems solved in this assignment contest";
-        if (h.match(/assign.*marks/)) return "Marks: 4+ solved=10, 3=9, 2=7, 1=4, 0 participated=2, DNP=0";
-        if (h.match(/best.*assignment/)) return "Sum of top 2 assignment scores (max 20)";
-        if (h.match(/practice.*mark/)) return "Counted contests x 1.4, capped at 20";
-        if (h.match(/total/)) return "Assignment + Practice marks";
         return "";
       }
 
@@ -523,6 +542,9 @@
             return r.json();
           })
           .then(function(allData) {
+            if (allData.error) throw new Error(allData.message || "Server error");
+            if (allData.config) initTooltips(allData.config);
+
             ["leaderboard", "grades", "performance"].forEach(function(view) {
               var data = allData[view];
               if (!data) return;
