@@ -516,39 +516,14 @@
       }
 
       function fetchAllData() {
-        var url = API_BASE + "?view=all";
+        var url = API_BASE;
 
         // Show loading on active tab
         document.getElementById(VIEW_PREFIX[currentView] + "-loading").classList.remove("hide");
 
         fetch(url)
-          .then(function(r) {
-            if (!r.ok) throw new Error("HTTP " + r.status);
-            return r.text();
-          })
-          .then(function(text) {
-            var allData;
-            try { allData = JSON.parse(text); } catch(e) {
-              throw new Error("Invalid JSON response");
-            }
-
-            // Handle both combined format { leaderboard: {...}, grades: {...} }
-            // and single-view format { headers: [...], rows: [...] }
-            if (allData.headers) {
-              // Old single-view response — just load leaderboard
-              cache["leaderboard"] = allData;
-              var prefix = "lb";
-              renderTable(prefix + "-head", prefix + "-body", allData.headers, allData.rows, "leaderboard");
-              document.getElementById(prefix + "-loading").classList.add("hide");
-              document.getElementById(prefix + "-scroll-wrap").classList.remove("hide");
-              setupScrollArrows(prefix);
-              if (allData.lastUpdated) {
-                document.getElementById("last-updated").textContent = "Last updated: " + allData.lastUpdated;
-              }
-              announce("Data loaded (update deployment version for full data)");
-              return;
-            }
-
+          .then(function(r) { return r.json(); })
+          .then(function(allData) {
             ["leaderboard", "grades", "performance"].forEach(function(view) {
               var data = allData[view];
               if (!data) return;
@@ -561,19 +536,16 @@
               setupScrollArrows(prefix);
             });
 
-            var lb = allData.leaderboard;
-            if (lb && lb.lastUpdated) {
-              document.getElementById("last-updated").textContent = "Last updated: " + lb.lastUpdated;
+            if (allData.leaderboard && allData.leaderboard.lastUpdated) {
+              document.getElementById("last-updated").textContent = "Last updated: " + allData.leaderboard.lastUpdated;
             }
             announce("Data loaded");
           })
-          .catch(function(err) {
-            console.error("Fetch error:", err);
+          .catch(function() {
             ["lb", "gr", "pf"].forEach(function(prefix) {
               document.getElementById(prefix + "-loading").classList.add("hide");
-              var errEl = document.getElementById(prefix + "-error");
-              errEl.textContent = "Failed to load data. Please try again later.";
-              errEl.classList.remove("hide");
+              document.getElementById(prefix + "-error").textContent = "Failed to load data. Please try again later.";
+              document.getElementById(prefix + "-error").classList.remove("hide");
             });
           });
       }
