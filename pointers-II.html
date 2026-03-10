@@ -155,6 +155,25 @@
         }
         .arrow { color: #e67e22; font-size: 1.2em; margin: 0 4px; }
 
+        /* summary table */
+        .summary-table {
+            font-size: 0.72em;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .summary-table th {
+            padding: 10px 16px;
+            text-align: left;
+        }
+        .summary-table td {
+            padding: 9px 16px;
+            vertical-align: middle;
+            line-height: 1.4;
+        }
+        .summary-table td:first-child {
+            white-space: nowrap;
+        }
+
         /* resource links */
         .resource-section {
             margin-top: 20px;
@@ -610,13 +629,36 @@ free(p);  // caller must free</code></pre>
                 </div>
             </section>
 
+            <!-- Slide: sizeof — proof they are different -->
+            <section>
+                <h2><code>sizeof</code> Proves They Are Different</h2>
+                <p>The clearest way to see the difference between a 2D array and <code>int **</code>:</p>
+
+                <pre><code class="language-c">int a[3][4];        // stack 2D array
+int **p;            // pointer to pointer
+
+sizeof(a)           // 48  ← 3 × 4 × sizeof(int) = full array
+sizeof(p)           // 8   ← just one pointer (on 64-bit system)
+
+sizeof(a[0])        // 16  ← one row = 4 ints
+sizeof(p[0])        // 8   ← one int* pointer</code></pre>
+
+                <div class="warning-box">
+                    <code>sizeof</code> on a true 2D array gives you the full size of all the data. <code>sizeof</code> on a pointer gives you the size of the pointer — not what it points to. This is why functions receiving arrays cannot use <code>sizeof</code> to find the length; the array decays to a pointer when passed.
+                </div>
+
+                <div class="insight-box">
+                    <strong>Bottom line:</strong> <code>int a[3][4]</code> and <code>int **p</code> both support <code>a[i][j]</code> syntax, but they are fundamentally different in memory layout, type, and size.
+                </div>
+            </section>
+
             <!-- Summary -->
             <section>
                 <h2>Mental Model Summary</h2>
-                <table style="font-size: 0.82em; width:100%;">
+                <table class="summary-table">
                     <tr style="background: #2c3e50; color: white;">
-                        <th style="padding:8px;">Syntax / Concept</th>
-                        <th style="padding:8px;">What it means</th>
+                        <th>Syntax / Concept</th>
+                        <th>What it means</th>
                     </tr>
                     <tr>
                         <td><code>int a[3][4]</code></td>
@@ -624,19 +666,19 @@ free(p);  // caller must free</code></pre>
                     </tr>
                     <tr style="background:#f8f9fa;">
                         <td><code>a[i][j]</code></td>
-                        <td>Element at row i, col j → offset = i×cols + j</td>
+                        <td>Element at row i, col j — offset = i×cols + j</td>
                     </tr>
                     <tr>
                         <td><code>int a[][4]</code> in a function</td>
-                        <td>Column size required so compiler can compute offsets</td>
+                        <td>Column size required so compiler can compute row offsets</td>
                     </tr>
                     <tr style="background:#f8f9fa;">
                         <td><code>int (*p)[4]</code></td>
-                        <td>Pointer to a row of 4 ints — <code>p++</code> skips 16 bytes</td>
+                        <td>Pointer to a row of 4 ints — p++ skips 16 bytes</td>
                     </tr>
                     <tr>
                         <td><code>malloc(n * sizeof(T))</code></td>
-                        <td>Allocate n items on the heap (uninitialized)</td>
+                        <td>Allocate n items on the heap, uninitialized</td>
                     </tr>
                     <tr style="background:#f8f9fa;">
                         <td><code>calloc(n, sizeof(T))</code></td>
@@ -644,11 +686,11 @@ free(p);  // caller must free</code></pre>
                     </tr>
                     <tr>
                         <td><code>realloc(p, new_size)</code></td>
-                        <td>Resize a heap allocation — always assign to a temp pointer first</td>
+                        <td>Resize a heap allocation — always use a temp pointer</td>
                     </tr>
                     <tr style="background:#f8f9fa;">
                         <td><code>free(p); p = NULL;</code></td>
-                        <td>Return heap memory; nullify to prevent double-free</td>
+                        <td>Return heap memory; nullify to prevent accidental reuse</td>
                     </tr>
                     <tr>
                         <td><code>return malloc(...)</code></td>

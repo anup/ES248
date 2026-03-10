@@ -113,6 +113,24 @@
             margin: 25px 0 !important;
         }        
         .subtle-note { font-style: italic; color: #7f8c8d; font-size: 0.85em; margin-top: 10px; }
+
+        .summary-table {
+            font-size: 0.75em;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .summary-table th {
+            padding: 10px 16px;
+            text-align: left;
+        }
+        .summary-table td {
+            padding: 9px 16px;
+            vertical-align: middle;
+            line-height: 1.4;
+        }
+        .summary-table td:first-child {
+            white-space: nowrap;
+        }
         
         .split-container {
             display: grid;
@@ -574,24 +592,24 @@ p = NULL;  // Good practice: nullify after freeing</code></pre>
             <!-- Summary -->
             <section>
                 <h2>The Mental Model Summary</h2>
-                <table style="font-size: 0.85em;">
+                <table class="summary-table">
                     <tr style="background: #2c3e50; color: white;">
                         <th>Syntax</th>
                         <th>Mental Model</th>
                     </tr>
                     <tr>
-                        <td><code>&a</code></td>
-                        <td>"Where does <code>a</code> live?"</td>
+                        <td><code>&amp;a</code></td>
+                        <td>"Where does a live?"</td>
                     </tr>
-                    <tr>
+                    <tr style="background:#f8f9fa;">
                         <td><code>*p</code></td>
-                        <td>"Go to the address in <code>p</code>"</td>
+                        <td>"Go to the address in p"</td>
                     </tr>
                     <tr>
                         <td><code>p + 1</code></td>
                         <td>"Next item of the same type"</td>
                     </tr>
-                    <tr>
+                    <tr style="background:#f8f9fa;">
                         <td><code>A[i]</code></td>
                         <td>"Start at A, jump i items, dereference"</td>
                     </tr>
