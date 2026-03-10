@@ -83,16 +83,17 @@
             margin: 16px auto;
         }
         .cell {
-            width: 68px;
+            width: 76px;
             height: 44px;
             border: 2px solid #bbb;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: monospace;
-            font-size: 0.78em;
+            font-size: 0.6em;
             font-weight: bold;
             border-radius: 4px;
+            white-space: nowrap;
         }
         .cell.row0 { background: #d6eaf8; border-color: #3498db; }
         .cell.row1 { background: #d5f5e3; border-color: #27ae60; }
@@ -106,7 +107,7 @@
             align-items: center;
         }
         .flat-cell {
-            width: 56px;
+            width: 58px;
             height: 40px;
             border: 2px solid #bbb;
             display: flex;
@@ -114,11 +115,12 @@
             align-items: center;
             justify-content: center;
             font-family: monospace;
-            font-size: 0.65em;
+            font-size: 0.52em;
             font-weight: bold;
             border-radius: 3px;
+            white-space: nowrap;
         }
-        .flat-cell .addr { font-size: 0.75em; color: #888; font-weight: normal; }
+        .flat-cell .addr { font-size: 0.8em; color: #888; font-weight: normal; }
 
         /* ── heap/stack visual ── */
         .memory-region {
