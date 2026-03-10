@@ -102,25 +102,34 @@
         .flat-memory {
             display: flex;
             flex-wrap: wrap;
-            gap: 3px;
+            gap: 6px;
             margin: 12px 0;
-            align-items: center;
+            align-items: flex-start;
         }
-        .flat-cell {
-            width: 58px;
-            height: 40px;
-            border: 2px solid #bbb;
+        .flat-item {
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 3px;
+        }
+        .flat-cell {
+            width: 68px;
+            height: 36px;
+            border: 2px solid #bbb;
+            display: flex;
+            align-items: center;
             justify-content: center;
             font-family: monospace;
-            font-size: 0.52em;
+            font-size: 0.6em;
             font-weight: bold;
             border-radius: 3px;
             white-space: nowrap;
         }
-        .flat-cell .addr { font-size: 0.8em; color: #888; font-weight: normal; }
+        .flat-addr {
+            font-family: monospace;
+            font-size: 0.52em;
+            color: #888;
+        }
 
         /* ── heap/stack visual ── */
         .memory-region {
@@ -238,18 +247,18 @@
                 <p><code>int a[3][4]</code> is stored as 12 consecutive integers:</p>
 
                 <div class="flat-memory">
-                    <div class="flat-cell row0">a[0][0]<div class="addr">200</div></div>
-                    <div class="flat-cell row0">a[0][1]<div class="addr">204</div></div>
-                    <div class="flat-cell row0">a[0][2]<div class="addr">208</div></div>
-                    <div class="flat-cell row0">a[0][3]<div class="addr">212</div></div>
-                    <div class="flat-cell row1">a[1][0]<div class="addr">216</div></div>
-                    <div class="flat-cell row1">a[1][1]<div class="addr">220</div></div>
-                    <div class="flat-cell row1">a[1][2]<div class="addr">224</div></div>
-                    <div class="flat-cell row1">a[1][3]<div class="addr">228</div></div>
-                    <div class="flat-cell row2">a[2][0]<div class="addr">232</div></div>
-                    <div class="flat-cell row2">a[2][1]<div class="addr">236</div></div>
-                    <div class="flat-cell row2">a[2][2]<div class="addr">240</div></div>
-                    <div class="flat-cell row2">a[2][3]<div class="addr">244</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">a[0][0]</div><div class="flat-addr">200</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">a[0][1]</div><div class="flat-addr">204</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">a[0][2]</div><div class="flat-addr">208</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">a[0][3]</div><div class="flat-addr">212</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">a[1][0]</div><div class="flat-addr">216</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">a[1][1]</div><div class="flat-addr">220</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">a[1][2]</div><div class="flat-addr">224</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">a[1][3]</div><div class="flat-addr">228</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">a[2][0]</div><div class="flat-addr">232</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">a[2][1]</div><div class="flat-addr">236</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">a[2][2]</div><div class="flat-addr">240</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">a[2][3]</div><div class="flat-addr">244</div></div>
                 </div>
 
                 <p style="margin-top:12px;">To find <code>a[i][j]</code>, the compiler computes:</p>
@@ -565,19 +574,19 @@ free(a);              // then free the pointer array</code></pre>
                 <div class="split-container">
                     <div>
                         <h4>Stack: <code>int a[3][4]</code></h4>
-                        <div class="flat-memory" style="flex-wrap:wrap; width:180px;">
-                            <div class="flat-cell row0" style="width:38px;font-size:0.6em;">r0c0</div>
-                            <div class="flat-cell row0" style="width:38px;font-size:0.6em;">r0c1</div>
-                            <div class="flat-cell row0" style="width:38px;font-size:0.6em;">r0c2</div>
-                            <div class="flat-cell row0" style="width:38px;font-size:0.6em;">r0c3</div>
-                            <div class="flat-cell row1" style="width:38px;font-size:0.6em;">r1c0</div>
-                            <div class="flat-cell row1" style="width:38px;font-size:0.6em;">r1c1</div>
-                            <div class="flat-cell row1" style="width:38px;font-size:0.6em;">r1c2</div>
-                            <div class="flat-cell row1" style="width:38px;font-size:0.6em;">r1c3</div>
-                            <div class="flat-cell row2" style="width:38px;font-size:0.6em;">r2c0</div>
-                            <div class="flat-cell row2" style="width:38px;font-size:0.6em;">r2c1</div>
-                            <div class="flat-cell row2" style="width:38px;font-size:0.6em;">r2c2</div>
-                            <div class="flat-cell row2" style="width:38px;font-size:0.6em;">r2c3</div>
+                        <div class="flat-memory" style="flex-wrap:wrap; width:200px;">
+                            <div class="flat-item"><div class="flat-cell row0" style="width:40px;">r0c0</div></div>
+                            <div class="flat-item"><div class="flat-cell row0" style="width:40px;">r0c1</div></div>
+                            <div class="flat-item"><div class="flat-cell row0" style="width:40px;">r0c2</div></div>
+                            <div class="flat-item"><div class="flat-cell row0" style="width:40px;">r0c3</div></div>
+                            <div class="flat-item"><div class="flat-cell row1" style="width:40px;">r1c0</div></div>
+                            <div class="flat-item"><div class="flat-cell row1" style="width:40px;">r1c1</div></div>
+                            <div class="flat-item"><div class="flat-cell row1" style="width:40px;">r1c2</div></div>
+                            <div class="flat-item"><div class="flat-cell row1" style="width:40px;">r1c3</div></div>
+                            <div class="flat-item"><div class="flat-cell row2" style="width:40px;">r2c0</div></div>
+                            <div class="flat-item"><div class="flat-cell row2" style="width:40px;">r2c1</div></div>
+                            <div class="flat-item"><div class="flat-cell row2" style="width:40px;">r2c2</div></div>
+                            <div class="flat-item"><div class="flat-cell row2" style="width:40px;">r2c3</div></div>
                         </div>
                         <p class="subtle-note">12 ints — one contiguous block</p>
                     </div>
