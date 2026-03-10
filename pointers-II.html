@@ -569,7 +569,7 @@ free(a);              // then free the pointer array</code></pre>
 
             <!-- Slide: Stack 2D vs Dynamic 2D -->
             <section>
-                <h2>Stack 2D vs Dynamic 2D — The Difference</h2>
+                <h2>Two Ways — Very Different Memory</h2>
 
                 <div class="split-container">
                     <div>
@@ -601,8 +601,92 @@ free(a);              // then free the pointer array</code></pre>
                     </div>
                 </div>
 
-                <div class="key-point">
-                    With a dynamic 2D array, rows are <strong>not contiguous</strong>. <code>a[i][j]</code> still works syntactically, but the memory layout is different from <code>int a[3][4]</code>.
+                <div class="warning-box">
+                    With <code>int **</code>, each row is a separate <code>malloc</code> — rows are <strong>not contiguous</strong>. <code>a[i][j]</code> syntax works, but the memory is scattered. There is a third approach that gives you dynamic sizing AND contiguous memory.
+                </div>
+            </section>
+
+            <!-- Slide: Flat dynamic array — third approach -->
+            <section>
+                <h2>A Third Way: Flat Dynamic Array</h2>
+                <p>One single <code>malloc</code> for all elements — row-major, just like a stack 2D array.</p>
+
+                <pre><code class="language-c">int rows = 3, cols = 4;
+
+// ONE allocation for everything
+int *flat = malloc(rows * cols * sizeof(int));
+
+// Access: compute the offset manually
+flat[1 * cols + 2] = 42;    // same as a[1][2]
+flat[i * cols + j] = value; // general form
+
+// Free: just one call
+free(flat);</code></pre>
+
+                <div class="flat-memory" style="margin-top:10px;">
+                    <div class="flat-item"><div class="flat-cell row0">r0c0</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">r0c1</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">r0c2</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">r0c3</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">r1c0</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">r1c1</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">r1c2</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">r1c3</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">r2c0</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">r2c1</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">r2c2</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">r2c3</div></div>
+                </div>
+
+                <div class="insight-box">
+                    Fully contiguous — same memory layout as <code>int a[3][4]</code>, but the size is decided at runtime and you manage the lifetime manually.
+                </div>
+            </section>
+
+            <!-- Slide: Three-way comparison -->
+            <section>
+                <h2>Three Approaches — Side by Side</h2>
+                <table class="summary-table">
+                    <tr style="background: #2c3e50; color: white;">
+                        <th></th>
+                        <th><code>int a[3][4]</code></th>
+                        <th><code>int **a</code></th>
+                        <th><code>int *flat</code></th>
+                    </tr>
+                    <tr>
+                        <td>Memory layout</td>
+                        <td>One block, row-major</td>
+                        <td>Scattered rows</td>
+                        <td>One block, row-major</td>
+                    </tr>
+                    <tr style="background:#f8f9fa;">
+                        <td>Size at runtime?</td>
+                        <td>No</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Access syntax</td>
+                        <td><code>a[i][j]</code></td>
+                        <td><code>a[i][j]</code></td>
+                        <td><code>flat[i*cols+j]</code></td>
+                    </tr>
+                    <tr style="background:#f8f9fa;">
+                        <td>Rows same length?</td>
+                        <td>Yes (fixed)</td>
+                        <td>No — can vary</td>
+                        <td>Yes (fixed)</td>
+                    </tr>
+                    <tr>
+                        <td>Free</td>
+                        <td>Automatic</td>
+                        <td>Loop + <code>free(a)</code></td>
+                        <td>One <code>free</code></td>
+                    </tr>
+                </table>
+
+                <div class="key-point" style="margin-top:14px;">
+                    Use <code>int **</code> when rows can have different lengths (jagged arrays). Use <code>int *flat</code> when you need dynamic sizing with contiguous memory. Use <code>int a[N][M]</code> when the size is fixed at compile time.
                 </div>
             </section>
 
