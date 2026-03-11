@@ -74,6 +74,12 @@
             padding: 20px;
             border-radius: 8px;
         }
+        .comparison-box pre { margin: 8px 0 0 !important; }
+        .comparison-box pre code {
+            padding: 10px 14px !important;
+            font-size: 0.78em !important;
+            line-height: 1.5 !important;
+        }
 
         /* ── Precedence table ── */
         .prec-table {
@@ -324,36 +330,30 @@
             <!-- Slide: Precedence table -->
             <section>
                 <h2>C Operator Precedence — The Practical Table</h2>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px;">
-                    <table class="prec-table">
-                        <tr><th>Operators</th><th>Category</th><th>Assoc.</th></tr>
-                        <tr class="high">
-                            <td><code>()  []  .  ->  ++  --</code> <em style="font-size:0.85em;">(postfix)</em></td>
-                            <td>Subscript, member, postfix</td>
-                            <td>L→R</td>
-                        </tr>
-                        <tr>
-                            <td><code>!  ~  ++  --  *  &amp;  -</code> <em style="font-size:0.85em;">(prefix)</em></td>
-                            <td>Unary, prefix inc/dec</td>
-                            <td>R→L</td>
-                        </tr>
-                        <tr><td><code>*  /  %</code></td><td>Multiplicative</td><td>L→R</td></tr>
-                        <tr><td><code>+  -</code></td><td>Additive</td><td>L→R</td></tr>
-                        <tr><td><code>&lt;&lt;  &gt;&gt;</code></td><td>Bitwise shift</td><td>L→R</td></tr>
-                        <tr><td><code>&lt;  &lt;=  &gt;  &gt;=</code></td><td>Relational</td><td>L→R</td></tr>
-                        <tr><td><code>==  !=</code></td><td>Equality</td><td>L→R</td></tr>
-                    </table>
-                    <table class="prec-table">
-                        <tr><th>Operators</th><th>Category</th><th>Assoc.</th></tr>
-                        <tr><td><code>&amp;</code></td><td>Bitwise AND</td><td>L→R</td></tr>
-                        <tr><td><code>^</code></td><td>Bitwise XOR</td><td>L→R</td></tr>
-                        <tr><td><code>|</code></td><td>Bitwise OR</td><td>L→R</td></tr>
-                        <tr><td><code>&amp;&amp;</code></td><td>Logical AND</td><td>L→R</td></tr>
-                        <tr><td><code>||</code></td><td>Logical OR</td><td>L→R</td></tr>
-                        <tr class="low"><td><code>=  +=  -=  ...</code></td><td>Assignment</td><td>R→L</td></tr>
-                        <tr style="background:transparent;"><td colspan="3" style="padding-top:6px; font-size:0.85em; color:#7f8c8d; font-style:italic;">↑ higher = tighter binding &nbsp;·&nbsp; ↓ lower = looser</td></tr>
-                    </table>
-                </div>
+                <table class="prec-table" style="margin-top:10px;">
+                    <tr><th>Operators</th><th>Category</th><th>Associativity</th></tr>
+                    <tr class="high">
+                        <td><code>()  []  .  ->  ++  --</code> <em>(postfix)</em></td>
+                        <td>Subscript, member access, postfix inc/dec</td>
+                        <td>Left → Right</td>
+                    </tr>
+                    <tr>
+                        <td><code>!  ~  ++  --  *  &amp;  -</code> <em>(prefix)</em></td>
+                        <td>Unary, prefix inc/dec, dereference, address-of</td>
+                        <td>Right → Left</td>
+                    </tr>
+                    <tr><td><code>*  /  %</code></td><td>Multiplicative</td><td>Left → Right</td></tr>
+                    <tr><td><code>+  -</code></td><td>Additive</td><td>Left → Right</td></tr>
+                    <tr><td><code>&lt;&lt;  &gt;&gt;</code></td><td>Bitwise shift</td><td>Left → Right</td></tr>
+                    <tr><td><code>&lt;  &lt;=  &gt;  &gt;=</code></td><td>Relational</td><td>Left → Right</td></tr>
+                    <tr><td><code>==  !=</code></td><td>Equality</td><td>Left → Right</td></tr>
+                    <tr><td><code>&amp;</code></td><td>Bitwise AND</td><td>Left → Right</td></tr>
+                    <tr><td><code>^</code></td><td>Bitwise XOR</td><td>Left → Right</td></tr>
+                    <tr><td><code>|</code></td><td>Bitwise OR</td><td>Left → Right</td></tr>
+                    <tr><td><code>&amp;&amp;</code></td><td>Logical AND</td><td>Left → Right</td></tr>
+                    <tr><td><code>||</code></td><td>Logical OR</td><td>Left → Right</td></tr>
+                    <tr class="low"><td><code>=  +=  -=  *=  /=  ...</code></td><td>Assignment</td><td>Right → Left</td></tr>
+                </table>
             </section>
 
             <!-- Slide: Common mistakes -->
@@ -362,39 +362,34 @@
 
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:16px;">
 
-                    <div class="mistake-card">
-                        <div class="mistake-header">1 — Bitwise vs equality</div>
+                    <div class="comparison-box">
+                        <h4 style="margin-bottom:4px;">Bitwise vs equality</h4>
                         <pre><code class="language-c">if (x & 3 == 0)
-// → x & (3 == 0)
-// → x & 0  always false!
+// → x & (3==0) → x&0
+// always false!
 
-if ((x & 3) == 0) // ✓
-// last 2 bits zero?</code></pre>
-                        <div class="mistake-rule"><code>==</code> binds tighter than <code>&amp;</code></div>
+if ((x & 3) == 0) // ✓</code></pre>
+                        <p class="subtle-note" style="margin-top:6px;"><code>==</code> binds tighter than <code>&amp;</code></p>
                     </div>
 
-                    <div class="mistake-card">
-                        <div class="mistake-header">2 — &amp;&amp; beats ||</div>
+                    <div class="comparison-box">
+                        <h4 style="margin-bottom:4px;"><code>&amp;&amp;</code> beats <code>||</code></h4>
                         <pre><code class="language-c">a==1 || a==2 && b==3
 // C reads:
 // a==1 || (a==2 && b==3)
 
-// did you mean?
-(a==1 || a==2) && b==3
-// → always write parens</code></pre>
-                        <div class="mistake-rule"><code>&amp;&amp;</code> binds tighter than <code>||</code></div>
+// always be explicit</code></pre>
+                        <p class="subtle-note" style="margin-top:6px;"><code>&amp;&amp;</code> binds tighter than <code>||</code></p>
                     </div>
 
-                    <div class="mistake-card">
-                        <div class="mistake-header">3 — *p++ vs (*p)++</div>
-                        <pre><code class="language-c">*p++
-// *(p++) — ptr advances
-// reads old value
+                    <div class="comparison-box">
+                        <h4 style="margin-bottom:4px;"><code>*p++</code> vs <code>(*p)++</code></h4>
+                        <pre><code class="language-c">*p++    // *(p++)
+        // ptr advances
 
-(*p)++
-// ptr stays put
-// value at *p increments</code></pre>
-                        <div class="mistake-rule">postfix <code>++</code> beats unary <code>*</code></div>
+(*p)++  // ptr stays
+        // value increments</code></pre>
+                        <p class="subtle-note" style="margin-top:6px;">postfix <code>++</code> beats unary <code>*</code></p>
                     </div>
 
                 </div>
@@ -705,26 +700,34 @@ printf("%p\n", (void*)mul);   // 0x1080 — different address</code></pre>
             <!-- Slide: Declaration — right-left rule revisited -->
             <section>
                 <h2>Function Pointer — Declaration</h2>
-                <p>Apply the right-left rule. Now <code>()</code> on the right means <em>function</em> instead of array.</p>
+                <p>Apply the right-left rule. <code>()</code> on the right now means <em>function call</em> instead of array subscript.</p>
 
-                <div class="rl-container" style="margin-top:16px;">
-                    <div class="rl-decl">int &nbsp;(*fp)(int, int)</div>
-                    <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">(*fp)</span><span class="rl-meaning">parens force: fp is a <strong>pointer to</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">(int, int)</span><span class="rl-meaning">right: <strong>a function taking (int, int)</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>returning int</strong></span></div>
-                    <div class="rl-result">"fp is a pointer to a function taking (int, int) and returning int"</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px;">
+
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;(*fp)(int, int)</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">(*fp)</span><span class="rl-meaning">parens force: <strong>pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">(int,int)</span><span class="rl-meaning">right: <strong>function taking (int,int)</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>returning int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"fp is a pointer to a function taking (int,int) returning int"</div>
+                    </div>
+
+                    <div class="decl-card" style="border-color:#e74c3c;">
+                        <div class="decl-header" style="color:#e87070;">int &nbsp;*fp(int, int)</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">(int,int)</span><span class="rl-meaning">right wins: <strong>function taking (int,int)</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>returning a pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result" style="background:#ffe6e6; border-color:#e74c3c; color:#c0392b;">"fp is a function returning a pointer to int" — very different!</div>
+                    </div>
+
                 </div>
 
-                <div class="rl-container" style="margin-top:20px;">
-                    <div class="rl-decl">int &nbsp;*fp(int, int)</div>
-                    <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">(int, int)</span><span class="rl-meaning">right wins: fp is a <strong>function taking (int, int)</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>returning a pointer to</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
-                    <div class="rl-result">"fp is a function returning a pointer to int" ← very different!</div>
-                </div>
-
-                <div class="warning-box">
-                    Without the parentheses around <code>*fp</code>, you get a function <em>returning</em> a pointer — not a pointer <em>to</em> a function.
+                <div class="warning-box" style="margin-top:14px;">
+                    Without <code>(*fp)</code>, the <code>(int,int)</code> on the right wins — you get a function <em>returning</em> a pointer, not a pointer <em>to</em> a function.
                 </div>
             </section>
 
