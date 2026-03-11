@@ -77,20 +77,20 @@
 
         /* ── Precedence table ── */
         .prec-table {
-            font-size: 0.75em;
+            font-size: 0.65em;
             width: 100%;
             border-collapse: collapse;
         }
         .prec-table th {
-            padding: 8px 14px;
+            padding: 6px 10px;
             text-align: left;
             background: #2c3e50;
             color: white;
         }
         .prec-table td {
-            padding: 7px 14px;
+            padding: 4px 10px;
             vertical-align: middle;
-            line-height: 1.4;
+            line-height: 1.3;
             white-space: nowrap;
         }
         .prec-table tr:nth-child(even) { background: #f8f9fa; }
@@ -250,6 +250,41 @@
             padding: 12px 14px !important;
             font-size: 0.75em !important;
             line-height: 1.6 !important;
+        }
+
+        /* ── Declaration cards (right-left rule) ── */
+        .decl-card {
+            border: 1px solid #c8d6e5;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .decl-header {
+            background: #2c3e50;
+            color: #7ec8e3;
+            padding: 9px 14px;
+            font-family: monospace;
+            font-size: 0.95em;
+            font-weight: bold;
+        }
+        .decl-body {
+            padding: 8px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+        .decl-body .rl-step { font-size: 0.78em; margin: 0; }
+        .decl-body .rl-num  { width: 16px; height: 16px; font-size: 0.7em; }
+        .decl-body .rl-code { min-width: 80px; }
+        .decl-result {
+            background: #e8f5e9;
+            border-top: 1px solid #a5d6a7;
+            padding: 7px 14px;
+            font-size: 0.75em;
+            font-style: italic;
+            color: #2e7d32;
         }
     </style>
 </head>
@@ -484,18 +519,20 @@ x = y = z = 0; // all set to 0</code></pre>
                 <h2>The Right-Left Rule</h2>
                 <p>A mechanical procedure for reading any C declaration:</p>
 
-                <ol style="margin: 16px 0; line-height: 2.2;">
-                    <li>Find the <strong>name</strong> (the identifier being declared)</li>
-                    <li>Look <strong>right</strong> — read <code>[]</code> or <code>()</code> if present</li>
-                    <li>Look <strong>left</strong> — read <code>*</code> if present</li>
-                    <li>If you hit a <strong>closing parenthesis</strong> <code>)</code>, jump to its matching <code>(</code> and repeat from inside</li>
-                    <li>Continue until you reach the <strong>base type</strong></li>
-                </ol>
-
-                <div class="key-point">
-                    <strong>The question to ask at every step:</strong> "What does the name bind to first — an array subscript, a function call, or a pointer?"<br><br>
-                    No parentheses = <code>[]</code>/<code>()</code> win (higher precedence).<br>
-                    Parentheses around <code>*name</code> = <code>*</code> wins (forced by grouping).
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:14px; align-items:start;">
+                    <ol style="margin:0; padding-left:1.4em; line-height:1.95;">
+                        <li>Find the <strong>name</strong></li>
+                        <li>Look <strong>right</strong> — read <code>[]</code> or <code>()</code> if present</li>
+                        <li>Look <strong>left</strong> — read <code>*</code> if present</li>
+                        <li>Hit <code>)</code>? Jump to its <code>(</code>, repeat from inside</li>
+                        <li>Stop at the <strong>base type</strong></li>
+                    </ol>
+                    <div class="key-point" style="margin:0;">
+                        <strong>The one question at every step:</strong><br>
+                        "What binds to the name first — array <code>[]</code>, function <code>()</code>, or pointer <code>*</code>?"<br><br>
+                        No parens → <code>[]</code> / <code>()</code> win.<br>
+                        Parens around <code>*name</code> → <code>*</code> wins.
+                    </div>
                 </div>
             </section>
 
@@ -503,35 +540,47 @@ x = y = z = 0; // all set to 0</code></pre>
             <section>
                 <h2>Right-Left Rule — Four Cases</h2>
 
-                <div class="rl-container">
-                    <div class="rl-decl">int &nbsp;*p</div>
-                    <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">*</span><span class="rl-meaning">left: p is a <strong>pointer to</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
-                    <div class="rl-result">"p is a pointer to int"</div>
-                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px;">
 
-                <div class="rl-container" style="margin-top:14px;">
-                    <div class="rl-decl">int &nbsp;*p[4]</div>
-                    <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">[4]</span><span class="rl-meaning">right wins first: p is an <strong>array of 4</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>pointers to</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
-                    <div class="rl-result">"p is an array of 4 pointers to int"</div>
-                </div>
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;*p</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"p is a pointer to int"</div>
+                    </div>
 
-                <div class="rl-container" style="margin-top:14px;">
-                    <div class="rl-decl">int &nbsp;(*p)[4]</div>
-                    <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">(*p)</span><span class="rl-meaning">parens force: p is a <strong>pointer to</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">[4]</span><span class="rl-meaning">right: <strong>an array of 4</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
-                    <div class="rl-result">"p is a pointer to an array of 4 ints"</div>
-                </div>
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;*p[4]</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">[4]</span><span class="rl-meaning">right wins: <strong>array of 4</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>pointers to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"p is an array of 4 pointers to int"</div>
+                    </div>
 
-                <div class="rl-container" style="margin-top:14px;">
-                    <div class="rl-decl">int &nbsp;**p</div>
-                    <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">*</span><span class="rl-meaning">left: p is a <strong>pointer to</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">*</span><span class="rl-meaning">left again: <strong>a pointer to</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
-                    <div class="rl-result">"p is a pointer to a pointer to int"</div>
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;(*p)[4]</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">(*p)</span><span class="rl-meaning">parens force: <strong>pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">[4]</span><span class="rl-meaning">right: <strong>array of 4</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"p is a pointer to an array of 4 ints"</div>
+                    </div>
+
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;**p</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>a pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"p is a pointer to a pointer to int"</div>
+                    </div>
+
                 </div>
             </section>
 
@@ -540,23 +589,31 @@ x = y = z = 0; // all set to 0</code></pre>
                 <h2>The Rule Scales — 3D Arrays</h2>
                 <p>The same procedure works for any level of complexity:</p>
 
-                <div class="rl-container">
-                    <div class="rl-decl">int &nbsp;*p[3][4]</div>
-                    <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">[3][4]</span><span class="rl-meaning">right: p is a <strong>3×4 array of</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>pointers to</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
-                    <div class="rl-result">"p is a 3×4 array of pointers to int"</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px;">
+
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;*p[3][4]</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">[3][4]</span><span class="rl-meaning">right: <strong>3×4 array of</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>pointers to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"p is a 3×4 array of pointers to int"</div>
+                    </div>
+
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;(*p)[3][4]</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">(*p)</span><span class="rl-meaning">parens force: <strong>pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">[3][4]</span><span class="rl-meaning">right: <strong>3×4 array of</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"p is a pointer to a 3×4 array of ints"</div>
+                    </div>
+
                 </div>
 
-                <div class="rl-container" style="margin-top:20px;">
-                    <div class="rl-decl">int &nbsp;(*p)[3][4]</div>
-                    <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">(*p)</span><span class="rl-meaning">parens force: p is a <strong>pointer to</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">[3][4]</span><span class="rl-meaning">right: <strong>a 3×4 array of</strong></span></div>
-                    <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
-                    <div class="rl-result">"p is a pointer to a 3×4 array of ints"</div>
-                </div>
-
-                <div class="insight-box" style="margin-top:16px;">
+                <div class="insight-box" style="margin-top:14px;">
                     One rule. Any declaration. The only question is: did you put parentheses around <code>*name</code>?
                 </div>
             </section>
@@ -696,32 +753,43 @@ $ size program
 
             <section>
                 <h2>Functions Live in Memory Too</h2>
-                <p>You know that variables have addresses. So do functions — their compiled instructions sit in the <strong>text segment</strong> at a fixed address.</p>
 
-                <pre><code class="language-c">int add(int a, int b) { return a + b; }
+                <div style="display:grid; grid-template-columns:200px 1fr; gap:28px; align-items:start; margin-top:16px;">
+
+                    <div>
+                        <div class="mem-addr" style="text-align:center; margin-bottom:4px;">text segment</div>
+                        <div class="mem-map" style="width:100%; font-size:0.75em;">
+                            <div class="mem-seg text-seg" style="padding:8px 12px;">
+                                <div class="seg-label">add()</div>
+                                <div class="seg-note">0x1040</div>
+                            </div>
+                            <div class="mem-seg text-seg" style="padding:8px 12px; margin-top:3px;">
+                                <div class="seg-label">mul()</div>
+                                <div class="seg-note">0x1080</div>
+                            </div>
+                            <div class="mem-seg text-seg" style="padding:8px 12px; margin-top:3px;">
+                                <div class="seg-label">main()</div>
+                                <div class="seg-note">0x10c0</div>
+                            </div>
+                        </div>
+                        <p class="subtle-note" style="text-align:center; margin-top:6px;">fixed at load time</p>
+                    </div>
+
+                    <div>
+                        <pre><code class="language-c">int add(int a, int b) { return a + b; }
 int mul(int a, int b) { return a * b; }
 
-printf("%p\n", (void*)add);  // prints address of add's code
-printf("%p\n", (void*)mul);  // different address</code></pre>
+// print addresses — same as printing &x for a variable
+printf("%p\n", (void*)add);   // 0x1040
+printf("%p\n", (void*)mul);   // 0x1080</code></pre>
 
-                <div style="display:flex; gap:24px; align-items:center; margin-top:16px;">
-                    <div class="mem-map" style="width:180px; font-size:0.72em;">
-                        <div class="mem-seg text-seg" style="padding:6px 10px;">
-                            <div class="seg-label" style="font-size:0.9em;">add() — 0x1040</div>
-                        </div>
-                        <div class="mem-seg text-seg" style="padding:6px 10px; margin-top:3px;">
-                            <div class="seg-label" style="font-size:0.9em;">mul() — 0x1080</div>
-                        </div>
-                        <div class="mem-seg text-seg" style="padding:6px 10px; margin-top:3px;">
-                            <div class="seg-label" style="font-size:0.9em;">main() — 0x10c0</div>
+                        <div class="key-point" style="margin-top:14px;">
+                            <code>add(3, 4)</code> — calls the function at that address.<br>
+                            <code>add</code> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;— just the address, no call.<br><br>
+                            Exactly like an array name giving the address of element 0 without reading it.
                         </div>
                     </div>
-                    <div style="flex:1; font-size:0.85em;">
-                        <p>Writing <code>add</code> without <code>()</code> gives you the address — it does <strong>not</strong> call the function.</p>
-                        <p style="margin-top:10px;">This is exactly like how an array name gives you the address of the first element without accessing it.</p>
-                        <p style="margin-top:10px;"><code>add(3, 4)</code> — call the function at that address.<br>
-                        <code>add</code> — just the address, no call.</p>
-                    </div>
+
                 </div>
             </section>
 
