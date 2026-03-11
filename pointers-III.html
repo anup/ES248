@@ -324,92 +324,36 @@
             <!-- Slide: Precedence table -->
             <section>
                 <h2>C Operator Precedence — The Practical Table</h2>
-                <table class="prec-table">
-                    <tr>
-                        <th>Priority</th>
-                        <th>Operators</th>
-                        <th>What they are</th>
-                        <th>Associativity</th>
-                    </tr>
-                    <tr class="high">
-                        <td>Highest</td>
-                        <td><code>()  []  .  ->  ++  --</code> (postfix)</td>
-                        <td>Grouping, subscript, member access, postfix inc/dec</td>
-                        <td>Left → Right</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><code>!  ~  ++  --  *  &amp;  -</code> (prefix/unary)</td>
-                        <td>Unary operators, prefix inc/dec</td>
-                        <td>Right → Left</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><code>*  /  %</code></td>
-                        <td>Multiplicative</td>
-                        <td>Left → Right</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><code>+  -</code></td>
-                        <td>Additive</td>
-                        <td>Left → Right</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><code>&lt;&lt;  &gt;&gt;</code></td>
-                        <td>Bitwise shift</td>
-                        <td>Left → Right</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><code>&lt;  &lt;=  &gt;  &gt;=</code></td>
-                        <td>Relational</td>
-                        <td>Left → Right</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><code>==  !=</code></td>
-                        <td>Equality</td>
-                        <td>Left → Right</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><code>&amp;</code></td>
-                        <td>Bitwise AND</td>
-                        <td>Left → Right</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><code>^</code></td>
-                        <td>Bitwise XOR</td>
-                        <td>Left → Right</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><code>|</code></td>
-                        <td>Bitwise OR</td>
-                        <td>Left → Right</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><code>&amp;&amp;</code></td>
-                        <td>Logical AND</td>
-                        <td>Left → Right</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><code>||</code></td>
-                        <td>Logical OR</td>
-                        <td>Left → Right</td>
-                    </tr>
-                    <tr class="low">
-                        <td>Lowest</td>
-                        <td><code>=  +=  -=  ...</code></td>
-                        <td>Assignment</td>
-                        <td>Right → Left</td>
-                    </tr>
-                </table>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px;">
+                    <table class="prec-table">
+                        <tr><th>Operators</th><th>Category</th><th>Assoc.</th></tr>
+                        <tr class="high">
+                            <td><code>()  []  .  ->  ++  --</code> <em style="font-size:0.85em;">(postfix)</em></td>
+                            <td>Subscript, member, postfix</td>
+                            <td>L→R</td>
+                        </tr>
+                        <tr>
+                            <td><code>!  ~  ++  --  *  &amp;  -</code> <em style="font-size:0.85em;">(prefix)</em></td>
+                            <td>Unary, prefix inc/dec</td>
+                            <td>R→L</td>
+                        </tr>
+                        <tr><td><code>*  /  %</code></td><td>Multiplicative</td><td>L→R</td></tr>
+                        <tr><td><code>+  -</code></td><td>Additive</td><td>L→R</td></tr>
+                        <tr><td><code>&lt;&lt;  &gt;&gt;</code></td><td>Bitwise shift</td><td>L→R</td></tr>
+                        <tr><td><code>&lt;  &lt;=  &gt;  &gt;=</code></td><td>Relational</td><td>L→R</td></tr>
+                        <tr><td><code>==  !=</code></td><td>Equality</td><td>L→R</td></tr>
+                    </table>
+                    <table class="prec-table">
+                        <tr><th>Operators</th><th>Category</th><th>Assoc.</th></tr>
+                        <tr><td><code>&amp;</code></td><td>Bitwise AND</td><td>L→R</td></tr>
+                        <tr><td><code>^</code></td><td>Bitwise XOR</td><td>L→R</td></tr>
+                        <tr><td><code>|</code></td><td>Bitwise OR</td><td>L→R</td></tr>
+                        <tr><td><code>&amp;&amp;</code></td><td>Logical AND</td><td>L→R</td></tr>
+                        <tr><td><code>||</code></td><td>Logical OR</td><td>L→R</td></tr>
+                        <tr class="low"><td><code>=  +=  -=  ...</code></td><td>Assignment</td><td>R→L</td></tr>
+                        <tr style="background:transparent;"><td colspan="3" style="padding-top:6px; font-size:0.85em; color:#7f8c8d; font-style:italic;">↑ higher = tighter binding &nbsp;·&nbsp; ↓ lower = looser</td></tr>
+                    </table>
+                </div>
             </section>
 
             <!-- Slide: Common mistakes -->
@@ -493,20 +437,25 @@ x = y = z = 0; // all set to 0</code></pre>
 
             <!-- Slide: Bridge to declarations -->
             <section>
-                <h2>The Same Table Governs Declarations</h2>
-                <p>This is the part most textbooks do not say clearly enough:</p>
+                <h2>Why Are We Looking at Precedence?</h2>
+                <p>In Pointers II, when working with 2D arrays, you hit this pair of declarations:</p>
 
-                <div class="key-point" style="font-size:1em;">
-                    The operator precedence table you just saw is not only for expressions — it also governs how C reads type declarations.
+                <div class="split-container" style="margin-top:12px;">
+                    <div class="comparison-box" style="border-color:var(--error-color);">
+                        <h4><code>int *p[4]</code></h4>
+                        <p style="font-size:0.88em; margin-top:8px;">array of 4 pointers — <code>[]</code> won</p>
+                    </div>
+                    <div class="comparison-box" style="border-color:var(--success-color);">
+                        <h4><code>int (*p)[4]</code></h4>
+                        <p style="font-size:0.88em; margin-top:8px;">pointer to an array of 4 — <code>*</code> won (forced by parens)</p>
+                    </div>
                 </div>
 
-                <p style="margin-top:16px;">In a declaration like <code>int *p[4]</code>, the compiler sees <code>[]</code> and <code>*</code> competing to bind to <code>p</code>. It applies the same precedence: <code>[]</code> wins because it ranks higher.</p>
+                <p style="margin-top:14px;">Moving the <code>*</code> inside parentheses completely changes the meaning. Why? Because <strong>the same precedence table governs declarations</strong>, not just expressions.</p>
 
-                <p style="margin-top:12px;">There is no special rule for pointers. There is one rule, applied everywhere.</p>
-
-                <div class="insight-box">
-                    <strong>Highest precedence in declarations:</strong> <code>[]</code> (array) and <code>()</code> (function) — same as in expressions.<br>
-                    <strong>Lower:</strong> <code>*</code> (pointer) — same as unary <code>*</code> in expressions.
+                <div class="key-point" style="margin-top:12px;">
+                    In <code>int *p[4]</code>, the compiler sees <code>[]</code> and <code>*</code> competing for <code>p</code>. Since <code>[]</code> ranks higher, it wins. Adding <code>(*p)</code> forces <code>*</code> to bind first — same as parentheses overriding precedence in arithmetic.<br><br>
+                    There is no special rule for pointer declarations. It is the same one rule, applied everywhere.
                 </div>
             </section>
 
@@ -517,7 +466,7 @@ x = y = z = 0; // all set to 0</code></pre>
             <!-- Slide: The rule stated -->
             <section>
                 <h2>The Right-Left Rule</h2>
-                <p>A mechanical procedure for reading any C declaration:</p>
+                <p>Not a new rule — a <strong>reading procedure</strong> for applying the same precedence table to declarations mechanically. For simple cases you can apply the table directly; for complex nested ones you need a systematic walk.</p>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:14px; align-items:start;">
                     <ol style="margin:0; padding-left:1.4em; line-height:1.95;">
@@ -723,73 +672,29 @@ void foo() {
                 </div>
             </section>
 
-            <!-- Slide: size command -->
-            <section>
-                <h2>Seeing It Live — the <code>size</code> Command</h2>
-                <p>Compile any C program on Ubuntu and run <code>size</code> to see the actual segment sizes:</p>
-
-                <pre><code class="language-bash">$ gcc program.c -o program
-$ size program
-   text    data     bss     dec     hex filename
-   1234     552       8    1794     702 program</code></pre>
-
-                <p style="margin-top:14px;">Now add a large uninitialised global array and recompile:</p>
-
-                <pre><code class="language-c">int big[10000];    // uninitialised — goes to BSS</code></pre>
-
-                <pre><code class="language-bash">$ size program
-   text    data     bss     dec     hex filename
-   1234     552   40008    1794     702 program
-#                 ↑ BSS grew by 40000 bytes — binary file size unchanged!</code></pre>
-
-                <div class="insight-box">
-                    BSS records only the <em>size needed</em>, not the zeros themselves. This is why embedded systems use large uninitialised buffers — they cost nothing in flash storage.
-                </div>
-            </section>
-
             <!-- ════════════════════════════════
                  SECTION: Functions in Memory
                  ════════════════════════════════ -->
 
             <section>
                 <h2>Functions Live in Memory Too</h2>
+                <p>Variables have addresses. So do functions — their compiled instructions sit in the <strong>text segment</strong> at a fixed address.</p>
 
-                <div style="display:grid; grid-template-columns:200px 1fr; gap:28px; align-items:start; margin-top:16px;">
-
-                    <div>
-                        <div class="mem-addr" style="text-align:center; margin-bottom:4px;">text segment</div>
-                        <div class="mem-map" style="width:100%; font-size:0.75em;">
-                            <div class="mem-seg text-seg" style="padding:8px 12px;">
-                                <div class="seg-label">add()</div>
-                                <div class="seg-note">0x1040</div>
-                            </div>
-                            <div class="mem-seg text-seg" style="padding:8px 12px; margin-top:3px;">
-                                <div class="seg-label">mul()</div>
-                                <div class="seg-note">0x1080</div>
-                            </div>
-                            <div class="mem-seg text-seg" style="padding:8px 12px; margin-top:3px;">
-                                <div class="seg-label">main()</div>
-                                <div class="seg-note">0x10c0</div>
-                            </div>
-                        </div>
-                        <p class="subtle-note" style="text-align:center; margin-top:6px;">fixed at load time</p>
-                    </div>
-
-                    <div>
-                        <pre><code class="language-c">int add(int a, int b) { return a + b; }
+                <pre><code class="language-c">int add(int a, int b) { return a + b; }
 int mul(int a, int b) { return a * b; }
 
-// print addresses — same as printing &x for a variable
-printf("%p\n", (void*)add);   // 0x1040
-printf("%p\n", (void*)mul);   // 0x1080</code></pre>
+printf("%p\n", (void*)add);   // 0x1040 — address of add's machine code
+printf("%p\n", (void*)mul);   // 0x1080 — different address</code></pre>
 
-                        <div class="key-point" style="margin-top:14px;">
-                            <code>add(3, 4)</code> — calls the function at that address.<br>
-                            <code>add</code> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;— just the address, no call.<br><br>
-                            Exactly like an array name giving the address of element 0 without reading it.
-                        </div>
+                <div class="split-container" style="margin-top:14px;">
+                    <div class="comparison-box">
+                        <h4><code>add</code> &nbsp;(no parentheses)</h4>
+                        <p style="font-size:0.88em; margin-top:8px;">The address of the function's code — does <strong>not</strong> call it. Same as writing an array name without <code>[i]</code>: you get the pointer, not the data.</p>
                     </div>
-
+                    <div class="comparison-box">
+                        <h4><code>add(3, 4)</code></h4>
+                        <p style="font-size:0.88em; margin-top:8px;"><code>()</code> triggers the <strong>call</strong> — CPU jumps to that address and executes. Same as <code>arr[i]</code> actually accessing an element.</p>
+                    </div>
                 </div>
             </section>
 
