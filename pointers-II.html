@@ -289,6 +289,10 @@ a + 1      // pointer to row 1           (moves 16 bytes — skips 4 ints)
                 <div class="insight-box">
                     <code>a[i]</code> means "dereference the i-th row pointer" — it gives you an <code>int *</code> pointing to the first element of that row. From there, adding j and dereferencing gives the element.
                 </div>
+
+                <div class="key-point">
+                    <strong>Same address, different type:</strong> <code>a</code> and <code>*a</code> (i.e. <code>a[0]</code>) hold the same numerical address — both point to <code>a[0][0]</code>. But their types differ: <code>a</code> is <code>int (*)[4]</code>, so <code>a+1</code> skips <strong>16 bytes</strong>; <code>*a</code> is <code>int *</code>, so <code>(*a)+1</code> skips <strong>4 bytes</strong>. Same value, completely different arithmetic.
+                </div>
             </section>
 
             <!-- Slide: a is NOT int** — key nuance -->

@@ -268,14 +268,14 @@
                     </tr>
                     <tr class="high">
                         <td>Highest</td>
-                        <td><code>()  []  .  -></code></td>
-                        <td>Grouping, subscript, member access</td>
+                        <td><code>()  []  .  ->  ++  --</code> (postfix)</td>
+                        <td>Grouping, subscript, member access, postfix inc/dec</td>
                         <td>Left → Right</td>
                     </tr>
                     <tr>
                         <td></td>
-                        <td><code>!  ~  ++  --  *  &amp;  -</code> (unary)</td>
-                        <td>Unary operators</td>
+                        <td><code>!  ~  ++  --  *  &amp;  -</code> (prefix/unary)</td>
+                        <td>Unary operators, prefix inc/dec</td>
                         <td>Right → Left</td>
                     </tr>
                     <tr>
@@ -292,6 +292,12 @@
                     </tr>
                     <tr>
                         <td></td>
+                        <td><code>&lt;&lt;  &gt;&gt;</code></td>
+                        <td>Bitwise shift</td>
+                        <td>Left → Right</td>
+                    </tr>
+                    <tr>
+                        <td></td>
                         <td><code>&lt;  &lt;=  &gt;  &gt;=</code></td>
                         <td>Relational</td>
                         <td>Left → Right</td>
@@ -304,14 +310,32 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <td><code>&amp;  ^  |</code></td>
-                        <td>Bitwise AND, XOR, OR</td>
+                        <td><code>&amp;</code></td>
+                        <td>Bitwise AND</td>
                         <td>Left → Right</td>
                     </tr>
                     <tr>
                         <td></td>
-                        <td><code>&amp;&amp;  ||</code></td>
-                        <td>Logical AND, OR</td>
+                        <td><code>^</code></td>
+                        <td>Bitwise XOR</td>
+                        <td>Left → Right</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><code>|</code></td>
+                        <td>Bitwise OR</td>
+                        <td>Left → Right</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><code>&amp;&amp;</code></td>
+                        <td>Logical AND</td>
+                        <td>Left → Right</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><code>||</code></td>
+                        <td>Logical OR</td>
                         <td>Left → Right</td>
                     </tr>
                     <tr class="low">
@@ -697,7 +721,7 @@ fp(3, 4);     // 12</code></pre>
 
                 <div class="split-container" style="margin-top:12px;">
                     <div class="insight-box" style="margin:0;">
-                        <code>fp = add</code> — no <code>&amp;</code> needed. A function name already decays to its address, just like an array name decays to a pointer to its first element.
+                        <code>fp = add</code> and <code>fp = &amp;add</code> are both valid — a function name decays to its address automatically (like array decay), so <code>&amp;</code> is optional, not wrong.
                     </div>
                     <div class="insight-box" style="margin:0;">
                         <code>fp(3,4)</code> and <code>(*fp)(3,4)</code> are identical. The compiler handles both. Prefer <code>fp(3,4)</code> — it reads like a normal call.
