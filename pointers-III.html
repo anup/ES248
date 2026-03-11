@@ -221,6 +221,36 @@
             font-size: 0.8em;
         }
         .resource-links a:hover { background: var(--accent-color); color: white; }
+
+        /* ── Mistake cards ── */
+        .mistake-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .mistake-header {
+            background: #2c3e50;
+            color: white;
+            padding: 8px 14px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        .mistake-rule {
+            background: #fff3cd;
+            border-top: 1px solid #ffc107;
+            padding: 7px 12px;
+            font-size: 0.78em;
+            color: #6d4c00;
+        }
+        .mistake-card pre { margin: 0 !important; flex: 1; }
+        .mistake-card pre code {
+            border-radius: 0 !important;
+            padding: 12px 14px !important;
+            font-size: 0.75em !important;
+            line-height: 1.6 !important;
+        }
     </style>
 </head>
 <body>
@@ -351,20 +381,46 @@
             <section>
                 <h2>Precedence Mistakes That Bite Everyone</h2>
 
-                <p><strong>Mistake 1 — Bitwise vs comparison</strong></p>
-                <pre><code class="language-c">if (x & 3 == 0)       // parsed as: x & (3 == 0)  =  x & 0  ← WRONG
-if ((x & 3) == 0)     // correct — check if last 2 bits are zero</code></pre>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:16px;">
 
-                <p><strong>Mistake 2 — <code>&amp;&amp;</code> beats <code>||</code></strong></p>
-                <pre><code class="language-c">if (a == 1 || a == 2 && b == 3)
-// parsed as: a==1 || (a==2 && b==3)
-// almost never what you meant — write parentheses explicitly</code></pre>
+                    <div class="mistake-card">
+                        <div class="mistake-header">1 — Bitwise vs equality</div>
+                        <pre><code class="language-c">if (x & 3 == 0)
+// → x & (3 == 0)
+// → x & 0  always false!
 
-                <p><strong>Mistake 3 — <code>*p++</code> vs <code>(*p)++</code></strong></p>
-                <pre><code class="language-c">*p++     // *(p++)  — moves the pointer, then dereferences old address
-(*p)++   // dereferences p, then increments the VALUE at that address</code></pre>
+if ((x & 3) == 0) // ✓
+// last 2 bits zero?</code></pre>
+                        <div class="mistake-rule"><code>==</code> binds tighter than <code>&amp;</code></div>
+                    </div>
 
-                <div class="key-point">
+                    <div class="mistake-card">
+                        <div class="mistake-header">2 — &amp;&amp; beats ||</div>
+                        <pre><code class="language-c">a==1 || a==2 && b==3
+// C reads:
+// a==1 || (a==2 && b==3)
+
+// did you mean?
+(a==1 || a==2) && b==3
+// → always write parens</code></pre>
+                        <div class="mistake-rule"><code>&amp;&amp;</code> binds tighter than <code>||</code></div>
+                    </div>
+
+                    <div class="mistake-card">
+                        <div class="mistake-header">3 — *p++ vs (*p)++</div>
+                        <pre><code class="language-c">*p++
+// *(p++) — ptr advances
+// reads old value
+
+(*p)++
+// ptr stays put
+// value at *p increments</code></pre>
+                        <div class="mistake-rule">postfix <code>++</code> beats unary <code>*</code></div>
+                    </div>
+
+                </div>
+
+                <div class="key-point" style="margin-top:14px;">
                     When in doubt, add parentheses. They cost nothing and make intent clear.
                 </div>
             </section>
