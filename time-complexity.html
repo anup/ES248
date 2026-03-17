@@ -296,93 +296,6 @@
     <p class="fragment key-point" style="margin-top: 30px;">Same data. Different algorithm. <strong>31 years vs 30 seconds.</strong></p>
 </section>
 
-<!-- PIGEONS VS INTERNET -->
-
-<section class="section-divider">
-    <h2>Another Surprise</h2>
-    <p style="color: white; opacity: 0.9;">When Pigeons Beat the Internet</p>
-</section>
-
-<section>
-    <h2>The Pigeon Experiment</h2>
-    <p><strong>Question:</strong> What's the fastest way to transfer 3 TB of data?</p>
-    <div class="comparison-grid fragment" style="font-size: 0.85em;">
-        <div class="comparison-box">
-            <h3 style="color: var(--accent-color);">Internet</h3>
-            <p>Gigabit fiber connection</p>
-            <p>Upload: limited by ISP</p>
-            <p>Average: 75 MB/sec</p>
-        </div>
-        <div class="comparison-box">
-            <h3 style="color: var(--warning-color);">Homing Pigeon</h3>
-            <p>Attach 3× 1TB flash drives</p>
-            <p>Fly from St. Louis to Nova Scotia</p>
-            <p>Speed: ~90 MPH</p>
-        </div>
-    </div>
-</section>
-
-<section>
-    <h2>The Results (Jeff Geerling, 2023)</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Method</th>
-                <th>Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Internet (75 MB/sec)</td>
-                <td class="highlight-red">10 hours 54 minutes</td>
-            </tr>
-            <tr class="fragment">
-                <td>Jet-assisted pigeon</td>
-                <td class="highlight-green">6 hours 53 minutes</td>
-            </tr>
-        </tbody>
-    </table>
-    <p class="fragment insight-box" style="margin-top: 30px;">The pigeon won by <strong>4 hours!</strong></p>
-</section>
-
-<section>
-    <h2>Why Did the Pigeon Win?</h2>
-    <div style="margin-top: 40px;">
-        <div class="fragment">
-            <p><strong>Internet = O(n):</strong> Time proportional to data size</p>
-            <ul style="font-size: 0.85em; margin-left: 40px;">
-                <li>3 TB takes 11 hours</li>
-                <li>6 TB would take 22 hours</li>
-                <li>12 TB would take 44 hours</li>
-            </ul>
-        </div>
-        <div class="fragment" style="margin-top: 30px;">
-            <p><strong>Pigeon = O(1):</strong> Time is constant (up to capacity)</p>
-            <ul style="font-size: 0.85em; margin-left: 40px;">
-                <li>3 TB takes ~7 hours</li>
-                <li>6 TB takes ~7 hours</li>
-                <li>38 TB (max capacity) still takes ~7 hours!</li>
-            </ul>
-        </div>
-    </div>
-    <p class="fragment key-point" style="margin-top: 30px;">Pigeon wins up to ~500 miles for large datasets!</p>
-</section>
-
-<section>
-    <h2>Racing Pigeons: The Numbers</h2>
-    <ul>
-        <li class="fragment">Can carry <strong>75 grams</strong></li>
-        <li class="fragment">MicroSD card: 0.5g, 256GB</li>
-        <li class="fragment">Capacity: <strong>150 cards = 38.4 TB</strong></li>
-        <li class="fragment">Speed: 92.5 MPH sustained</li>
-    </ul>
-    <p class="fragment insight-box" style="margin-top: 30px;">
-        <strong>Crossover point:</strong> ~16 GB<br>
-        Below 16GB → Internet wins<br>
-        Above 16GB → Pigeons competitive (up to ~500 miles)
-    </p>
-</section>
-
 <!-- PART 2: DEFINING TIME COMPLEXITY -->
 
 <section class="section-divider">
@@ -649,6 +562,101 @@ int price = hashTable.get("apple");
 int sum = a + b;
 int max = (x > y) ? x : y;</code></pre>
     <p class="fragment key-point" style="margin-top: 20px;">Runtime doesn't depend on input size</p>
+</section>
+
+<!-- O(1) DRAMATIC EXAMPLE: PIGEONS -->
+
+<section>
+    <h2>O(1) vs O(n): A Dramatic Example</h2>
+    <p><strong>Question:</strong> What's the fastest way to transfer 3 TB of data?</p>
+    <div class="comparison-grid fragment" style="font-size: 0.85em;">
+        <div class="comparison-box">
+            <h3 style="color: var(--accent-color);">Internet</h3>
+            <p>Gigabit fiber connection</p>
+            <p>Upload: limited by ISP</p>
+            <p>Average: 75 MB/sec</p>
+        </div>
+        <div class="comparison-box">
+            <h3 style="color: var(--warning-color);">Homing Pigeon</h3>
+            <p>Attach 3× 1TB flash drives</p>
+            <p>Fly from St. Louis to Nova Scotia</p>
+            <p>Speed: ~90 MPH</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>The Results (Jeff Geerling, 2023)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Method</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Internet (75 MB/sec)</td>
+                <td class="highlight-red">10 hours 54 minutes</td>
+            </tr>
+            <tr class="fragment">
+                <td>Jet-assisted pigeon</td>
+                <td class="highlight-green">6 hours 53 minutes</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="fragment insight-box" style="margin-top: 30px;">The pigeon won by <strong>4 hours!</strong></p>
+</section>
+
+<section>
+    <h2>Why Did the Pigeon Win?</h2>
+    <div style="margin-top: 40px;">
+        <div class="fragment">
+            <p><strong>Internet = O(n):</strong> Time proportional to data size</p>
+            <ul style="font-size: 0.85em; margin-left: 40px;">
+                <li>3 TB takes 11 hours</li>
+                <li>6 TB would take 22 hours</li>
+                <li>12 TB would take 44 hours</li>
+            </ul>
+        </div>
+        <div class="fragment" style="margin-top: 30px;">
+            <p><strong>Pigeon = O(1):</strong> Time is constant (up to capacity)</p>
+            <ul style="font-size: 0.85em; margin-left: 40px;">
+                <li>3 TB takes ~7 hours</li>
+                <li>6 TB takes ~7 hours</li>
+                <li>38 TB (max capacity) still takes ~7 hours!</li>
+            </ul>
+        </div>
+    </div>
+    <p class="fragment key-point" style="margin-top: 30px;">Constant time can beat linear time at large scale!</p>
+</section>
+
+<section>
+    <h2>Racing Pigeons: The Numbers</h2>
+    <ul>
+        <li class="fragment">Can carry <strong>75 grams</strong></li>
+        <li class="fragment">MicroSD card: 0.5g, 256GB</li>
+        <li class="fragment">Capacity: <strong>150 cards = 38.4 TB</strong></li>
+        <li class="fragment">Speed: 92.5 MPH sustained</li>
+    </ul>
+    <p class="fragment insight-box" style="margin-top: 30px;">
+        <strong>Crossover point:</strong> ~16 GB<br>
+        Below 16GB → Internet wins<br>
+        Above 16GB → Pigeons competitive (up to ~500 miles)
+    </p>
+</section>
+
+<section>
+    <h2>The Key Insight</h2>
+    <p class="key-point" style="font-size: 1.1em;">
+        O(1) doesn't mean "fast" — it means <strong>scalable</strong>.
+    </p>
+    <p class="fragment" style="margin-top: 30px;">The pigeon is "slow" (90 MPH vs speed of light),</p>
+    <p class="fragment">but its runtime doesn't grow with data size!</p>
+    <p class="fragment insight-box" style="margin-top: 40px;">
+        This is the essence of time complexity:<br>
+        <strong>How does runtime scale as input grows?</strong>
+    </p>
 </section>
 
 <section>
