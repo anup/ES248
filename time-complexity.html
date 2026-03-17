@@ -160,15 +160,85 @@
 <!-- PART 1: THE WOW FACTOR -->
 
 <section>
-    <h2>The Real Question</h2>
-    <p>You've written working code. It runs. Tests pass. ✓</p>
-    <p class="fragment" style="margin-top: 40px; font-size: 1.2em; color: var(--accent-color);">But will it still work when your data grows 1000×?</p>
-    <p class="fragment" style="margin-top: 30px;">This is where <strong>time complexity</strong> matters.</p>
+    <h2>A Familiar Frustration</h2>
+    <p>You're solving a problem on CodeChef/Codeforces/LeetCode...</p>
+    <div class="fragment" style="margin-top: 40px;">
+        <p style="font-size: 1.1em;">✓ Test Case 1: <span class="highlight-green">Accepted</span> (0.02s)</p>
+        <p style="font-size: 1.1em;">✓ Test Case 2: <span class="highlight-green">Accepted</span> (0.05s)</p>
+    </div>
+    <div class="fragment" style="margin-top: 30px;">
+        <p style="font-size: 1.1em;">✗ Test Case 3: <span class="highlight-red">Time Limit Exceeded (TLE)</span></p>
+        <p style="font-size: 1.1em;">✗ Test Case 4: <span class="highlight-red">Time Limit Exceeded (TLE)</span></p>
+        <p style="font-size: 1.1em;">✗ Test Cases 5-10: <span class="highlight-red">Time Limit Exceeded (TLE)</span></p>
+    </div>
+    <p class="fragment warning-box" style="margin-top: 40px;">Your code is <strong>correct</strong>, but 8 out of 10 test cases fail. Why?</p>
+</section>
+
+<section>
+    <h2>What is TLE?</h2>
+    <p><strong>Time Limit Exceeded</strong> = Your code ran for more than the allowed time</p>
+    <div class="fragment" style="margin-top: 40px;">
+        <p>Typical competitive programming limits:</p>
+        <ul style="font-size: 0.9em; margin-left: 40px;">
+            <li>1 second for most problems</li>
+            <li>2 seconds for harder problems</li>
+            <li>Sometimes 5-10 seconds for very large inputs</li>
+        </ul>
+    </div>
+    <p class="fragment insight-box" style="margin-top: 40px;">But why do small test cases pass while large ones fail?</p>
+</section>
+
+<section>
+    <h2>The Pattern</h2>
+    <table style="font-size: 0.85em;">
+        <thead>
+            <tr>
+                <th>Test Case</th>
+                <th>Input Size (n)</th>
+                <th>Result</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>100</td>
+                <td class="highlight-green">✓ Pass</td>
+                <td>0.01s</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>1,000</td>
+                <td class="highlight-green">✓ Pass</td>
+                <td>0.08s</td>
+            </tr>
+            <tr class="fragment">
+                <td>3</td>
+                <td>10,000</td>
+                <td class="highlight-red">✗ TLE</td>
+                <td>>1s</td>
+            </tr>
+            <tr class="fragment">
+                <td>4-10</td>
+                <td>100,000+</td>
+                <td class="highlight-red">✗ TLE</td>
+                <td>>1s</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="fragment key-point" style="margin-top: 30px;">Small inputs work. Large inputs timeout. <strong>Your algorithm doesn't scale.</strong></p>
+</section>
+
+<section>
+    <h2>Beyond Competitive Programming</h2>
+    <p>TLE in contests = 1 second limit</p>
+    <p class="fragment" style="margin-top: 30px;">But what about <strong>real-world problems</strong>?</p>
+    <p class="fragment" style="margin-top: 40px; font-size: 1.2em; color: var(--accent-color);">Let's see an extreme example...</p>
 </section>
 
 <section>
     <h2>The Aadhaar Problem</h2>
-    <p>India has <strong>1 billion</strong> Aadhaar numbers</p>
+    <p>India has <strong>1 billion</strong> (10<sup>9</sup>) Aadhaar numbers</p>
     <p class="fragment">Task: Verify SIM card applicants against this database</p>
     <div class="fragment problem-box" style="margin-top: 30px;">
         <strong>Naive Approach: Check every applicant against every Aadhaar number</strong>
