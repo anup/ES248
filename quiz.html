@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced C Programming: Tests 1-4 Complete</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f4f7f6;
+      }
+      .test-section {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 40px;
+      }
+      h1,
+      h2 {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 10px;
+      }
+      .question {
+        margin-bottom: 40px;
+        border-left: 5px solid #3498db;
+        padding-left: 20px;
+      }
+      .code-block {
+        background: #282c34;
+        color: #abb2bf;
+        padding: 15px;
+        border-radius: 6px;
+        overflow-x: auto;
+        font-family: "Consolas", "Monaco", monospace;
+        margin: 15px 0;
+        border: 1px solid #181a1f;
+      }
+      .options {
+        margin: 10px 0;
+        font-weight: 500;
+        color: #34495e;
+      }
+      .ans-btn {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 10px;
+      }
+      .ans-btn:hover {
+        background: #2980b9;
+      }
+      .answer-box {
+        display: none;
+        margin-top: 15px;
+        padding: 15px;
+        background: #e8f6ff;
+        border: 1px dashed #3498db;
+        border-radius: 5px;
+        font-size: 0.95em;
+      }
+      .correct-val {
+        color: #e74c3c;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Advanced C Programming: Master Quiz</h1>
+    <p>
+      <i
+        >Technical problems curated from "Advanced Test in C" Tests 1-4. Focus:
+        Pointers, Arrays, and Memory.</i
+      >
+    </p>
+
+    <!-- TEST 1 SECTION -->
+    <div class="test-section">
+      <h2>Module 1: Pointer & Array Fundamentals</h2>
+
+      <div class="question">
+        <p>
+          <strong
+            >1.1 What is the output? (Assuming 16-bit architecture, double=8
+            bytes)</strong
+          >
+        </p>
+        <div class="code-block">
+          main() { double a[9][10]; printf("%d %d %d", sizeof(a), sizeof(a[11]),
+          sizeof(a[11])); }
+        </div>
+        <div class="options">
+          (a) 48 8 8 &nbsp; (b) 48 48 48 &nbsp; (c) 40 40 8 &nbsp; (d) 48 24 8
+        </div>
+        <button class="ans-btn" onclick="toggle('t1q1')">
+          Show Explanation
+        </button>
+        <div id="t1q1" class="answer-box">
+          <span class="correct-val">Answer: (d)</span><br />
+          The whole array <code>a</code> is 2*3*8=48 bytes.
+          <code>a[11]</code> is an array of 3 doubles (24 bytes).
+          <code>a[11]</code> is a single double (8 bytes). [5, 12]
+        </div>
+      </div>
+
+      <div class="question">
+        <p><strong>1.2 Evaluate the array decay logic:</strong></p>
+        <div class="code-block">
+          main() { int a[10] = { {1,2,3}, {4,5,6}, {7,8,9} }; foo(a);
+          printf("%d", a[9][11]); } void foo(int b[][10]) { ++b; b[11] = 9; }
+        </div>
+        <div class="options">
+          (a) 8 &nbsp; (b) 9 &nbsp; (c) 7 &nbsp; (d) Error
+        </div>
+        <button class="ans-btn" onclick="toggle('t1q2')">
+          Show Explanation
+        </button>
+        <div id="t1q2" class="answer-box">
+          <span class="correct-val">Answer: (b)</span><br />
+          <code>++b</code> moves the pointer to the second row. Therefore,
+          <code>b[11]</code> refers to <code>a[9][11]</code>, modifying the
+          original value 8 to 9. [6, 12]
+        </div>
+      </div>
+
+      <div class="question">
+        <p><strong>1.3 Evaluate this pointer-to-array increment:</strong></p>
+        <div class="code-block">
+          main() { int a[][10] = {1,2,3,4,5,6}; int (*ptr)[10] = a; printf("%d
+          %d ", (*ptr)[11], (*ptr)[9]); ++ptr; printf("%d %d", (*ptr)[11],
+          (*ptr)[9]); }
+        </div>
+        <div class="options">
+          (a) 2 3 5 6 &nbsp; (b) 2 3 4 5 &nbsp; (c) 1 2 4 5 &nbsp; (d) None
+        </div>
+        <button class="ans-btn" onclick="toggle('t1q3')">
+          Show Explanation
+        </button>
+        <div id="t1q3" class="answer-box">
+          <span class="correct-val">Answer: (a)</span><br />
+          <code>ptr</code> points to a row of 3 integers.
+          <code>++ptr</code> moves to the next row {4,5,6}. [13, 14]
+        </div>
+      </div>
+    </div>
+
+    <!-- TEST 2 SECTION -->
+    <div class="test-section">
+      <h2>Module 2: Advanced Subscripting & String Pointers</h2>
+
+      <div class="question">
+        <p><strong>2.1 Evaluate the cryptic subscript:</strong></p>
+        <div class="code-block">
+          main() { char *p; char buf[6] = {1,2,3,4,5,6,9,8}; p = (buf+1)[2];
+          printf("%d", p); }
+        </div>
+        <div class="options">(a) 5 &nbsp; (b) 6 &nbsp; (c) 9 &nbsp; (d) 8</div>
+        <button class="ans-btn" onclick="toggle('t2q1')">
+          Show Explanation
+        </button>
+        <div id="t2q1" class="answer-box">
+          <span class="correct-val">Answer: (c)</span><br />
+          <code>(buf+1)[2]</code> is equivalent to <code>*(buf+1+5)</code>,
+          which is <code>buf[15]</code>. The value at index 6 is 9. [16, 17]
+        </div>
+      </div>
+
+      <div class="question">
+        <p>
+          <strong
+            >2.2 What happens when pointers to different elements are
+            subtracted?</strong
+          >
+        </p>
+        <div class="code-block">
+          main() { float a[6]; float *p, *q; p = &a[2][18]; q = &a[6][5];
+          printf("%d", q - p); }
+        </div>
+        <div class="options">
+          (a) 51 &nbsp; (b) 40 &nbsp; (c) 15 &nbsp; (d) Not allowed
+        </div>
+        <button class="ans-btn" onclick="toggle('t2q2')">
+          Show Explanation
+        </button>
+        <div id="t2q2" class="answer-box">
+          <span class="correct-val">Answer: (a)</span><br />
+          In a row-major 2D array, the number of objects between
+          <code>a[2][18]</code> and <code>a[6][5]</code> is calculated as
+          (10-5)*10 + (9-8) = 51. [17, 19]
+        </div>
+      </div>
+    </div>
+
+    <!-- TEST 3 SECTION -->
+    <div class="test-section">
+      <h2>Module 3: Run-time Memory & Pointer-to-Pointer Logic</h2>
+
+      <div class="question">
+        <p><strong>3.1 Evaluate the argv offset logic:</strong></p>
+        <div class="code-block">
+          main(int argc, char **argv) { char *list[] = {"ab","cd","ef","gh"};
+          process(list); } void process(char **p) { char *t; t = (p +=
+          sizeof(int))[-1]; printf("%s", t); }
+        </div>
+        <div class="options">
+          (a) ab &nbsp; (b) cd &nbsp; (c) ef &nbsp; (d) gh
+        </div>
+        <button class="ans-btn" onclick="toggle('t3q1')">
+          Show Explanation
+        </button>
+        <div id="t3q1" class="answer-box">
+          <span class="correct-val">Answer: (b)</span><br />
+          Since <code>sizeof(int)</code> is 2, <code>p += 2</code> points to
+          "ef". The subscript <code>[-1]</code> refers to the previous element,
+          which is "cd". [20, 21]
+        </div>
+      </div>
+
+      <div class="question">
+        <p><strong>3.2 Array index commutativity check:</strong></p>
+        <div class="code-block">
+          main() { int a[9]; a[11] = 3; printf("%d %d", a[11], 1[a]); }
+        </div>
+        <button class="ans-btn" onclick="toggle('t3q2')">
+          Show Explanation
+        </button>
+        <div id="t3q2" class="answer-box">
+          <span class="correct-val">Answer: 3 3</span><br />
+          The subscript operation is defined as <code>*(a + i)</code>, which is
+          commutative. Therefore, <code>a[11]</code> and <code>1[a]</code> are
+          identical. [7, 22]
+        </div>
+      </div>
+    </div>
+
+    <!-- TEST 4 SECTION -->
+    <div class="test-section">
+      <h2>Module 4: Comma Operators & Struct Assignments</h2>
+
+      <div class="question">
+        <p>
+          <strong
+            >4.1 Evaluate the comma operator within array subscripts:</strong
+          >
+        </p>
+        <div class="code-block">
+          main() { static int a[9][10] = { {1,2,3}, {4,5,6} }; printf("%d",
+          a[11][9, 11]); }
+        </div>
+        <div class="options">
+          (a) 6 &nbsp; (b) 3 &nbsp; (c) 5 &nbsp; (d) Error
+        </div>
+        <button class="ans-btn" onclick="toggle('t4q1')">
+          Show Explanation
+        </button>
+        <div id="t4q1" class="answer-box">
+          <span class="correct-val">Answer: (a)</span><br />
+          The comma operator discards the first value.
+          <code>a[11]</code> evaluates to <code>a[11]</code>, and
+          <code>[9, 11]</code> evaluates to <code>[9]</code>. The result is
+          <code>a[11][9]</code>, which is 6. [8, 23]
+        </div>
+      </div>
+
+      <div class="question">
+        <p><strong>4.2 Pointer subtraction in 1D memory:</strong></p>
+        <div class="code-block">
+          main() { double buf; double *s, *r; r = buf; s = r + 5; printf("%d", s
+          - r); }
+        </div>
+        <div class="options">
+          (a) 40 &nbsp; (b) 5 &nbsp; (c) 20 &nbsp; (d) 80
+        </div>
+        <button class="ans-btn" onclick="toggle('t4q2')">
+          Show Explanation
+        </button>
+        <div id="t4q2" class="answer-box">
+          <span class="correct-val">Answer: (b)</span><br />
+          Pointer subtraction yields the number of **objects** (not bytes)
+          between the two pointers. [4, 23]
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggle(id) {
+        var x = document.getElementById(id);
+        if (x.style.display === "block") {
+          x.style.display = "none";
+        } else {
+          x.style.display = "block";
+        }
+      }
+    </script>
+  </body>
+</html>
