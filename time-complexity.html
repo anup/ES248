@@ -512,180 +512,6 @@
     <p style="font-size: 0.7em; margin-top: 15px; color: #7f8c8d;">Notice how exponential growth explodes compared to polynomial and logarithmic</p>
 </section>
 
-<script>
-// Draw complexity growth chart
-function drawComplexityChart() {
-    const canvas = document.getElementById('complexityChart');
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    const padding = 60;
-    const graphWidth = width - 2 * padding;
-    const graphHeight = height - 2 * padding;
-
-    // Clear canvas
-    ctx.clearRect(0, 0, width, height);
-
-    // Define complexity functions
-    const maxN = 100;
-    const functions = [
-        { name: 'O(1)', color: '#27ae60', fn: (n) => 1 },
-        { name: 'O(log n)', color: '#16a085', fn: (n) => Math.log2(n) },
-        { name: 'O(n)', color: '#2980b9', fn: (n) => n },
-        { name: 'O(n log n)', color: '#8e44ad', fn: (n) => n * Math.log2(n) },
-        { name: 'O(n²)', color: '#d35400', fn: (n) => n * n },
-        { name: 'O(2ⁿ)', color: '#c0392b', fn: (n) => Math.pow(2, n) }
-    ];
-
-    // Calculate max value for scaling (exclude O(2^n) for better visibility)
-    let maxValue = 0;
-    for (let n = 1; n <= maxN; n++) {
-        for (let i = 0; i < functions.length - 1; i++) {
-            maxValue = Math.max(maxValue, functions[i].fn(n));
-        }
-    }
-
-    // Draw axes
-    ctx.strokeStyle = '#34495e';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(padding, padding);
-    ctx.lineTo(padding, height - padding);
-    ctx.lineTo(width - padding, height - padding);
-    ctx.stroke();
-
-    // Draw axis labels
-    ctx.fillStyle = '#34495e';
-    ctx.font = 'bold 14px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('n (input size)', width / 2, height - 20);
-    ctx.save();
-    ctx.translate(20, height / 2);
-    ctx.rotate(-Math.PI / 2);
-    ctx.fillText('Operations', 0, 0);
-    ctx.restore();
-
-    // Draw grid lines
-    ctx.strokeStyle = '#ecf0f1';
-    ctx.lineWidth = 1;
-    for (let i = 1; i <= 5; i++) {
-        const y = padding + (graphHeight * i / 5);
-        ctx.beginPath();
-        ctx.moveTo(padding, y);
-        ctx.lineTo(width - padding, y);
-        ctx.stroke();
-    }
-
-    // Draw x-axis ticks
-    ctx.fillStyle = '#7f8c8d';
-    ctx.font = '11px Arial';
-    ctx.textAlign = 'center';
-    for (let i = 0; i <= 5; i++) {
-        const x = padding + (graphWidth * i / 5);
-        const nValue = Math.floor(maxN * i / 5);
-        ctx.fillText(nValue.toString(), x, height - padding + 20);
-    }
-
-    // Draw y-axis ticks
-    ctx.textAlign = 'right';
-    for (let i = 0; i <= 5; i++) {
-        const y = height - padding - (graphHeight * i / 5);
-        const value = Math.floor(maxValue * i / 5);
-        ctx.fillText(value.toString(), padding - 10, y + 4);
-    }
-
-    // Helper function to convert n and value to canvas coordinates
-    function toCanvasCoords(n, value) {
-        const x = padding + (n / maxN) * graphWidth;
-        const y = height - padding - (value / maxValue) * graphHeight;
-        return { x, y };
-    }
-
-    // Draw each function (except O(2^n) which we'll handle separately)
-    for (let i = 0; i < functions.length - 1; i++) {
-        const func = functions[i];
-        ctx.strokeStyle = func.color;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-
-        let firstPoint = true;
-        for (let n = 1; n <= maxN; n++) {
-            const value = func.fn(n);
-            const coords = toCanvasCoords(n, value);
-
-            if (firstPoint) {
-                ctx.moveTo(coords.x, coords.y);
-                firstPoint = false;
-            } else {
-                ctx.lineTo(coords.x, coords.y);
-            }
-        }
-        ctx.stroke();
-    }
-
-    // Draw O(2^n) separately with adjusted scale (only up to n=20)
-    const expFunc = functions[functions.length - 1];
-    ctx.strokeStyle = expFunc.color;
-    ctx.lineWidth = 3;
-    ctx.setLineDash([5, 5]);
-    ctx.beginPath();
-
-    let expFirstPoint = true;
-    for (let n = 1; n <= 20; n++) {
-        const value = Math.min(expFunc.fn(n), maxValue); // Cap at maxValue
-        const coords = toCanvasCoords(n, value);
-
-        if (expFirstPoint) {
-            ctx.moveTo(coords.x, coords.y);
-            expFirstPoint = false;
-        } else {
-            ctx.lineTo(coords.x, coords.y);
-        }
-    }
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Draw legend
-    const legendX = width - 150;
-    const legendY = padding + 20;
-    const lineHeight = 25;
-
-    ctx.textAlign = 'left';
-    ctx.font = 'bold 13px Arial';
-
-    functions.forEach((func, i) => {
-        const y = legendY + i * lineHeight;
-
-        // Draw color box
-        ctx.fillStyle = func.color;
-        ctx.fillRect(legendX, y - 10, 20, 12);
-
-        // Draw label
-        ctx.fillStyle = '#34495e';
-        ctx.fillText(func.name, legendX + 28, y);
-    });
-}
-
-// Draw chart when slide is shown
-Reveal.on('slidechanged', event => {
-    if (event.currentSlide.querySelector('#complexityChart')) {
-        setTimeout(drawComplexityChart, 100);
-    }
-});
-
-// Draw on initial load if on that slide
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        const currentSlide = Reveal.getCurrentSlide();
-        if (currentSlide && currentSlide.querySelector('#complexityChart')) {
-            drawComplexityChart();
-        }
-    }, 500);
-});
-</script>
-
 <!-- REAL-WORLD EXAMPLES -->
 
 <section class="section-divider">
@@ -1110,6 +936,175 @@ for (int i = 0; i < n; i++) {
             plugins: [ RevealHighlight, RevealMath.KaTeX ],
             slideNumber: true,
             transition: 'slide'
+        });
+
+        // Draw complexity growth chart
+        function drawComplexityChart() {
+            const canvas = document.getElementById('complexityChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 60;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+
+            // Define complexity functions
+            const maxN = 100;
+            const functions = [
+                { name: 'O(1)', color: '#27ae60', fn: (n) => 1 },
+                { name: 'O(log n)', color: '#16a085', fn: (n) => Math.log2(n) },
+                { name: 'O(n)', color: '#2980b9', fn: (n) => n },
+                { name: 'O(n log n)', color: '#8e44ad', fn: (n) => n * Math.log2(n) },
+                { name: 'O(n²)', color: '#d35400', fn: (n) => n * n },
+                { name: 'O(2ⁿ)', color: '#c0392b', fn: (n) => Math.pow(2, n) }
+            ];
+
+            // Calculate max value for scaling (exclude O(2^n) for better visibility)
+            let maxValue = 0;
+            for (let n = 1; n <= maxN; n++) {
+                for (let i = 0; i < functions.length - 1; i++) {
+                    maxValue = Math.max(maxValue, functions[i].fn(n));
+                }
+            }
+
+            // Draw axes
+            ctx.strokeStyle = '#34495e';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+
+            // Draw axis labels
+            ctx.fillStyle = '#34495e';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('n (input size)', width / 2, height - 20);
+            ctx.save();
+            ctx.translate(20, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Operations', 0, 0);
+            ctx.restore();
+
+            // Draw grid lines
+            ctx.strokeStyle = '#ecf0f1';
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= 5; i++) {
+                const y = padding + (graphHeight * i / 5);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+
+            // Draw x-axis ticks
+            ctx.fillStyle = '#7f8c8d';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'center';
+            for (let i = 0; i <= 5; i++) {
+                const x = padding + (graphWidth * i / 5);
+                const nValue = Math.floor(maxN * i / 5);
+                ctx.fillText(nValue.toString(), x, height - padding + 20);
+            }
+
+            // Draw y-axis ticks
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const y = height - padding - (graphHeight * i / 5);
+                const value = Math.floor(maxValue * i / 5);
+                ctx.fillText(value.toString(), padding - 10, y + 4);
+            }
+
+            // Helper function to convert n and value to canvas coordinates
+            function toCanvasCoords(n, value) {
+                const x = padding + (n / maxN) * graphWidth;
+                const y = height - padding - (value / maxValue) * graphHeight;
+                return { x, y };
+            }
+
+            // Draw each function (except O(2^n) which we'll handle separately)
+            for (let i = 0; i < functions.length - 1; i++) {
+                const func = functions[i];
+                ctx.strokeStyle = func.color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+
+                let firstPoint = true;
+                for (let n = 1; n <= maxN; n++) {
+                    const value = func.fn(n);
+                    const coords = toCanvasCoords(n, value);
+
+                    if (firstPoint) {
+                        ctx.moveTo(coords.x, coords.y);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(coords.x, coords.y);
+                    }
+                }
+                ctx.stroke();
+            }
+
+            // Draw O(2^n) separately with adjusted scale (only up to n=20)
+            const expFunc = functions[functions.length - 1];
+            ctx.strokeStyle = expFunc.color;
+            ctx.lineWidth = 3;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+
+            let expFirstPoint = true;
+            for (let n = 1; n <= 20; n++) {
+                const value = Math.min(expFunc.fn(n), maxValue); // Cap at maxValue
+                const coords = toCanvasCoords(n, value);
+
+                if (expFirstPoint) {
+                    ctx.moveTo(coords.x, coords.y);
+                    expFirstPoint = false;
+                } else {
+                    ctx.lineTo(coords.x, coords.y);
+                }
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw legend
+            const legendX = width - 150;
+            const legendY = padding + 20;
+            const lineHeight = 25;
+
+            ctx.textAlign = 'left';
+            ctx.font = 'bold 13px Arial';
+
+            functions.forEach((func, i) => {
+                const y = legendY + i * lineHeight;
+
+                // Draw color box
+                ctx.fillStyle = func.color;
+                ctx.fillRect(legendX, y - 10, 20, 12);
+
+                // Draw label
+                ctx.fillStyle = '#34495e';
+                ctx.fillText(func.name, legendX + 28, y);
+            });
+        }
+
+        // Draw chart when slide is shown
+        Reveal.on('slidechanged', event => {
+            if (event.currentSlide.querySelector('#complexityChart')) {
+                setTimeout(drawComplexityChart, 100);
+            }
+        });
+
+        // Draw on ready
+        Reveal.on('ready', () => {
+            if (Reveal.getCurrentSlide().querySelector('#complexityChart')) {
+                setTimeout(drawComplexityChart, 100);
+            }
         });
     </script>
 </body>
