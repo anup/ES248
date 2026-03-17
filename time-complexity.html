@@ -508,8 +508,11 @@
 <section>
     <h2>Growth Rate Comparison</h2>
     <p style="font-size: 0.8em; margin-bottom: 20px;">How different complexities scale with input size</p>
-    <canvas id="complexityChart" width="1600" height="900" style="width: 800px; height: 450px; background: white; border-radius: 8px; max-width: 100%;"></canvas>
-    <p style="font-size: 0.7em; margin-top: 15px; color: #7f8c8d;">Notice how exponential growth explodes compared to polynomial and logarithmic</p>
+    <div style="display: flex; gap: 20px; align-items: flex-start; justify-content: center;">
+        <canvas id="complexityChart" width="1400" height="900" style="width: 700px; height: 450px; background: white; border-radius: 8px;"></canvas>
+        <div id="chartLegend" style="display: flex; flex-direction: column; gap: 12px; padding-top: 20px;"></div>
+    </div>
+    <p style="font-size: 0.7em; margin-top: 15px; color: #7f8c8d;">Y-axis focused on smaller values to show differences between efficient algorithms</p>
 </section>
 
 <!-- REAL-WORLD EXAMPLES -->
@@ -941,117 +944,98 @@ for (int i = 0; i < n; i++) {
         // Draw complexity growth chart
         function drawComplexityChart() {
             const canvas = document.getElementById('complexityChart');
+            const legendDiv = document.getElementById('chartLegend');
             if (!canvas) return;
 
             const ctx = canvas.getContext('2d');
             const width = canvas.width;
             const height = canvas.height;
-            const padding = 120;  // Increased padding for better labels
+            const padding = 120;
             const graphWidth = width - 2 * padding;
             const graphHeight = height - 2 * padding;
-
-            // Enable anti-aliasing for crisp rendering
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
 
             // Clear canvas
             ctx.clearRect(0, 0, width, height);
 
-            // Define complexity functions with bolder colors
-            const maxN = 50;  // Reduced range to show slow-growing functions better
+            // Define complexity functions
+            const maxN = 100;
             const functions = [
-                { name: 'O(1)', color: '#27ae60', lineWidth: 5, fn: (n) => 5 },  // Scale up for visibility
-                { name: 'O(log n)', color: '#16a085', lineWidth: 5, fn: (n) => Math.log2(n) * 8 },  // Scale up
-                { name: 'O(n)', color: '#2980b9', lineWidth: 5, fn: (n) => n },
-                { name: 'O(n log n)', color: '#8e44ad', lineWidth: 5, fn: (n) => n * Math.log2(n) / 2 },
-                { name: 'O(n²)', color: '#e67e22', lineWidth: 5, fn: (n) => n * n / 10 },  // Scale down to fit
-                { name: 'O(2ⁿ)', color: '#c0392b', lineWidth: 5, fn: (n) => Math.pow(2, n) / 100 }  // Scale down heavily
+                { name: 'O(1)', color: '#27ae60', fn: (n) => 1 },
+                { name: 'O(log n)', color: '#16a085', fn: (n) => Math.log2(n) },
+                { name: 'O(n)', color: '#2980b9', fn: (n) => n },
+                { name: 'O(n log n)', color: '#8e44ad', fn: (n) => n * Math.log2(n) },
+                { name: 'O(n²)', color: '#d35400', fn: (n) => n * n },
+                { name: 'O(2ⁿ)', color: '#c0392b', fn: (n) => Math.pow(2, n) }
             ];
 
-            // Calculate max value for scaling
-            let maxValue = 0;
-            for (let n = 1; n <= maxN; n++) {
-                for (let i = 0; i < functions.length; i++) {
-                    const value = functions[i].fn(n);
-                    if (isFinite(value) && value < 1e6) {  // Avoid infinity
-                        maxValue = Math.max(maxValue, value);
-                    }
-                }
-            }
-            maxValue = Math.max(maxValue, 250);  // Ensure minimum scale
+            // Cap max value to focus on smaller values - show differences between efficient algorithms
+            const maxValue = 300;  // Fixed scale to emphasize O(1), O(log n), O(n), O(n log n)
 
-            // Draw axes with thicker lines
-            ctx.strokeStyle = '#2c3e50';
-            ctx.lineWidth = 4;
+            // Draw axes
+            ctx.strokeStyle = '#34495e';
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(padding, padding);
             ctx.lineTo(padding, height - padding);
             ctx.lineTo(width - padding, height - padding);
             ctx.stroke();
 
-            // Draw axis labels with larger font
-            ctx.fillStyle = '#2c3e50';
-            ctx.font = 'bold 28px Arial';
+            // Draw axis labels
+            ctx.fillStyle = '#34495e';
+            ctx.font = 'bold 24px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('n (input size)', width / 2, height - 40);
+            ctx.fillText('n (input size)', width / 2, height - 30);
             ctx.save();
-            ctx.translate(40, height / 2);
+            ctx.translate(30, height / 2);
             ctx.rotate(-Math.PI / 2);
             ctx.fillText('Operations', 0, 0);
             ctx.restore();
 
             // Draw grid lines
-            ctx.strokeStyle = '#dfe6e9';
+            ctx.strokeStyle = '#ecf0f1';
             ctx.lineWidth = 2;
-            for (let i = 1; i <= 10; i++) {
-                const y = padding + (graphHeight * i / 10);
+            for (let i = 1; i <= 5; i++) {
+                const y = padding + (graphHeight * i / 5);
                 ctx.beginPath();
                 ctx.moveTo(padding, y);
                 ctx.lineTo(width - padding, y);
                 ctx.stroke();
-
-                const x = padding + (graphWidth * i / 10);
-                ctx.beginPath();
-                ctx.moveTo(x, padding);
-                ctx.lineTo(x, height - padding);
-                ctx.stroke();
             }
 
-            // Draw x-axis ticks with larger font
-            ctx.fillStyle = '#2c3e50';
-            ctx.font = '22px Arial';
+            // Draw x-axis ticks
+            ctx.fillStyle = '#7f8c8d';
+            ctx.font = '20px Arial';
             ctx.textAlign = 'center';
             for (let i = 0; i <= 5; i++) {
                 const x = padding + (graphWidth * i / 5);
                 const nValue = Math.floor(maxN * i / 5);
-                ctx.fillText(nValue.toString(), x, height - padding + 45);
+                ctx.fillText(nValue.toString(), x, height - padding + 35);
             }
 
-            // Draw y-axis ticks with larger font
+            // Draw y-axis ticks
             ctx.textAlign = 'right';
             for (let i = 0; i <= 5; i++) {
                 const y = height - padding - (graphHeight * i / 5);
                 const value = Math.floor(maxValue * i / 5);
-                ctx.fillText(value.toString(), padding - 20, y + 10);
+                ctx.fillText(value.toString(), padding - 15, y + 8);
             }
 
             // Helper function to convert n and value to canvas coordinates
             function toCanvasCoords(n, value) {
                 const x = padding + (n / maxN) * graphWidth;
-                const y = height - padding - (value / maxValue) * graphHeight;
+                const clampedValue = Math.min(value, maxValue);
+                const y = height - padding - (clampedValue / maxValue) * graphHeight;
                 return { x, y };
             }
 
-            // Draw each function with smooth curves
-            functions.forEach((func, idx) => {
+            // Draw each function
+            for (let i = 0; i < functions.length; i++) {
+                const func = functions[i];
                 ctx.strokeStyle = func.color;
-                ctx.lineWidth = func.lineWidth;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
+                ctx.lineWidth = 5;
 
-                // Use dashed line for O(2^n) to show it's off the scale
                 if (func.name === 'O(2ⁿ)') {
-                    ctx.setLineDash([15, 10]);
+                    ctx.setLineDash([10, 8]);
                 } else {
                     ctx.setLineDash([]);
                 }
@@ -1059,11 +1043,8 @@ for (int i = 0; i < n; i++) {
                 ctx.beginPath();
 
                 let firstPoint = true;
-                const step = 0.5;  // Smoother curves with smaller steps
-                for (let n = 1; n <= maxN; n += step) {
+                for (let n = 1; n <= maxN; n++) {
                     const value = func.fn(n);
-                    if (!isFinite(value) || value > maxValue * 1.2) continue;
-
                     const coords = toCanvasCoords(n, value);
 
                     if (firstPoint) {
@@ -1074,29 +1055,29 @@ for (int i = 0; i < n; i++) {
                     }
                 }
                 ctx.stroke();
-            });
+            }
 
             ctx.setLineDash([]);
 
-            // Draw legend with larger font and boxes
-            const legendX = width - 280;
-            const legendY = padding + 40;
-            const lineHeight = 50;
+            // Create legend outside the graph
+            if (legendDiv) {
+                legendDiv.innerHTML = '';
+                functions.forEach(func => {
+                    const item = document.createElement('div');
+                    item.style.cssText = 'display: flex; align-items: center; gap: 10px;';
 
-            ctx.textAlign = 'left';
-            ctx.font = 'bold 26px Arial';
+                    const colorBox = document.createElement('div');
+                    colorBox.style.cssText = `width: 30px; height: 18px; background: ${func.color}; border-radius: 3px;`;
 
-            functions.forEach((func, i) => {
-                const y = legendY + i * lineHeight;
+                    const label = document.createElement('span');
+                    label.style.cssText = 'font-size: 16px; font-weight: 600; color: #34495e;';
+                    label.textContent = func.name;
 
-                // Draw color box
-                ctx.fillStyle = func.color;
-                ctx.fillRect(legendX, y - 20, 40, 24);
-
-                // Draw label
-                ctx.fillStyle = '#2c3e50';
-                ctx.fillText(func.name, legendX + 55, y);
-            });
+                    item.appendChild(colorBox);
+                    item.appendChild(label);
+                    legendDiv.appendChild(item);
+                });
+            }
         }
 
         // Draw chart when slide is shown
