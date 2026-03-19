@@ -250,41 +250,10 @@
     <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 248 · Introduction to DSA in C</p>
 </section>
 
-<!-- ═══════════════════════════════════════════════════
-     PART 1 — THE CONSTRUCTION
-════════════════════════════════════════════════════ -->
-<section class="center-content">
-    <h1 style="font-size:2.8em;">Part 1</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">The Construction</p>
-</section>
-
-<!-- Familiar problem -->
-<section>
-    <h2>A Familiar Problem</h2>
-    <p>5,000 students stored in a sorted array. One new student joins.</p>
-
-    <pre class="fragment"><code class="language-c">int rolls[5000] = { 201, 202, 203, 205, 206, ... };
-//                    0    1    2    3    4
-
-// New student has roll 204. Must go between index 2 and 3.
-// → Shift indices 3 through 4999 by one.  ~2,500 moves.</code></pre>
-
-    <div class="fragment key-point">
-        The shifting itself is the same asymptotic complexity as search — both O(n). The deeper problem is:
-        what happens when the array is <strong>already full</strong>?<br><br>
-        You must allocate a new, <em>larger, contiguous block</em> of memory and copy everything over.
-        That block might not exist — even if there is plenty of total free memory.
-    </div>
-
-    <div class="fragment">
-        <p class="big-q">Can we store a sequence without requiring consecutive memory?</p>
-    </div>
-</section>
-
 <!-- The two-array idea -->
 <section>
-    <h2>A Trick with Two Arrays</h2>
-    <p>Add a second array <code>nxt[]</code>. Each slot stores the <em>index of the next element</em>.</p>
+    <h2>Two Arrays</h2>
+    <p>Here are two arrays and an integer. What can we do with them?</p>
 
     <table class="ll-table" style="margin-top:0.8em;">
         <tr>
@@ -304,9 +273,9 @@
     <div class="ptr-row"><span class="ptr-lbl ptr-head">head = 1</span></div>
 
     <ul class="fragment">
-        <li><code>head</code> is the index of the first element</li>
-        <li><code>nxt[i]</code> is the index of the element that follows <code>i</code></li>
-        <li><code>nxt[i] = -1</code> means <code>i</code> is the last element</li>
+        <li><code>head</code> — an integer, the starting index</li>
+        <li><code>nxt[i]</code> — the index of whatever comes after slot <code>i</code></li>
+        <li><code>nxt[i] = -1</code> — nothing comes after slot <code>i</code></li>
     </ul>
 
     <div class="fragment key-point">
