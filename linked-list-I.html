@@ -660,38 +660,36 @@ void traverse();                // print all values in order</code></pre>
     </div>
 </section>
 
-<!-- FAT reveal -->
+<!-- FAT — corrected -->
 <section>
-    <h2>This Is How Every Hard Drive Works</h2>
+    <h2>Your USB Drive Is a Linked List</h2>
 
-    <p>A hard disk is a flat array of numbered fixed-size blocks called <strong>sectors</strong>.</p>
-    <p class="small">(This is persistent storage — the disk — not RAM.)</p>
+    <p>USB drives and SD cards use a filesystem called <strong>FAT</strong> (File Allocation Table).</p>
+    <p>Files are stored in fixed-size blocks called <strong>clusters</strong>, scattered across the drive.</p>
 
-    <div class="fragment">
-        <p>When you save a file, the OS writes data to any available sectors.
-        They do not need to be consecutive.</p>
-        <p>It must track: <em>"for this file, which sector comes after which?"</em></p>
+    <div class="fragment" style="margin-top:0.5em;">
+        <p>The drive keeps an array — <code>FAT[i]</code> = the cluster that comes after cluster <code>i</code>.</p>
+        <p>Each file's directory entry stores its <strong>first cluster</strong> — the head of the chain.</p>
     </div>
 
-    <div class="fragment">
-        <p>Solution: the <strong>File Allocation Table (FAT)</strong> — a special array stored at a fixed location on the disk.
-        <code>FAT[i]</code> holds the index of the sector that follows sector <code>i</code> in a file's chain.
-        <code>FAT[i] = 0</code> means sector <code>i</code> is free.</p>
-    </div>
-
-    <div class="fragment">
+    <div class="fragment" style="margin-top:0.5em;">
         <table>
-            <tr><th>Disk / FAT concept</th><th>What we built</th></tr>
-            <tr><td>Sector contents (the data on disk)</td><td><code>data[]</code></td></tr>
-            <tr><td>FAT array: <code>FAT[i]</code> = next sector</td><td><code>nxt[]</code></td></tr>
-            <tr><td>First sector number, stored in directory entry</td><td><code>head</code></td></tr>
-            <tr><td>Sectors where <code>FAT[i] = 0</code> (free)</td><td><code>avail</code> chain</td></tr>
+            <tr><th>What we built</th><th>What a USB drive does</th></tr>
+            <tr><td><code>data[i]</code></td><td>Contents of cluster <code>i</code> on disk</td></tr>
+            <tr><td><code>nxt[i]</code></td><td><code>FAT[i]</code> — next cluster number</td></tr>
+            <tr><td><code>head</code></td><td>First cluster, stored in directory entry</td></tr>
+            <tr><td><del><code>avail</code> chain</del></td><td><del>Free list</del> — FAT has none; it scans for zeros</td></tr>
         </table>
     </div>
 
-    <div class="fragment success-box">
-        You just built what every hard drive has used since 1977.
+    <div class="fragment info-box" style="margin-top:0.5em;">
+        FAT is not used for your laptop's main drive (Windows uses NTFS, Linux uses ext4, macOS uses APFS).
+        But it is still the <strong>one format every OS can read</strong> — which is why all USB drives and SD cards use it.
     </div>
+
+    <p class="fragment small" style="margin-top:0.3em;">
+        <a href="fat.html" target="_blank">Full visual walkthrough &rarr;</a>
+    </p>
 </section>
 
 <!-- Problem 2: When does shifting happen? -->
