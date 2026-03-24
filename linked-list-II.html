@@ -302,11 +302,11 @@
 
 <!-- insertFront -->
 <section>
-    <h2>2 — <code>insertFront(Node **head, int val)</code></h2>
+    <h2>2 — <code>insertFront(struct Node **head, int val)</code></h2>
     <div class="key-point">
         <strong>Task:</strong> Create a node and prepend it to the list.
     </div>
-    <p class="fragment"><strong>Why <code>Node **head</code>?</strong> We need to modify the caller's <code>head</code> pointer. A single pointer (<code>Node *head</code>) would only change the local copy.</p>
+    <p class="fragment"><strong>Why <code>struct Node **head</code>?</strong> We need to modify the caller's <code>head</code> pointer. A single pointer (<code>struct Node *head</code>) would only change the local copy.</p>
     <pre class="fragment"><code class="language-c">void insertFront(struct Node **head, int val) {
     struct Node *node = createNode(val);
     if (node == NULL) return;
@@ -322,7 +322,7 @@
 
 <!-- insertEnd -->
 <section>
-    <h2>3 — <code>insertEnd(Node **head, int val)</code></h2>
+    <h2>3 — <code>insertEnd(struct Node **head, int val)</code></h2>
     <div class="key-point">
         <strong>Task:</strong> Traverse to the last node, then link the new node after it.
     </div>
@@ -345,7 +345,7 @@
 
 <!-- deleteNode -->
 <section>
-    <h2>4 — <code>deleteNode(Node **head, int val)</code></h2>
+    <h2>4 — <code>deleteNode(struct Node **head, int val)</code></h2>
     <div class="key-point">
         <strong>Task:</strong> Find the node, unlink it, free its memory.
     </div>
@@ -371,7 +371,7 @@
 
 <!-- traverse -->
 <section>
-    <h2>5 — <code>traverse(Node *head)</code></h2>
+    <h2>5 — <code>traverse(struct Node *head)</code></h2>
     <div class="key-point">
         <strong>Task:</strong> Walk the list, print each value.
     </div>
@@ -391,7 +391,7 @@
 
 <!-- freeList -->
 <section>
-    <h2>6 — <code>freeList(Node **head)</code></h2>
+    <h2>6 — <code>freeList(struct Node **head)</code></h2>
     <div class="key-point">
         <strong>Task:</strong> Free every node. Set head to NULL. Without this, you have a <strong>memory leak</strong>.
     </div>
