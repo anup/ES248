@@ -466,8 +466,8 @@
     <p class="fragment"><strong>How do you detect this — without extra memory?</strong></p>
 
     <div class="fragment" style="margin-top:0.8em;">
-        <p>Naive approach: use a hash set to record visited nodes. If you see a node twice &rarr; cycle.</p>
-        <p>But that uses O(n) extra space.</p>
+        <p>One approach: store every visited node's address in an array. Before visiting a node, check if you've seen it before.</p>
+        <p>That works — but uses O(n) extra memory.</p>
     </div>
 
     <div class="fragment key-point" style="margin-top:0.7em;">
@@ -549,7 +549,7 @@
     </div>
 </section>
 
-<!-- Josephus — setup -->
+<!-- Josephus — the problem -->
 <section>
     <h2>Problem 3 — The Josephus Problem</h2>
 
@@ -558,27 +558,100 @@
     <div class="fragment" style="margin-top:0.6em;">
         <p><strong>Example:</strong> N=6, k=3</p>
         <p class="mono" style="line-height:2;">
-            Circle: 1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; 5 &rarr; 6 &rarr; (back to 1)<br>
-            Eliminate 3: &nbsp;1 &rarr; 2 &rarr; 4 &rarr; 5 &rarr; 6<br>
-            Eliminate 6: &nbsp;1 &rarr; 2 &rarr; 4 &rarr; 5<br>
-            Eliminate 4: &nbsp;1 &rarr; 2 &rarr; 5<br>
-            Eliminate 2: &nbsp;1 &rarr; 5<br>
+            Circle: 1, 2, 3, 4, 5, 6 &nbsp;(standing in a circle)<br>
+            Eliminate 3: &nbsp;1, 2, _, 4, 5, 6<br>
+            Eliminate 6: &nbsp;1, 2, _, 4, 5, _<br>
+            Eliminate 4: &nbsp;1, 2, _, _, 5, _<br>
+            Eliminate 2: &nbsp;1, _, _, _, 5, _<br>
             Eliminate 5: &nbsp;<strong>1 survives</strong>
         </p>
     </div>
 
     <div class="fragment key-point" style="margin-top:0.5em;">
-        <strong>Data structure:</strong> A <em>circular</em> linked list — the last node's <code>next</code> points back to <code>head</code>.
+        <strong>Your task:</strong> Write a function that takes N and k, and returns the survivor's number.
     </div>
 
     <div class="fragment small">
-        This is exactly <strong>round-robin scheduling</strong>: processes arranged in a circle, the OS gives each a time slice and moves to the next.
+        <strong>Fun fact:</strong> Flavius Josephus (37 AD) reportedly used this reasoning to choose the safe position and survive.
     </div>
 </section>
 
-<!-- Josephus — code -->
+<!-- Josephus — array solution -->
 <section>
-    <h2>Josephus — Code</h2>
+    <h2>Josephus — Array Solution</h2>
+
+    <p>The natural first approach: use an array and mark eliminated people.</p>
+
+    <pre class="fragment"><code class="language-c">int josephus_array(int n, int k) {
+    int alive[n];
+    for (int i = 0; i < n; i++)
+        alive[i] = 1;          // everyone starts alive
+
+    int remaining = n;
+    int pos = 0;                // current position in the circle
+
+    while (remaining > 1) {
+        // Count k alive people
+        int count = 0;
+        while (count < k) {
+            if (alive[pos])
+                count++;
+            if (count < k)
+                pos = (pos + 1) % n;   // wrap around
+        }
+        printf("Eliminated %d\n", pos + 1);
+        alive[pos] = 0;
+        remaining--;
+        pos = (pos + 1) % n;
+    }
+
+    // Find the survivor
+    for (int i = 0; i < n; i++)
+        if (alive[i]) return i + 1;
+    return -1;
+}</code></pre>
+</section>
+
+<!-- Josephus — array problems -->
+<section>
+    <h2>Josephus — What's Wrong With the Array?</h2>
+
+    <ul>
+        <li class="fragment"><strong>Skipping dead people:</strong> Every time you count k, you must step over eliminated slots. As more people die, you skip more and more empty slots.</li>
+        <li class="fragment"><strong>Wrap-around logic:</strong> <code>(pos + 1) % n</code> everywhere — easy to get wrong.</li>
+        <li class="fragment"><strong>Wasteful:</strong> The array never shrinks. With 1000 people and 999 eliminated, you're still walking past 999 dead slots to find the last two alive.</li>
+    </ul>
+
+    <div class="fragment key-point" style="margin-top:0.8em;">
+        What if we could <strong>actually remove</strong> a person from the circle when they're eliminated — so we never skip anyone?
+    </div>
+</section>
+
+<!-- Josephus — circular linked list idea -->
+<section>
+    <h2>Josephus — A Circular Linked List</h2>
+
+    <p>Make the last node's <code>next</code> point back to the first node. A circle — no NULL, no end.</p>
+
+    <p class="mono" style="margin:0.6em 0; font-size:0.82em;">
+        1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; 5 &rarr; 6 &rarr; (back to 1)
+    </p>
+
+    <ul>
+        <li class="fragment">To eliminate someone: <code>prev->next = curr->next</code> — they're gone from the circle. O(1).</li>
+        <li class="fragment">No skipping dead slots. Every step lands on a living person.</li>
+        <li class="fragment">Counting k steps means exactly k pointer follows.</li>
+        <li class="fragment">One person left? <code>curr->next == curr</code> — done.</li>
+    </ul>
+
+    <div class="fragment success-box" style="margin-top:0.6em;">
+        The circle shrinks as people are eliminated. No wasted work.
+    </div>
+</section>
+
+<!-- Josephus — linked list code -->
+<section>
+    <h2>Josephus — Linked List Code</h2>
 
     <pre><code class="language-c">int josephus(int n, int k) {
     // Build circular linked list: 1 → 2 → ... → n → (back to 1)
@@ -614,24 +687,20 @@
 }</code></pre>
 </section>
 
-<!-- Josephus — takeaway -->
+<!-- Josephus — comparison -->
 <section>
-    <h2>Josephus — Why It's Interesting</h2>
+    <h2>Josephus — Array vs. Linked List</h2>
 
-    <ul>
-        <li class="fragment"><strong>Circular linked list</strong> — a natural fit; no special "wrap around" logic needed</li>
-        <li class="fragment"><strong>Deletion in O(1)</strong> — just <code>prev->next = curr->next</code></li>
-        <li class="fragment"><strong>Termination is clean</strong> — <code>curr->next == curr</code> means one node left</li>
-    </ul>
+    <table style="margin-top:0.8em;">
+        <tr><th></th><th>Array</th><th>Circular Linked List</th></tr>
+        <tr><td><strong>Eliminate someone</strong></td><td>Mark as dead, still takes space</td><td>Remove from circle, free memory</td></tr>
+        <tr><td><strong>Count k steps</strong></td><td>Must skip dead slots</td><td>Every step lands on a living person</td></tr>
+        <tr><td><strong>Wrap around</strong></td><td><code>(pos+1) % n</code></td><td>Automatic — it's a circle</td></tr>
+        <tr><td><strong>Detect last person</strong></td><td>Scan array for the one alive</td><td><code>curr->next == curr</code></td></tr>
+    </table>
 
-    <div class="fragment key-point" style="margin-top:1em;">
-        Try this with an array: you'd need to shift elements on every deletion,
-        handle wrap-around with modular arithmetic, and track which slots are "alive."
-        The circular list makes it effortless.
-    </div>
-
-    <div class="fragment info-box" style="margin-top:0.7em;">
-        <strong>Fun fact:</strong> Flavius Josephus (37 AD) reportedly used this reasoning to choose the safe position and survive. Whether the story is true or not — the math is beautiful.
+    <div class="fragment info-box" style="margin-top:0.8em;">
+        This pattern — processes arranged in a circle, each getting a turn — is exactly <strong>round-robin scheduling</strong> in operating systems.
     </div>
 </section>
 
