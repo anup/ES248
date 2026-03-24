@@ -694,28 +694,58 @@ void traverse();                // print all values in order</code></pre>
     </div>
 </section>
 
-<!-- Defrag -->
+<!-- Problem 2: When does shifting happen? -->
 <section>
-    <h2>What Defragmentation Actually Is</h2>
+    <h2>Problem 2 — When Does Shifting Happen?</h2>
 
-    <p><strong>Fragmented file:</strong> sectors of your file scattered across the disk.</p>
-    <p class="mono fragment">FAT[47]=103 &nbsp;&rarr;&nbsp; FAT[103]=12 &nbsp;&rarr;&nbsp; FAT[12]=88 &nbsp;&rarr;&nbsp; FAT[88]=-1</p>
-    <p class="small fragment">Your file data sits in sectors 47, 103, 12, 88 — in that order — scattered all over the disk.</p>
+    <p>Three common situations force an array to move data around:</p>
 
-    <div class="fragment" style="margin-top:0.8em;">
-        <p><strong>After defragmentation:</strong> OS physically rewrites data to consecutive sectors.</p>
-        <p class="mono">FAT[47]=48 &nbsp;&rarr;&nbsp; FAT[48]=49 &nbsp;&rarr;&nbsp; FAT[49]=50 &nbsp;&rarr;&nbsp; FAT[50]=-1</p>
+    <div class="fragment" style="margin-top:0.6em;">
+        <h4>1. Insert into a sorted array</h4>
+        <p class="mono">Before: [3, 8, 12, 20, 25]</p>
+        <p class="mono">Insert 15 &rarr; shift 20, 25 right &rarr; [3, 8, 12, <strong>15</strong>, 20, 25]</p>
     </div>
 
-    <div class="fragment key-point" style="margin-top:0.7em;">
-        Defragmentation = converting a linked-list layout back into an array layout.<br>
-        The progress bar you have seen your whole life is just rewriting <code>nxt[]</code> entries.
+    <div class="fragment" style="margin-top:0.5em;">
+        <h4>2. Delete from the middle</h4>
+        <p class="mono">Delete 12 &rarr; shift 20, 25 left &rarr; [3, 8, 20, 25]</p>
     </div>
 
-    <p class="fragment small">SSDs have no spinning platters — random access costs the same as sequential — so defragmentation is unnecessary (and harmful). This is why modern drives skip it.</p>
+    <div class="fragment" style="margin-top:0.5em;">
+        <h4>3. <code>realloc()</code> may move the entire array</h4>
+        <p>If there isn't room to grow in place, <code>realloc</code> allocates a new block, copies everything, and frees the old one. <strong>Every pointer into the old array is now dangling.</strong></p>
+    </div>
+
+    <div class="fragment warning-box" style="margin-top:0.6em;">
+        Any code holding a pointer or index into the array is now broken — silently.
+    </div>
 </section>
 
-<!-- Problem 2: Shifting invalidates references -->
+<!-- Problem 2: Student database example -->
+<section>
+    <h2>Real Example — Student Database</h2>
+
+    <p>Array of students sorted alphabetically. A separate roll-number index stores pointers.</p>
+
+    <pre><code class="language-c">Student students[5] = { "Aman", "Dev", "Kavya", "Riya", "Zara" };
+
+// Roll-number lookup — stores direct pointers into students[]
+Student *roll_idx[MAX_ROLL];
+roll_idx[25110154] = &amp;students[3];  // Riya is at index 3</code></pre>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p><strong>New student "Neha" enrolls.</strong> Insert alphabetically between Kavya and Riya:</p>
+        <p class="mono">Before: [Aman, Dev, Kavya, <span style="color:#e74c3c;">Riya</span>, Zara]</p>
+        <p class="mono">After: &nbsp;[Aman, Dev, Kavya, <strong>Neha</strong>, <span style="color:#e74c3c;">Riya</span>, Zara]</p>
+        <p><code>roll_idx[25110154]</code> still points to index 3 — but that's <strong>Neha</strong> now, not Riya.</p>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        <strong>In a linked list:</strong> nodes never move in memory. <code>roll_idx</code> keeps pointing to the same node forever. Secondary indexes stay valid.
+    </div>
+</section>
+
+<!-- Problem 2: formal statement -->
 <section>
     <h2>Problem 2 — Shifting Invalidates References</h2>
 
@@ -737,22 +767,55 @@ void traverse();                // print all values in order</code></pre>
     </div>
 </section>
 
-<!-- Problem 3: O(1) with a pointer -->
+<!-- Problem 3: OS Run Queue walkthrough -->
 <section>
     <h2>Problem 3 — O(1) Insert / Delete With a Pointer</h2>
 
-    <p>In an array: even if you already know exactly where to insert, you still must shift O(n) elements.</p>
+    <p>In an array: even if you know exactly where to delete, you still shift O(n) elements.</p>
 
-    <p class="fragment">In a linked list: if you have a pointer (or index) to the predecessor node,
-    insertion is <strong>two assignments</strong>. Always O(1).</p>
+    <h4 class="fragment" style="margin-top:0.8em;">OS Run Queue — Visual Walkthrough</h4>
+
+    <div class="fragment">
+        <p class="mono" style="font-size:0.82em; line-height:1.8;">
+            Run queue: &nbsp;A &rarr; B &rarr; C &rarr; D &rarr; NULL
+        </p>
+        <p>Process B calls <code>read()</code> — blocks waiting for disk I/O.</p>
+        <p>OS has a <strong>direct pointer</strong> to B's node. Remove B in O(1): relink A &rarr; C.</p>
+        <p class="mono" style="font-size:0.82em; line-height:1.8;">
+            Run queue: &nbsp;A &rarr; C &rarr; D &rarr; NULL &nbsp; &nbsp; (B saved aside)
+        </p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.4em;">
+        <p>I/O completes &rarr; re-insert B in O(1). Just relink pointers.</p>
+    </div>
+
+    <div class="fragment warning-box" style="margin-top:0.5em;">
+        With an array: removing B shifts C and D. Every pointer to C or D — held by other kernel subsystems — breaks.
+    </div>
+</section>
+
+<!-- Problem 3: Browser tabs -->
+<section>
+    <h2>Browser Tabs Are a Linked List</h2>
+
+    <p>Each tab is a node in a <strong>doubly linked list</strong>:</p>
+    <p class="mono" style="font-size:0.85em; margin:0.5em 0;">
+        Tab1 &harr; Tab2 &harr; Tab3 &harr; Tab4
+    </p>
+
+    <ul>
+        <li class="fragment"><strong>Close Tab2:</strong> relink Tab1 &harr; Tab3 — O(1), no shifting</li>
+        <li class="fragment"><strong>Ctrl+Shift+T (reopen):</strong> re-insert the saved node — O(1)</li>
+        <li class="fragment"><strong>Drag to reorder:</strong> unlink and re-insert — just pointer changes</li>
+    </ul>
 
     <div class="fragment key-point" style="margin-top:0.8em;">
-        <strong>Real example — OS process scheduler:</strong><br><br>
-        The OS keeps all runnable processes in a linked list (the <em>run queue</em>).<br><br>
-        When a process blocks waiting for I/O, the OS holds a direct pointer to its node.
-        It removes the process in O(1) — two assignments.<br><br>
-        When the I/O completes, the process is re-inserted in O(1).<br><br>
-        With an array, every other process would have to shift. That would be a disaster.
+        This is why closing a tab is instant, but scrolling a huge spreadsheet (array of cells) is slow.
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        Whenever you need fast insert/delete at arbitrary positions with stable references — linked list.
     </div>
 </section>
 
