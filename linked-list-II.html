@@ -704,6 +704,80 @@
     </div>
 </section>
 
+<!-- Josephus — time complexity -->
+<section>
+    <h2>Josephus — Time Complexity</h2>
+
+    <p>We eliminate n&minus;1 people. How much work does each elimination take?</p>
+
+    <div class="two-col fragment" style="margin-top:0.6em;">
+        <div class="card" style="border-top-color:#e67e22;">
+            <h4 style="color:#e67e22;">Array</h4>
+            <p>To count k alive people, you step over <strong>dead slots</strong>.</p>
+            <p style="margin-top:0.4em;">After half the people are dead, counting k alive takes ~2k steps.</p>
+            <p>Near the end (2 people left in an array of n), one elimination walks ~n slots.</p>
+            <p style="margin-top:0.4em; font-weight:600;">Worst case total: O(n<sup>2</sup>)</p>
+        </div>
+        <div class="card" style="border-top-color:#27ae60;">
+            <h4 style="color:#27ae60;">Circular Linked List</h4>
+            <p>Dead nodes are <strong>removed</strong>. Every step lands on a living person.</p>
+            <p style="margin-top:0.4em;">Each elimination: exactly k steps.</p>
+            <p>n&minus;1 eliminations &times; k steps each.</p>
+            <p style="margin-top:0.4em; font-weight:600;">Always: O(n &times; k)</p>
+        </div>
+    </div>
+
+    <div class="fragment" style="margin-top:0.7em;">
+        <p><strong>Example:</strong> n = 100,000 and k = 2</p>
+        <table style="width:70%;">
+            <tr><th>Solution</th><th>Operations</th></tr>
+            <tr><td>Array (worst case)</td><td>O(n<sup>2</sup>) = <strong>10,000,000,000</strong></td></tr>
+            <tr><td>Circular linked list</td><td>O(n &times; k) = <strong>200,000</strong></td></tr>
+        </table>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        The linked list isn't just cleaner code — it is <strong>genuinely faster</strong>.
+    </div>
+</section>
+
+<!-- Josephus — mathematical recurrence -->
+<section>
+    <h2>Josephus — The Mathematical Shortcut</h2>
+
+    <p>What if you only need the survivor's number — not the full elimination order?</p>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong>Insight:</strong> After eliminating person k, you have the same problem with n&minus;1 people — but the numbering has shifted by k positions.</p>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.6em;">
+        <strong>Recurrence:</strong><br>
+        <code>J(1, k) = 0</code> &nbsp; &nbsp; (one person — index 0 survives)<br>
+        <code>J(n, k) = (J(n&minus;1, k) + k) % n</code>
+    </div>
+
+    <pre class="fragment"><code class="language-c">int josephus_math(int n, int k) {
+    int survivor = 0;               // J(1, k) = 0
+    for (int i = 2; i <= n; i++)
+        survivor = (survivor + k) % i;
+    return survivor + 1;            // +1 for 1-indexed
+}</code></pre>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <table style="width:80%;">
+            <tr><th>Solution</th><th>Time</th><th>Space</th><th>Prints elimination order?</th></tr>
+            <tr><td>Array simulation</td><td>O(n<sup>2</sup>)</td><td>O(n)</td><td>Yes</td></tr>
+            <tr><td>Circular linked list</td><td>O(n &times; k)</td><td>O(n)</td><td>Yes</td></tr>
+            <tr><td>Mathematical recurrence</td><td>O(n)</td><td>O(1)</td><td>No — only the survivor</td></tr>
+        </table>
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.5em;">
+        Three solutions, each with a trade-off. The right choice depends on what the problem asks for.
+    </div>
+</section>
+
 <!-- ═══════════════════════════════════════════════════
      CLOSING
 ════════════════════════════════════════════════════ -->
