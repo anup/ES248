@@ -272,6 +272,67 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════
+     YOU ALREADY USE STACKS
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>You Already Use Stacks</h2>
+
+    <p>Every time you call a function, your program uses a stack.</p>
+
+    <pre class="fragment"><code class="language-c">int factorial(int n) {
+    if (n == 0) return 1;
+    return n * factorial(n - 1);
+}
+// factorial(4) calls factorial(3) calls factorial(2) ...</code></pre>
+
+    <div class="fragment" style="margin-top:0.6em; font-family:monospace; font-size:0.72em; line-height:1.8;">
+        <div>[ factorial(4) | n=4, waiting... ]  &larr; top</div>
+        <div>[ factorial(3) | n=3, waiting... ]</div>
+        <div>[ factorial(2) | n=2, waiting... ]</div>
+        <div>[ factorial(1) | n=1, waiting... ]</div>
+        <div>[ factorial(0) | returns 1         ]  &larr; currently running</div>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.6em;">
+        Each call is <strong>pushed</strong> when started, <strong>popped</strong> when it returns.
+        The last function called is the first to finish — LIFO. The call stack <em>is</em> a stack.
+    </div>
+</section>
+
+<!-- Stacks everywhere -->
+<section>
+    <h2>Stacks Everywhere</h2>
+
+    <div class="two-col" style="margin-top:0.6em;">
+        <div class="card">
+            <h4>Undo / Redo</h4>
+            <p>Every text edit is pushed onto a stack. Ctrl+Z pops the last action. Ctrl+Y re-applies it from a second stack.</p>
+            <p class="small">VS Code, Word, Photoshop — all stacks.</p>
+        </div>
+        <div class="card">
+            <h4>Browser Back Button</h4>
+            <p>Each page you visit is pushed. Back = pop. Forward = push to a second stack.</p>
+            <p class="small">The URL bar history is a stack.</p>
+        </div>
+    </div>
+
+    <div class="two-col fragment" style="margin-top:0.5em;">
+        <div class="card">
+            <h4>Syntax Checking</h4>
+            <p>Your compiler checks that <code>{</code>, <code>(</code>, <code>[</code> are properly closed. It uses a stack to track which ones are open.</p>
+        </div>
+        <div class="card">
+            <h4>Expression Evaluation</h4>
+            <p>How does a calculator handle <code>2 + 3 * 4</code>? Operator precedence is managed with a stack — the basis of every compiler.</p>
+        </div>
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.7em;">
+        <strong>Pattern:</strong> Whenever you need to process something in reverse order of arrival — or remember where you were before going somewhere new — you need a stack.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
      PROBLEM 1 — REVERSE A STRING
 ════════════════════════════════════════════════════ -->
 <section>
@@ -497,6 +558,84 @@ int isBalanced(char *expr) {
 </section>
 
 <!-- ═══════════════════════════════════════════════════
+     OPTIONAL — DFS ON A MAZE
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Optional: Exploring a Maze with a Stack</h2>
+
+    <p>A 2D grid. <code>0</code> = open, <code>1</code> = wall. Find if there is a path from top-left to bottom-right.</p>
+
+    <div class="fragment" style="margin-top:0.4em;">
+        <pre style="font-size:0.5em;"><code class="language-c">int maze[5][5] = {
+    {0, 0, 1, 0, 0},
+    {1, 0, 1, 0, 1},
+    {0, 0, 0, 0, 0},
+    {0, 1, 1, 1, 0},
+    {0, 0, 0, 0, 0}
+};</code></pre>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p><strong>Algorithm (Depth-First Search):</strong></p>
+        <ul>
+            <li>Push the starting cell (0,0) onto the stack</li>
+            <li>While the stack is not empty:
+                <ul>
+                    <li>Pop a cell. If it's the goal — done!</li>
+                    <li>Mark it as visited</li>
+                    <li>Push all unvisited, open neighbours (up, down, left, right)</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.5em;">
+        <strong>Why a stack?</strong> It goes <em>deep</em> before backtracking — like exploring one corridor fully before trying another.
+        This is <strong>Depth-First Search</strong>. Replace the stack with a queue and you get <strong>Breadth-First Search</strong>.
+    </div>
+
+    <div class="fragment small" style="margin-top:0.4em;">
+        Recursion does the same thing — the function call stack is the implicit stack. Here we make it explicit.
+    </div>
+</section>
+
+<!-- DFS maze — code -->
+<section>
+    <h2>Optional: Maze DFS — Code</h2>
+
+    <pre><code class="language-c">int dx[] = {0, 0, 1, -1};   // right, left, down, up
+int dy[] = {1, -1, 0, 0};
+
+int solveMaze(int maze[5][5]) {
+    int visited[5][5] = {0};
+
+    push(0 * 5 + 0);          // encode (row, col) as row*5 + col
+    visited[0][0] = 1;
+
+    while (!isEmpty()) {
+        int pos = pop();
+        int r = pos / 5, c = pos % 5;
+
+        if (r == 4 && c == 4) return 1;   // reached bottom-right!
+
+        for (int d = 0; d < 4; d++) {
+            int nr = r + dx[d], nc = c + dy[d];
+            if (nr >= 0 && nr < 5 && nc >= 0 && nc < 5
+                && maze[nr][nc] == 0 && !visited[nr][nc]) {
+                visited[nr][nc] = 1;
+                push(nr * 5 + nc);
+            }
+        }
+    }
+    return 0;   // stack empty, no path found
+}</code></pre>
+
+    <div class="fragment info-box" style="margin-top:0.5em;">
+        Same push/pop abstraction — the stack decides the exploration order. Swap in a queue and this same code does BFS instead.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
      TRANSITION — NOW LET'S BUILD IT
 ════════════════════════════════════════════════════ -->
 <section class="center-content">
@@ -610,6 +749,37 @@ int peek(struct Stack *s) {
         <strong>Overflow:</strong> push when full (<code>top == MAX-1</code>) — writes past the array. &nbsp;
         <strong>Underflow:</strong> pop when empty (<code>top == -1</code>) — reads garbage. Always check.
     </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     HOMEWORK
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Homework — Stack Challenges</h2>
+
+    <ol>
+        <li class="fragment" style="margin-bottom:0.6em;">
+            <strong>Evaluate a Postfix Expression</strong><br>
+            <span class="small">Input: <code>"2 3 4 * +"</code> &rarr; Output: <code>14</code> &nbsp; (because 3&times;4=12, then 2+12=14)<br>
+            Scan left to right. Numbers &rarr; push. Operator &rarr; pop two operands, compute, push result.</span>
+        </li>
+        <li class="fragment" style="margin-bottom:0.6em;">
+            <strong>Infix to Postfix Conversion</strong><br>
+            <span class="small">Input: <code>"2 + 3 * 4"</code> &rarr; Output: <code>"2 3 4 * +"</code><br>
+            Use a stack to handle operator precedence. This is how compilers parse expressions.</span>
+        </li>
+        <li class="fragment" style="margin-bottom:0.6em;">
+            <strong>Stock Span Problem</strong><br>
+            <span class="small">Given daily stock prices, for each day find how many consecutive days before it had a price &le; today's price.<br>
+            Input: <code>[100, 80, 60, 70, 60, 75, 85]</code> &rarr; Output: <code>[1, 1, 1, 2, 1, 4, 6]</code><br>
+            Hint: this is a monotonic stack problem — similar to Next Greater Element, but looking backward.</span>
+        </li>
+        <li class="fragment" style="margin-bottom:0.6em;">
+            <strong>Min Stack</strong><br>
+            <span class="small">Design a stack that supports push, pop, and <code>getMin()</code> — all in O(1) time.<br>
+            Hint: can you use a second stack to track the running minimum?</span>
+        </li>
+    </ol>
 </section>
 
 <!-- ═══════════════════════════════════════════════════
