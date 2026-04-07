@@ -549,6 +549,114 @@
     </div>
 </section>
 
+<!-- Reverse — recursive thinking -->
+<section>
+    <h2>Reverse — Can We Do It Recursively?</h2>
+
+    <p>The iterative version is clean. Why bother with recursion?</p>
+
+    <div class="fragment info-box" style="margin-top:0.6em;">
+        <strong>Why this matters:</strong> Reversing a linked list is the canonical problem where you can see the <em>exact same logic</em> written in two completely different recursive styles. Understanding the difference teaches you how to <em>think</em> recursively.
+    </div>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <p><strong>The recursive question:</strong> Break it into one step + the rest.</p>
+        <p class="mono" style="margin:0.4em 0;">1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; NULL</p>
+        <p class="fragment">"If I <em>trust</em> recursion to reverse <code>2→3→4</code>, what do I need to do with <code>1</code>?"</p>
+        <p class="fragment">&rarr; After recursion: &nbsp;<code>4 → 3 → 2 →</code> (<code>1</code> is dangling, still pointing at <code>2</code>)</p>
+        <p class="fragment">&rarr; Fix: make <code>2</code> point back at <code>1</code>, then cut <code>1</code>'s forward link.</p>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.6em;">
+        Two ways to arrange this work: fix <strong>on the way back</strong>, or carry state <strong>going forward</strong>.
+    </div>
+</section>
+
+<!-- Reverse — classic recursive -->
+<section>
+    <h2>Approach 1 — Fix on the Way Back</h2>
+
+    <pre><code class="language-c">struct Node* reverse_rec(struct Node *head) {
+    // Base case: empty list or last node — return as the new head
+    if (head == NULL || head->next == NULL) return head;
+
+    // Trust recursion to reverse everything after head
+    struct Node *new_head = reverse_rec(head->next);
+
+    // NOW on the way back: head->next still points at the old second node
+    // That node should now point BACK at head
+    head->next->next = head;
+    head->next = NULL;    // head is now the tail — cut its forward link
+
+    return new_head;      // bubble up the true new head all the way
+}</code></pre>
+
+    <div class="fragment" style="margin-top:0.6em; font-family:monospace; font-size:0.7em; line-height:1.8;">
+        <p>reverse_rec(1) calls reverse_rec(2) calls reverse_rec(3) calls reverse_rec(4)</p>
+        <p class="fragment">&nbsp;&nbsp;&larr; returns 4 as new_head. &nbsp;Now fix: 4→3 already done, fix 3→2: <code>3.next.next = 3</code> &rarr; 3→2→3? No — <code>2.next = 3</code></p>
+        <p class="fragment">&nbsp;&nbsp;&larr; Each frame fixes one arrow, then passes new_head up unchanged.</p>
+    </div>
+
+    <div class="fragment warning-box" style="margin-top:0.4em;">
+        The work happens <strong>on the return trip</strong>. You must hold the whole call stack in memory before doing anything.
+        Call stack depth: O(n).
+    </div>
+</section>
+
+<!-- Reverse — tail recursive -->
+<section>
+    <h2>Approach 2 — Carry State Forward (Tail Recursive)</h2>
+
+    <pre><code class="language-c">struct Node* reverse_tail(struct Node *curr, struct Node *prev) {
+    if (curr == NULL) return prev;   // prev is now the new head — done
+
+    struct Node *next = curr->next;  // save next before we overwrite it
+    curr->next = prev;               // flip the arrow right now
+
+    return reverse_tail(next, curr); // move forward, carrying work done so far
+}
+
+// Caller: head = reverse_tail(head, NULL);</code></pre>
+
+    <div class="fragment" style="margin-top:0.6em; font-family:monospace; font-size:0.72em; line-height:1.8;">
+        <p>reverse_tail(1, NULL) &rarr; flips 1, calls reverse_tail(2, 1)</p>
+        <p class="fragment">reverse_tail(2, 1)&nbsp; &rarr; flips 2, calls reverse_tail(3, 2)</p>
+        <p class="fragment">reverse_tail(3, 2)&nbsp; &rarr; flips 3, calls reverse_tail(4, 3)</p>
+        <p class="fragment">reverse_tail(4, 3)&nbsp; &rarr; flips 4, calls reverse_tail(NULL, 4) &rarr; returns <strong>4</strong></p>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.4em;">
+        The work happens <strong>going forward</strong>. The recursive call is the <em>last</em> thing each frame does — that is what <strong>tail recursion</strong> means. The result just passes straight back up without further processing.
+    </div>
+</section>
+
+<!-- Reverse — comparison -->
+<section>
+    <h2>Two Styles — One Problem</h2>
+
+    <table style="margin-top:0.6em;">
+        <tr><th></th><th>Classic Recursive</th><th>Tail Recursive</th></tr>
+        <tr><td><strong>Work happens</strong></td><td>On the return trip (back up)</td><td>Going forward (down)</td></tr>
+        <tr><td><strong>State carried</strong></td><td>Implicitly in the call stack</td><td>Explicitly as a parameter (<code>prev</code>)</td></tr>
+        <tr><td><strong>Reads like</strong></td><td>Pure recursion — trust, then fix</td><td>Iterative loop in disguise</td></tr>
+        <tr><td><strong>Stack depth</strong></td><td>O(n)</td><td>O(n) — same in C*</td></tr>
+        <tr><td><strong>Base case returns</strong></td><td>The new head (bubbles up)</td><td>The new head (passes straight through)</td></tr>
+    </table>
+
+    <div class="fragment small" style="margin-top:0.5em;">
+        *Some languages/compilers optimize tail calls to O(1) stack space. C does not guarantee this.
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.6em;">
+        <strong>Which to learn first?</strong> Classic — it forces you to think about what the call stack is doing.
+        Once that clicks, tail recursion reveals itself as "I moved the state from the stack into a parameter."
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.5em;">
+        <strong>Pattern you will see again:</strong> Any time a recursive function carries an accumulator forward (running total, running max, built-up result), that is tail recursion in spirit.
+    </div>
+</section>
+
 <!-- Josephus — the problem -->
 <section>
     <h2>Problem 3 — The Josephus Problem</h2>
@@ -708,73 +816,39 @@
 <section>
     <h2>Josephus — Time Complexity</h2>
 
-    <p>We eliminate n&minus;1 people. How much work does each elimination take?</p>
+    <p>We eliminate n&minus;1 people. <strong>k</strong> is the counting number — every k-th person is eliminated. How much work does each elimination take?</p>
 
-    <div class="two-col fragment" style="margin-top:0.6em;">
-        <div class="card" style="border-top-color:#e67e22;">
-            <h4 style="color:#e67e22;">Array</h4>
-            <p>To count k alive people, you step over <strong>dead slots</strong>.</p>
-            <p style="margin-top:0.4em;">After half the people are dead, counting k alive takes ~2k steps.</p>
-            <p>Near the end (2 people left in an array of n), one elimination walks ~n slots.</p>
-            <p style="margin-top:0.4em; font-weight:600;">Worst case total: O(n<sup>2</sup>)</p>
-        </div>
-        <div class="card" style="border-top-color:#27ae60;">
-            <h4 style="color:#27ae60;">Circular Linked List</h4>
-            <p>Dead nodes are <strong>removed</strong>. Every step lands on a living person.</p>
-            <p style="margin-top:0.4em;">Each elimination: exactly k steps.</p>
-            <p>n&minus;1 eliminations &times; k steps each.</p>
-            <p style="margin-top:0.4em; font-weight:600;">Always: O(n &times; k)</p>
-        </div>
+    <div class="fragment key-point" style="margin-top:0.5em;">
+        <strong>Linked list:</strong> dead nodes are physically removed. Every step lands on a living person.
+        Each elimination costs exactly <strong>k steps</strong>. &nbsp; (n&minus;1) eliminations &times; k steps = <strong>O(n &times; k)</strong>.
+    </div>
+
+    <div class="fragment warning-box" style="margin-top:0.5em;">
+        <strong>Array:</strong> dead slots stay in the array, just marked. To count k <em>alive</em> people you must skip over dead ones.
+        Near the end — say 2 people left in an array of n — a single elimination might walk past ~n dead slots.
+        Worst case: <strong>O(n&sup2;)</strong>.
     </div>
 
     <div class="fragment" style="margin-top:0.7em;">
+        <table style="width:90%;">
+            <tr><th>Elimination #</th><th>Array steps (skipping dead)</th><th>Linked list steps</th></tr>
+            <tr><td>1st &nbsp;(all n alive)</td><td>k</td><td>k</td></tr>
+            <tr><td>Midway &nbsp;(n/2 dead)</td><td>~2k &nbsp;(skip 1 dead per alive)</td><td>k</td></tr>
+            <tr><td>Near end &nbsp;(2 alive)</td><td>up to ~n &nbsp;(walk past n&minus;2 dead)</td><td>k</td></tr>
+        </table>
+    </div>
+
+    <div class="fragment" style="margin-top:0.6em;">
         <p><strong>Example:</strong> n = 100,000 and k = 2</p>
         <table style="width:70%;">
             <tr><th>Solution</th><th>Operations</th></tr>
-            <tr><td>Array (worst case)</td><td>O(n<sup>2</sup>) = <strong>10,000,000,000</strong></td></tr>
+            <tr><td>Array (worst case)</td><td>O(n&sup2;) = <strong>10,000,000,000</strong></td></tr>
             <tr><td>Circular linked list</td><td>O(n &times; k) = <strong>200,000</strong></td></tr>
         </table>
     </div>
 
     <div class="fragment success-box" style="margin-top:0.5em;">
-        The linked list isn't just cleaner code — it is <strong>genuinely faster</strong>.
-    </div>
-</section>
-
-<!-- Josephus — mathematical recurrence -->
-<section>
-    <h2>Josephus — The Mathematical Shortcut</h2>
-
-    <p>What if you only need the survivor's number — not the full elimination order?</p>
-
-    <div class="fragment" style="margin-top:0.6em;">
-        <p><strong>Insight:</strong> After eliminating person k, you have the same problem with n&minus;1 people — but the numbering has shifted by k positions.</p>
-    </div>
-
-    <div class="fragment key-point" style="margin-top:0.6em;">
-        <strong>Recurrence:</strong><br>
-        <code>J(1, k) = 0</code> &nbsp; &nbsp; (one person — index 0 survives)<br>
-        <code>J(n, k) = (J(n&minus;1, k) + k) % n</code>
-    </div>
-
-    <pre class="fragment"><code class="language-c">int josephus_math(int n, int k) {
-    int survivor = 0;               // J(1, k) = 0
-    for (int i = 2; i <= n; i++)
-        survivor = (survivor + k) % i;
-    return survivor + 1;            // +1 for 1-indexed
-}</code></pre>
-
-    <div class="fragment" style="margin-top:0.5em;">
-        <table style="width:80%;">
-            <tr><th>Solution</th><th>Time</th><th>Space</th><th>Prints elimination order?</th></tr>
-            <tr><td>Array simulation</td><td>O(n<sup>2</sup>)</td><td>O(n)</td><td>Yes</td></tr>
-            <tr><td>Circular linked list</td><td>O(n &times; k)</td><td>O(n)</td><td>Yes</td></tr>
-            <tr><td>Mathematical recurrence</td><td>O(n)</td><td>O(1)</td><td>No — only the survivor</td></tr>
-        </table>
-    </div>
-
-    <div class="fragment info-box" style="margin-top:0.5em;">
-        Three solutions, each with a trade-off. The right choice depends on what the problem asks for.
+        The linked list isn't just cleaner code — it is <strong>genuinely faster</strong>, because it erases dead work instead of carrying it forward.
     </div>
 </section>
 

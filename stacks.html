@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stacks</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 28px;
+        }
+
+        .reveal .slides section {
+            height: 100%;
+            overflow-y: auto !important;
+        }
+
+        .reveal .slides section.stack {
+            overflow-y: visible !important;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            font-weight: 600;
+            text-transform: none;
+            margin-bottom: 0.6em;
+        }
+
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+
+        .reveal pre {
+            margin: 0.7em auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            font-size: 0.55em;
+            line-height: 1.4;
+        }
+
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            padding: 0.1em 0.3em;
+            background: var(--light-bg);
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        .reveal pre code {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 1em;
+            border-radius: 8px;
+            max-height: 420px;
+            overflow: auto;
+        }
+
+        .reveal .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .warning-box {
+            background: #ffe5e5;
+            border-left: 4px solid var(--warning-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--success-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .info-box {
+            background: #dae8fc;
+            border-left: 4px solid #2980b9;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol { margin: 0.7em 0; }
+        .reveal p { margin: 0.45em 0; }
+
+        .reveal blockquote {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            font-style: normal;
+            border-radius: 4px;
+        }
+
+        .reveal .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2em;
+            margin: 0.7em 0;
+        }
+
+        .reveal .three-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1em;
+            margin: 0.7em 0;
+        }
+
+        .reveal .card {
+            background: var(--light-bg);
+            padding: 0.8em 1em;
+            border-radius: 8px;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+
+        .reveal table {
+            margin: 0.7em auto;
+            border-collapse: collapse;
+            font-size: 0.75em;
+            width: 90%;
+        }
+        .reveal table th {
+            background: var(--main-color);
+            color: white;
+            padding: 0.5em 0.8em;
+        }
+        .reveal table td {
+            padding: 0.4em 0.8em;
+            border: 1px solid #dee2e6;
+        }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+
+        .big-q {
+            font-size: 1.35em;
+            font-weight: 600;
+            color: var(--main-color);
+            text-align: center;
+            margin: 0.9em 0;
+            line-height: 1.4;
+        }
+
+        .stack-vis {
+            display: inline-block;
+            border: 2px solid var(--main-color);
+            border-radius: 6px;
+            padding: 0.3em 0.6em;
+            min-width: 80px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 0.85em;
+            margin: 0.1em 0;
+        }
+        .stack-vis.top {
+            background: #fff3cd;
+            border-color: #ffc107;
+            font-weight: bold;
+        }
+        .stack-arrow {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            margin: 0 0.5em;
+        }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Stacks</h1>
+    <h3 style="color:#7f8c8d;">The Most Useful Restricted Data Structure</h3>
+    <p style="color:#7f8c8d; font-size:1.2em; margin-top:1em;">ES 248 — Data Structures</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     MOTIVATION — YOU ALREADY USE STACKS
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>You Already Use Stacks</h2>
+
+    <p>Every time you call a function, your program uses a stack.</p>
+
+    <pre class="fragment"><code class="language-c">int factorial(int n) {
+    if (n == 0) return 1;
+    return n * factorial(n - 1);
+}
+// factorial(4) calls factorial(3) calls factorial(2) calls factorial(1)</code></pre>
+
+    <div class="fragment" style="margin-top:0.6em; font-family:monospace; font-size:0.72em; line-height:1.8;">
+        <div>[ factorial(4) | n=4, waiting... ]  &larr; top</div>
+        <div>[ factorial(3) | n=3, waiting... ]</div>
+        <div>[ factorial(2) | n=2, waiting... ]</div>
+        <div>[ factorial(1) | n=1, waiting... ]</div>
+        <div>[ factorial(0) | returns 1         ]  &larr; currently running</div>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.6em;">
+        Each call is <strong>pushed</strong> when started, <strong>popped</strong> when it returns.
+        The last function called is the first to finish. That is the defining property of a stack.
+    </div>
+</section>
+
+<!-- Everyday stacks -->
+<section>
+    <h2>Stacks Everywhere</h2>
+
+    <div class="two-col" style="margin-top:0.6em;">
+        <div class="card">
+            <h4>Undo / Redo</h4>
+            <p>Every text edit is pushed onto a stack. Ctrl+Z pops the last action. Ctrl+Y re-applies it from a second stack.</p>
+            <p class="small">VS Code, Word, Photoshop — all stacks.</p>
+        </div>
+        <div class="card">
+            <h4>Browser Back Button</h4>
+            <p>Each page you visit is pushed. Back = pop. Forward = push to a second stack.</p>
+            <p class="small">The URL bar history is a stack.</p>
+        </div>
+    </div>
+
+    <div class="two-col fragment" style="margin-top:0.5em;">
+        <div class="card">
+            <h4>Syntax Checking</h4>
+            <p>Your compiler checks that <code>{</code>, <code>(</code>, <code>[</code> are properly closed. It uses a stack to track which ones are open.</p>
+        </div>
+        <div class="card">
+            <h4>Expression Evaluation</h4>
+            <p>How does a calculator handle <code>2 + 3 * 4</code>? Operator precedence is managed with a stack — the basis of every compiler.</p>
+        </div>
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.7em;">
+        <strong>Pattern:</strong> Whenever you need to process something in reverse order of arrival — or remember where you were before going somewhere new — you need a stack.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     THE ADT
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>The Stack — Restricted by Design</h2>
+
+    <p>A stack is not just an array. It is an array with a <strong>contract</strong>:</p>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong>You may only interact with the top.</strong></p>
+        <ul>
+            <li class="fragment"><code>push(x)</code> — add x to the top</li>
+            <li class="fragment"><code>pop()</code> &nbsp;&nbsp;&nbsp;— remove and return the top element</li>
+            <li class="fragment"><code>peek()</code> &nbsp;&nbsp;— look at the top without removing it</li>
+            <li class="fragment"><code>isEmpty()</code> — is the stack empty?</li>
+        </ul>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.8em;">
+        <strong>LIFO — Last In, First Out.</strong> The last thing you pushed is the first thing you get back.
+        The restriction is not a limitation — it is a <em>guarantee</em> that makes problems easier to reason about.
+    </div>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p class="mono">push(1), push(2), push(3) &rarr; &nbsp;top: [ 3 | 2 | 1 ] :bottom</p>
+        <p class="mono fragment">pop() &rarr; 3 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; &nbsp;top: [ 2 | 1 ] :bottom</p>
+        <p class="mono fragment">pop() &rarr; 2 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; &nbsp;top: [ 1 ] :bottom</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     ARRAY IMPLEMENTATION — STRUCT
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Implementing a Stack with an Array</h2>
+
+    <p>An array + an integer tracking the top index. That is all.</p>
+
+    <pre class="fragment"><code class="language-c">#define MAX 100
+
+struct Stack {
+    int data[MAX];
+    int top;        // index of the current top element; -1 means empty
+};</code></pre>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p>Visualizing <code>top</code>:</p>
+        <p class="mono">data: [ 10 | 20 | 30 | ?? | ?? | ... ]</p>
+        <p class="mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0 &nbsp;&nbsp; 1 &nbsp;&nbsp;&nbsp;2 &nbsp;&nbsp;&nbsp;3</p>
+        <p class="mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&uarr; top = 2</p>
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.6em;">
+        <strong>Initialization:</strong> <code>s.top = -1</code> means the stack is empty — no element at index 0 yet.
+        The condition <code>s.top == -1</code> is our <code>isEmpty</code> check.
+    </div>
+</section>
+
+<!-- Array implementation — operations -->
+<section>
+    <h2>Stack Operations — Code</h2>
+
+    <pre><code class="language-c">void init(struct Stack *s) {
+    s->top = -1;
+}
+
+int isEmpty(struct Stack *s) {
+    return s->top == -1;
+}
+
+int isFull(struct Stack *s) {
+    return s->top == MAX - 1;
+}
+
+void push(struct Stack *s, int x) {
+    if (isFull(s)) { printf("Stack overflow\n"); return; }
+    s->top++;
+    s->data[s->top] = x;
+}
+
+int pop(struct Stack *s) {
+    if (isEmpty(s)) { printf("Stack underflow\n"); return -1; }
+    int val = s->data[s->top];
+    s->top--;
+    return val;
+}
+
+int peek(struct Stack *s) {
+    if (isEmpty(s)) { printf("Empty stack\n"); return -1; }
+    return s->data[s->top];
+}</code></pre>
+</section>
+
+<!-- push/pop visualization -->
+<section>
+    <h2>Push and Pop — Step by Step</h2>
+
+    <div class="two-col" style="margin-top:0.5em;">
+        <div>
+            <p><strong>push(10), push(20), push(30)</strong></p>
+            <div class="fragment" style="font-family:monospace; font-size:0.75em; line-height:2.2;">
+                <div>After push(10): &nbsp;[ 10 ] &nbsp; top=0</div>
+                <div>After push(20): &nbsp;[ 10 | 20 ] &nbsp; top=1</div>
+                <div>After push(30): &nbsp;[ 10 | 20 | 30 ] &nbsp; top=2</div>
+            </div>
+        </div>
+        <div>
+            <p><strong>pop(), pop()</strong></p>
+            <div class="fragment" style="font-family:monospace; font-size:0.75em; line-height:2.2;">
+                <div>pop() &rarr; 30 &nbsp; [ 10 | 20 ] &nbsp; top=1</div>
+                <div>pop() &rarr; 20 &nbsp; [ 10 ] &nbsp; top=0</div>
+                <div>pop() &rarr; 10 &nbsp; [] &nbsp; top=-1 (empty)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.8em;">
+        <strong>Push</strong> = increment top, write. &nbsp; <strong>Pop</strong> = read, decrement top. &nbsp;
+        Both are O(1). Always.
+    </div>
+
+    <div class="fragment warning-box">
+        <strong>Overflow:</strong> push when full (<code>top == MAX-1</code>) — writes past the array. &nbsp;
+        <strong>Underflow:</strong> pop when empty (<code>top == -1</code>) — reads garbage. Always check.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PROBLEM 1 — BALANCED BRACKETS
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Problem 1 — Balanced Brackets</h2>
+
+    <p>Your editor highlights unmatched brackets. How does it work?</p>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><code>{ ( [ ] ) }</code> &nbsp;&rarr; &nbsp;<span style="color:var(--success-color);">valid</span></p>
+        <p><code>{ ( [ ) ] }</code> &nbsp;&rarr; &nbsp;<span style="color:#e74c3c;">invalid</span> — wrong closing order</p>
+        <p><code>{ ( [ ] }</code> &nbsp;&nbsp;&rarr; &nbsp;<span style="color:#e74c3c;">invalid</span> — missing <code>)</code></p>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.8em;">
+        <strong>Key insight:</strong> When you see a closing bracket, it must match the <em>most recently opened</em> bracket.
+        "Most recently opened" = top of a stack.
+    </div>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong>Algorithm:</strong></p>
+        <ul>
+            <li>Scan left to right</li>
+            <li>Open bracket (<code>(</code>, <code>[</code>, <code>{</code>) → push it</li>
+            <li>Close bracket (<code>)</code>, <code>]</code>, <code>}</code>) → pop and check if it matches</li>
+            <li>End of string → valid only if stack is empty</li>
+        </ul>
+    </div>
+</section>
+
+<!-- Balanced brackets — walkthrough -->
+<section>
+    <h2>Balanced Brackets — Walkthrough</h2>
+
+    <p>Input: &nbsp;<code>{ ( [ ] ) }</code></p>
+
+    <div style="font-family:monospace; font-size:0.8em; line-height:2;">
+        <div class="fragment">Read <code>{</code> &nbsp; &rarr; push &nbsp;&nbsp; stack: [ { ]</div>
+        <div class="fragment">Read <code>(</code> &nbsp; &rarr; push &nbsp;&nbsp; stack: [ { ( ]</div>
+        <div class="fragment">Read <code>[</code> &nbsp; &rarr; push &nbsp;&nbsp; stack: [ { ( [ ]</div>
+        <div class="fragment">Read <code>]</code> &nbsp; &rarr; pop <code>[</code> &nbsp;&nbsp; match! &nbsp;&nbsp; stack: [ { ( ]</div>
+        <div class="fragment">Read <code>)</code> &nbsp; &rarr; pop <code>(</code> &nbsp;&nbsp; match! &nbsp;&nbsp; stack: [ { ]</div>
+        <div class="fragment">Read <code>}</code> &nbsp; &rarr; pop <code>{</code> &nbsp;&nbsp; match! &nbsp;&nbsp; stack: []</div>
+        <div class="fragment" style="color:var(--success-color); font-weight:bold;">Stack empty at end &rarr; VALID</div>
+    </div>
+</section>
+
+<!-- Balanced brackets — code -->
+<section>
+    <h2>Balanced Brackets — Code</h2>
+
+    <pre><code class="language-c">int isMatching(char open, char close) {
+    return (open == '(' && close == ')') ||
+           (open == '[' && close == ']') ||
+           (open == '{' && close == '}');
+}
+
+int isBalanced(char *expr) {
+    struct Stack s;
+    init(&s);
+
+    for (int i = 0; expr[i] != '\0'; i++) {
+        char c = expr[i];
+        if (c == '(' || c == '[' || c == '{') {
+            push(&s, c);
+        } else if (c == ')' || c == ']' || c == '}') {
+            if (isEmpty(&s)) return 0;         // nothing to match
+            if (!isMatching(pop(&s), c)) return 0;
+        }
+    }
+    return isEmpty(&s);   // valid only if all opens were closed
+}</code></pre>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        O(n) time — one pass through the string. O(n) space — at most n/2 opens on the stack at once.
+        No nested loops. The stack eliminates the need to search backward.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PROBLEM 2 — NEXT GREATER ELEMENT (MONOTONIC STACK)
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Problem 2 — Next Greater Element</h2>
+
+    <p>Given an array, for each element find the <strong>next element to its right that is greater</strong>.</p>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p class="mono">Input:  [ 2, 1, 5, 3, 6, 4 ]</p>
+        <p class="mono">Output: [ 5, 5, 6, 6, -1, -1 ]</p>
+        <p class="small" style="margin-top:0.3em;">For 2: next greater is 5. &nbsp; For 1: next greater is 5. &nbsp; For 6: none, so -1.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <p><strong>Brute force:</strong> For each element, scan right until you find something larger.</p>
+        <pre><code class="language-c">for (int i = 0; i < n; i++) {
+    result[i] = -1;
+    for (int j = i + 1; j < n; j++) {
+        if (arr[j] > arr[i]) { result[i] = arr[j]; break; }
+    }
+}</code></pre>
+    </div>
+
+    <div class="fragment warning-box">
+        O(n&sup2;). For n = 100,000 that is 10 billion comparisons. There is a better way.
+    </div>
+</section>
+
+<!-- NGE — monotonic stack idea -->
+<section>
+    <h2>Next Greater Element — Stack Insight</h2>
+
+    <p>Scan left to right. Use a stack to track elements <strong>waiting for their answer</strong>.</p>
+
+    <div class="fragment" style="margin-top:0.4em;">
+        <p><strong>Invariant:</strong> The stack always holds elements in <em>decreasing order</em> (bottom to top). When a new element arrives that is <em>larger than the top</em>, it is the answer for everything it beats.</p>
+    </div>
+
+    <p class="mono" style="margin:0.7em 0;">Array: [ 2, 1, 5, 3, 6, 4 ]</p>
+
+    <div style="font-family:monospace; font-size:0.72em; line-height:1.9;">
+        <div class="fragment">Read 2: &nbsp;stack empty, push 2. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [2]</div>
+        <div class="fragment">Read 1: &nbsp;1 &lt; 2, push 1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [2, 1]</div>
+        <div class="fragment">Read 5: &nbsp;5 &gt; 1, pop 1 &rarr; answer[1]=5. &nbsp;&nbsp;&nbsp;&nbsp;Stack: [2]</div>
+        <div class="fragment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 &gt; 2, pop 2 &rarr; answer[0]=5. &nbsp;&nbsp;&nbsp;&nbsp;Stack: []</div>
+        <div class="fragment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; push 5. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [5]</div>
+        <div class="fragment">Read 3: &nbsp;3 &lt; 5, push 3. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [5, 3]</div>
+        <div class="fragment">Read 6: &nbsp;6 &gt; 3, pop 3 &rarr; answer[3]=6. &nbsp;&nbsp;&nbsp;&nbsp;Stack: [5]</div>
+        <div class="fragment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 &gt; 5, pop 5 &rarr; answer[2]=6. &nbsp;&nbsp;&nbsp;&nbsp;Stack: []</div>
+        <div class="fragment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; push 6. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [6]</div>
+        <div class="fragment">Read 4: &nbsp;4 &lt; 6, push 4. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [6, 4]</div>
+        <div class="fragment">End: &nbsp;&nbsp;&nbsp;&nbsp;remaining stack {6, 4} &rarr; answer = -1.</div>
+    </div>
+</section>
+
+<!-- NGE — code -->
+<section>
+    <h2>Next Greater Element — Code</h2>
+
+    <pre><code class="language-c">void nextGreater(int arr[], int result[], int n) {
+    struct Stack s;
+    init(&s);
+
+    for (int i = 0; i < n; i++) {
+        // Pop everything the current element beats — it's their answer
+        while (!isEmpty(&s) && arr[peek(&s)] < arr[i]) {
+            int idx = pop(&s);
+            result[idx] = arr[i];
+        }
+        push(&s, i);   // push index, not value — so we can write result[idx]
+    }
+
+    // Anything still in the stack has no greater element
+    while (!isEmpty(&s))
+        result[pop(&s)] = -1;
+}</code></pre>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <table style="width:70%;">
+            <tr><th>Solution</th><th>Time</th><th>Space</th></tr>
+            <tr><td>Brute force (nested loops)</td><td>O(n&sup2;)</td><td>O(1)</td></tr>
+            <tr><td>Monotonic stack</td><td><strong>O(n)</strong></td><td>O(n)</td></tr>
+        </table>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        Each element is pushed exactly once and popped exactly once. Total work = 2n operations = <strong>O(n)</strong>.
+        The stack is not just a container here — it is an active part of the algorithm.
+    </div>
+</section>
+
+<!-- When to think stack -->
+<section>
+    <h2>When to Reach for a Stack</h2>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p><strong>The signal:</strong> You need to process something in reverse order of arrival — or you need to remember where you were before going somewhere new.</p>
+    </div>
+
+    <div class="three-col fragment" style="margin-top:0.7em;">
+        <div class="card">
+            <h4>Matching</h4>
+            <p>Balanced brackets, HTML tag matching, XML validation.</p>
+            <p class="small">Open → push. Close → pop and check.</p>
+        </div>
+        <div class="card">
+            <h4>Monotonic</h4>
+            <p>Next greater/smaller element, stock span, largest rectangle.</p>
+            <p class="small">Maintain a sorted invariant. Pop when it breaks.</p>
+        </div>
+        <div class="card">
+            <h4>Tracking State</h4>
+            <p>Undo/redo, browser history, function calls, DFS traversal.</p>
+            <p class="small">Push when entering. Pop when returning.</p>
+        </div>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.7em;">
+        <strong>Monotonic stack</strong> is the non-obvious one. Whenever a brute-force solution uses a nested loop to look backward or forward for a smaller/larger element, a monotonic stack can usually reduce it to O(n).
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CLOSING
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h2 style="margin-bottom:1em;">Recap</h2>
+
+    <div class="fragment" style="text-align:left; max-width:640px; margin:0 auto;">
+        <ul>
+            <li><strong>LIFO</strong> — the restriction is the point, not a limitation</li>
+            <li><strong>Array implementation</strong> — a struct with <code>data[]</code> and <code>top</code>. Push/pop are O(1).</li>
+            <li><strong>Balanced brackets</strong> — O(n) with a stack, because "most recent open" = top</li>
+            <li><strong>Monotonic stack</strong> — turns O(n²) nested-loop problems into O(n)</li>
+        </ul>
+    </div>
+
+    <div class="fragment" style="margin-top:1.5em;">
+        <p class="big-q">Next: Queues</p>
+        <p style="color:#7f8c8d;">FIFO — the other side of the coin. Stacks and queues are two ends of the same idea.</p>
+    </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        slideNumber: true,
+        transition: 'slide',
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 2.0,
+        plugins: [ RevealHighlight, RevealNotes ]
+    });
+</script>
+</body>
+</html>
