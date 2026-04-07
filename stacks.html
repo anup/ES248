@@ -760,7 +760,8 @@ int peek(struct Stack *s) {
     <ol>
         <li class="fragment" style="margin-bottom:0.6em;">
             <strong>Evaluate a Postfix Expression</strong><br>
-            <span class="small">Input: <code>"2 3 4 * +"</code> &rarr; Output: <code>14</code> &nbsp; (because 3&times;4=12, then 2+12=14)<br>
+            <span class="small">In <strong>postfix</strong> (also called Reverse Polish Notation), the operator comes <em>after</em> its operands: <code>2 + 3</code> becomes <code>2 3 +</code>. No parentheses are ever needed — the order is unambiguous.<br>
+            Input: <code>"2 3 4 * +"</code> &rarr; Output: <code>14</code> &nbsp; (because 3&times;4=12, then 2+12=14)<br>
             Scan left to right. Numbers &rarr; push. Operator &rarr; pop two operands, compute, push result.</span>
         </li>
         <li class="fragment" style="margin-bottom:0.6em;">
