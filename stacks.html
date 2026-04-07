@@ -210,269 +210,119 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════
-     MOTIVATION — YOU ALREADY USE STACKS
+     STACK OF PLATES — THE PHYSICAL ANALOGY
 ════════════════════════════════════════════════════ -->
 <section>
-    <h2>You Already Use Stacks</h2>
+    <h2>A Stack of Plates</h2>
 
-    <p>Every time you call a function, your program uses a stack.</p>
+    <p>Imagine a stack of plates in a cafeteria.</p>
 
-    <pre class="fragment"><code class="language-c">int factorial(int n) {
-    if (n == 0) return 1;
-    return n * factorial(n - 1);
-}
-// factorial(4) calls factorial(3) calls factorial(2) calls factorial(1)</code></pre>
-
-    <div class="fragment" style="margin-top:0.6em; font-family:monospace; font-size:0.72em; line-height:1.8;">
-        <div>[ factorial(4) | n=4, waiting... ]  &larr; top</div>
-        <div>[ factorial(3) | n=3, waiting... ]</div>
-        <div>[ factorial(2) | n=2, waiting... ]</div>
-        <div>[ factorial(1) | n=1, waiting... ]</div>
-        <div>[ factorial(0) | returns 1         ]  &larr; currently running</div>
+    <div class="fragment" style="margin-top:0.8em; font-family:monospace; font-size:0.85em; line-height:1.6; text-align:center;">
+        <div style="border:2px solid var(--main-color); border-radius:4px; padding:0.3em 1.5em; display:inline-block; background:#fff3cd; font-weight:bold;">Plate D</div> &larr; top (most recent)<br>
+        <div style="border:2px solid var(--main-color); border-radius:4px; padding:0.3em 1.5em; display:inline-block;">Plate C</div><br>
+        <div style="border:2px solid var(--main-color); border-radius:4px; padding:0.3em 1.5em; display:inline-block;">Plate B</div><br>
+        <div style="border:2px solid var(--main-color); border-radius:4px; padding:0.3em 1.5em; display:inline-block;">Plate A</div> &larr; bottom (first placed)
     </div>
 
-    <div class="fragment key-point" style="margin-top:0.6em;">
-        Each call is <strong>pushed</strong> when started, <strong>popped</strong> when it returns.
-        The last function called is the first to finish. That is the defining property of a stack.
-    </div>
-</section>
-
-<!-- Everyday stacks -->
-<section>
-    <h2>Stacks Everywhere</h2>
-
-    <div class="two-col" style="margin-top:0.6em;">
-        <div class="card">
-            <h4>Undo / Redo</h4>
-            <p>Every text edit is pushed onto a stack. Ctrl+Z pops the last action. Ctrl+Y re-applies it from a second stack.</p>
-            <p class="small">VS Code, Word, Photoshop — all stacks.</p>
-        </div>
-        <div class="card">
-            <h4>Browser Back Button</h4>
-            <p>Each page you visit is pushed. Back = pop. Forward = push to a second stack.</p>
-            <p class="small">The URL bar history is a stack.</p>
-        </div>
-    </div>
-
-    <div class="two-col fragment" style="margin-top:0.5em;">
-        <div class="card">
-            <h4>Syntax Checking</h4>
-            <p>Your compiler checks that <code>{</code>, <code>(</code>, <code>[</code> are properly closed. It uses a stack to track which ones are open.</p>
-        </div>
-        <div class="card">
-            <h4>Expression Evaluation</h4>
-            <p>How does a calculator handle <code>2 + 3 * 4</code>? Operator precedence is managed with a stack — the basis of every compiler.</p>
-        </div>
-    </div>
-
-    <div class="fragment info-box" style="margin-top:0.7em;">
-        <strong>Pattern:</strong> Whenever you need to process something in reverse order of arrival — or remember where you were before going somewhere new — you need a stack.
-    </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════
-     THE ADT
-════════════════════════════════════════════════════ -->
-<section>
-    <h2>The Stack — Restricted by Design</h2>
-
-    <p>A stack is not just an array. It is an array with a <strong>contract</strong>:</p>
-
-    <div class="fragment" style="margin-top:0.6em;">
-        <p><strong>You may only interact with the top.</strong></p>
+    <div class="fragment" style="margin-top:0.8em;">
         <ul>
-            <li class="fragment"><code>push(x)</code> — add x to the top</li>
-            <li class="fragment"><code>pop()</code> &nbsp;&nbsp;&nbsp;— remove and return the top element</li>
-            <li class="fragment"><code>peek()</code> &nbsp;&nbsp;— look at the top without removing it</li>
-            <li class="fragment"><code>isEmpty()</code> — is the stack empty?</li>
+            <li>You can only add a new plate <strong>on top</strong> — that is <code>push</code></li>
+            <li class="fragment">You can only remove the <strong>topmost</strong> plate — that is <code>pop</code></li>
+            <li class="fragment">You cannot pull a plate from the middle without first removing everything above it</li>
         </ul>
     </div>
 
-    <div class="fragment key-point" style="margin-top:0.8em;">
-        <strong>LIFO — Last In, First Out.</strong> The last thing you pushed is the first thing you get back.
-        The restriction is not a limitation — it is a <em>guarantee</em> that makes problems easier to reason about.
-    </div>
-
-    <div class="fragment" style="margin-top:0.6em;">
-        <p class="mono">push(1), push(2), push(3) &rarr; &nbsp;top: [ 3 | 2 | 1 ] :bottom</p>
-        <p class="mono fragment">pop() &rarr; 3 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; &nbsp;top: [ 2 | 1 ] :bottom</p>
-        <p class="mono fragment">pop() &rarr; 2 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; &nbsp;top: [ 1 ] :bottom</p>
+    <div class="fragment key-point" style="margin-top:0.7em;">
+        <strong>LIFO — Last In, First Out.</strong> The last plate placed is the first one you take. That is the entire idea. A stack is a data structure with just two operations: <code>push</code> and <code>pop</code>.
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════════
-     ARRAY IMPLEMENTATION — STRUCT
-════════════════════════════════════════════════════ -->
+<!-- Push and pop with plates -->
 <section>
-    <h2>Implementing a Stack with an Array</h2>
-
-    <p>An array + an integer tracking the top index. That is all.</p>
-
-    <pre class="fragment"><code class="language-c">#define MAX 100
-
-struct Stack {
-    int data[MAX];
-    int top;        // index of the current top element; -1 means empty
-};</code></pre>
-
-    <div class="fragment" style="margin-top:0.6em;">
-        <p>Visualizing <code>top</code>:</p>
-        <p class="mono">data: [ 10 | 20 | 30 | ?? | ?? | ... ]</p>
-        <p class="mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0 &nbsp;&nbsp; 1 &nbsp;&nbsp;&nbsp;2 &nbsp;&nbsp;&nbsp;3</p>
-        <p class="mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&uarr; top = 2</p>
-    </div>
-
-    <div class="fragment info-box" style="margin-top:0.6em;">
-        <strong>Initialization:</strong> <code>s.top = -1</code> means the stack is empty — no element at index 0 yet.
-        The condition <code>s.top == -1</code> is our <code>isEmpty</code> check.
-    </div>
-</section>
-
-<!-- Array implementation — operations -->
-<section>
-    <h2>Stack Operations — Code</h2>
-
-    <pre><code class="language-c">void init(struct Stack *s) {
-    s->top = -1;
-}
-
-int isEmpty(struct Stack *s) {
-    return s->top == -1;
-}
-
-int isFull(struct Stack *s) {
-    return s->top == MAX - 1;
-}
-
-void push(struct Stack *s, int x) {
-    if (isFull(s)) { printf("Stack overflow\n"); return; }
-    s->top++;
-    s->data[s->top] = x;
-}
-
-int pop(struct Stack *s) {
-    if (isEmpty(s)) { printf("Stack underflow\n"); return -1; }
-    int val = s->data[s->top];
-    s->top--;
-    return val;
-}
-
-int peek(struct Stack *s) {
-    if (isEmpty(s)) { printf("Empty stack\n"); return -1; }
-    return s->data[s->top];
-}</code></pre>
-</section>
-
-<!-- push/pop visualization -->
-<section>
-    <h2>Push and Pop — Step by Step</h2>
+    <h2>Push and Pop</h2>
 
     <div class="two-col" style="margin-top:0.5em;">
         <div>
-            <p><strong>push(10), push(20), push(30)</strong></p>
-            <div class="fragment" style="font-family:monospace; font-size:0.75em; line-height:2.2;">
-                <div>After push(10): &nbsp;[ 10 ] &nbsp; top=0</div>
-                <div>After push(20): &nbsp;[ 10 | 20 ] &nbsp; top=1</div>
-                <div>After push(30): &nbsp;[ 10 | 20 | 30 ] &nbsp; top=2</div>
+            <h4 style="color:var(--success-color);">push — add to top</h4>
+            <div style="font-family:monospace; font-size:0.8em; line-height:2;">
+                <div class="fragment">push(A): &nbsp; [ A ]</div>
+                <div class="fragment">push(B): &nbsp; [ A, B ]</div>
+                <div class="fragment">push(C): &nbsp; [ A, B, C ]</div>
             </div>
         </div>
         <div>
-            <p><strong>pop(), pop()</strong></p>
-            <div class="fragment" style="font-family:monospace; font-size:0.75em; line-height:2.2;">
-                <div>pop() &rarr; 30 &nbsp; [ 10 | 20 ] &nbsp; top=1</div>
-                <div>pop() &rarr; 20 &nbsp; [ 10 ] &nbsp; top=0</div>
-                <div>pop() &rarr; 10 &nbsp; [] &nbsp; top=-1 (empty)</div>
+            <h4 style="color:#e74c3c;">pop — remove from top</h4>
+            <div style="font-family:monospace; font-size:0.8em; line-height:2;">
+                <div class="fragment">pop() &rarr; C &nbsp; [ A, B ]</div>
+                <div class="fragment">pop() &rarr; B &nbsp; [ A ]</div>
+                <div class="fragment">pop() &rarr; A &nbsp; [ ] (empty)</div>
             </div>
         </div>
     </div>
 
-    <div class="fragment key-point" style="margin-top:0.8em;">
-        <strong>Push</strong> = increment top, write. &nbsp; <strong>Pop</strong> = read, decrement top. &nbsp;
-        Both are O(1). Always.
+    <div class="fragment info-box" style="margin-top:1em;">
+        Notice the order: we pushed A, B, C — but popped C, B, A. <strong>Reversed.</strong>
+        That is not a coincidence. It is the most fundamental property of a stack.
     </div>
 
-    <div class="fragment warning-box">
-        <strong>Overflow:</strong> push when full (<code>top == MAX-1</code>) — writes past the array. &nbsp;
-        <strong>Underflow:</strong> pop when empty (<code>top == -1</code>) — reads garbage. Always check.
+    <div class="fragment" style="margin-top:0.7em;">
+        <p>Let's not worry about <em>how</em> push and pop are implemented yet. Let's see what problems we can solve with just these two operations.</p>
     </div>
 </section>
 
 <!-- ═══════════════════════════════════════════════════
-     PROBLEM 1 — BALANCED BRACKETS
+     PROBLEM 1 — REVERSE A STRING
 ════════════════════════════════════════════════════ -->
 <section>
-    <h2>Problem 1 — Balanced Brackets</h2>
+    <h2>Problem 1 — Reverse a String</h2>
 
-    <p>Your editor highlights unmatched brackets. How does it work?</p>
-
-    <div class="fragment" style="margin-top:0.6em;">
-        <p><code>{ ( [ ] ) }</code> &nbsp;&rarr; &nbsp;<span style="color:var(--success-color);">valid</span></p>
-        <p><code>{ ( [ ) ] }</code> &nbsp;&rarr; &nbsp;<span style="color:#e74c3c;">invalid</span> — wrong closing order</p>
-        <p><code>{ ( [ ] }</code> &nbsp;&nbsp;&rarr; &nbsp;<span style="color:#e74c3c;">invalid</span> — missing <code>)</code></p>
-    </div>
-
-    <div class="fragment key-point" style="margin-top:0.8em;">
-        <strong>Key insight:</strong> When you see a closing bracket, it must match the <em>most recently opened</em> bracket.
-        "Most recently opened" = top of a stack.
-    </div>
+    <p>Given a string, reverse it. Simple enough — but watch what happens with a stack.</p>
 
     <div class="fragment" style="margin-top:0.6em;">
-        <p><strong>Algorithm:</strong></p>
-        <ul>
-            <li>Scan left to right</li>
-            <li>Open bracket (<code>(</code>, <code>[</code>, <code>{</code>) → push it</li>
-            <li>Close bracket (<code>)</code>, <code>]</code>, <code>}</code>) → pop and check if it matches</li>
-            <li>End of string → valid only if stack is empty</li>
-        </ul>
+        <p class="mono">Input:&nbsp; "HELLO"</p>
+        <p class="mono">Output: "OLLEH"</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <p><strong>Algorithm:</strong> Push every character. Then pop every character.</p>
+    </div>
+
+    <div class="fragment" style="font-family:monospace; font-size:0.78em; line-height:1.9; margin-top:0.5em;">
+        <div>push 'H', push 'E', push 'L', push 'L', push 'O'</div>
+        <div style="margin:0.3em 0;">Stack: [ H, E, L, L, O ] &larr; top</div>
+        <div class="fragment">pop &rarr; 'O', pop &rarr; 'L', pop &rarr; 'L', pop &rarr; 'E', pop &rarr; 'H'</div>
+        <div class="fragment" style="font-weight:bold; color:var(--success-color);">Result: "OLLEH"</div>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.7em;">
+        LIFO does the reversal for you automatically. Push everything in, pop everything out — reversed. No index arithmetic, no swapping, no second array.
     </div>
 </section>
 
-<!-- Balanced brackets — walkthrough -->
+<!-- Reverse string — code -->
 <section>
-    <h2>Balanced Brackets — Walkthrough</h2>
+    <h2>Reverse a String — Code</h2>
 
-    <p>Input: &nbsp;<code>{ ( [ ] ) }</code></p>
+    <p>Assume we have <code>push</code> and <code>pop</code> available. We don't care how they work internally yet.</p>
 
-    <div style="font-family:monospace; font-size:0.8em; line-height:2;">
-        <div class="fragment">Read <code>{</code> &nbsp; &rarr; push &nbsp;&nbsp; stack: [ { ]</div>
-        <div class="fragment">Read <code>(</code> &nbsp; &rarr; push &nbsp;&nbsp; stack: [ { ( ]</div>
-        <div class="fragment">Read <code>[</code> &nbsp; &rarr; push &nbsp;&nbsp; stack: [ { ( [ ]</div>
-        <div class="fragment">Read <code>]</code> &nbsp; &rarr; pop <code>[</code> &nbsp;&nbsp; match! &nbsp;&nbsp; stack: [ { ( ]</div>
-        <div class="fragment">Read <code>)</code> &nbsp; &rarr; pop <code>(</code> &nbsp;&nbsp; match! &nbsp;&nbsp; stack: [ { ]</div>
-        <div class="fragment">Read <code>}</code> &nbsp; &rarr; pop <code>{</code> &nbsp;&nbsp; match! &nbsp;&nbsp; stack: []</div>
-        <div class="fragment" style="color:var(--success-color); font-weight:bold;">Stack empty at end &rarr; VALID</div>
-    </div>
-</section>
+    <pre><code class="language-c">void reverseString(char *str) {
+    int len = strlen(str);
 
-<!-- Balanced brackets — code -->
-<section>
-    <h2>Balanced Brackets — Code</h2>
+    // Phase 1: push every character
+    for (int i = 0; i < len; i++)
+        push(str[i]);
 
-    <pre><code class="language-c">int isMatching(char open, char close) {
-    return (open == '(' && close == ')') ||
-           (open == '[' && close == ']') ||
-           (open == '{' && close == '}');
-}
-
-int isBalanced(char *expr) {
-    struct Stack s;
-    init(&s);
-
-    for (int i = 0; expr[i] != '\0'; i++) {
-        char c = expr[i];
-        if (c == '(' || c == '[' || c == '{') {
-            push(&s, c);
-        } else if (c == ')' || c == ']' || c == '}') {
-            if (isEmpty(&s)) return 0;         // nothing to match
-            if (!isMatching(pop(&s), c)) return 0;
-        }
-    }
-    return isEmpty(&s);   // valid only if all opens were closed
+    // Phase 2: pop them back — they come out reversed
+    for (int i = 0; i < len; i++)
+        str[i] = pop();
 }</code></pre>
 
-    <div class="fragment success-box" style="margin-top:0.5em;">
-        O(n) time — one pass through the string. O(n) space — at most n/2 opens on the stack at once.
-        No nested loops. The stack eliminates the need to search backward.
+    <div class="fragment success-box" style="margin-top:0.6em;">
+        O(n) time, O(n) space. Two passes — one to fill the stack, one to drain it.
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p class="small">Yes, you could reverse a string with two pointers and no extra space. The point here is to see LIFO in action — the stack gives you reversal for free.</p>
     </div>
 </section>
 
@@ -537,65 +387,227 @@ int isBalanced(char *expr) {
     <h2>Next Greater Element — Code</h2>
 
     <pre><code class="language-c">void nextGreater(int arr[], int result[], int n) {
-    struct Stack s;
-    init(&s);
+    // Again — just push and pop. We don't care how they work yet.
 
     for (int i = 0; i < n; i++) {
         // Pop everything the current element beats — it's their answer
-        while (!isEmpty(&s) && arr[peek(&s)] < arr[i]) {
-            int idx = pop(&s);
+        while (!isEmpty() && arr[peek()] < arr[i]) {
+            int idx = pop();
             result[idx] = arr[i];
         }
-        push(&s, i);   // push index, not value — so we can write result[idx]
+        push(i);   // push index, not value — so we can write result[idx]
     }
 
     // Anything still in the stack has no greater element
-    while (!isEmpty(&s))
-        result[pop(&s)] = -1;
+    while (!isEmpty())
+        result[pop()] = -1;
 }</code></pre>
 
     <div class="fragment" style="margin-top:0.6em;">
         <table style="width:70%;">
             <tr><th>Solution</th><th>Time</th><th>Space</th></tr>
             <tr><td>Brute force (nested loops)</td><td>O(n&sup2;)</td><td>O(1)</td></tr>
-            <tr><td>Monotonic stack</td><td><strong>O(n)</strong></td><td>O(n)</td></tr>
+            <tr><td>Stack</td><td><strong>O(n)</strong></td><td>O(n)</td></tr>
         </table>
     </div>
 
     <div class="fragment success-box" style="margin-top:0.5em;">
         Each element is pushed exactly once and popped exactly once. Total work = 2n operations = <strong>O(n)</strong>.
-        The stack is not just a container here — it is an active part of the algorithm.
+        The stack eliminated the inner loop entirely.
     </div>
 </section>
 
-<!-- When to think stack -->
+<!-- ═══════════════════════════════════════════════════
+     PROBLEM 3 — BALANCED BRACKETS
+════════════════════════════════════════════════════ -->
 <section>
-    <h2>When to Reach for a Stack</h2>
+    <h2>Problem 3 — Balanced Brackets</h2>
 
-    <div class="fragment" style="margin-top:0.5em;">
-        <p><strong>The signal:</strong> You need to process something in reverse order of arrival — or you need to remember where you were before going somewhere new.</p>
+    <p>Your editor highlights unmatched brackets. How does it work?</p>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><code>{ ( [ ] ) }</code> &nbsp;&rarr; &nbsp;<span style="color:var(--success-color);">valid</span></p>
+        <p><code>{ ( [ ) ] }</code> &nbsp;&rarr; &nbsp;<span style="color:#e74c3c;">invalid</span> — wrong closing order</p>
+        <p><code>{ ( [ ] }</code> &nbsp;&nbsp;&rarr; &nbsp;<span style="color:#e74c3c;">invalid</span> — missing <code>)</code></p>
     </div>
 
-    <div class="three-col fragment" style="margin-top:0.7em;">
-        <div class="card">
-            <h4>Matching</h4>
-            <p>Balanced brackets, HTML tag matching, XML validation.</p>
-            <p class="small">Open → push. Close → pop and check.</p>
+    <div class="fragment key-point" style="margin-top:0.8em;">
+        <strong>Key insight:</strong> When you see a closing bracket, it must match the <em>most recently opened</em> bracket.
+        "Most recently opened" = the last one pushed = top of a stack.
+    </div>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong>Algorithm:</strong></p>
+        <ul>
+            <li>Scan left to right</li>
+            <li>Open bracket (<code>(</code>, <code>[</code>, <code>{</code>) &rarr; push it</li>
+            <li>Close bracket (<code>)</code>, <code>]</code>, <code>}</code>) &rarr; pop and check if it matches</li>
+            <li>End of string &rarr; valid only if stack is empty</li>
+        </ul>
+    </div>
+</section>
+
+<!-- Balanced brackets — walkthrough -->
+<section>
+    <h2>Balanced Brackets — Walkthrough</h2>
+
+    <p>Input: &nbsp;<code>{ ( [ ] ) }</code></p>
+
+    <div style="font-family:monospace; font-size:0.8em; line-height:2;">
+        <div class="fragment">Read <code>{</code> &nbsp; &rarr; push &nbsp;&nbsp; stack: [ { ]</div>
+        <div class="fragment">Read <code>(</code> &nbsp; &rarr; push &nbsp;&nbsp; stack: [ { ( ]</div>
+        <div class="fragment">Read <code>[</code> &nbsp; &rarr; push &nbsp;&nbsp; stack: [ { ( [ ]</div>
+        <div class="fragment">Read <code>]</code> &nbsp; &rarr; pop <code>[</code> &nbsp;&nbsp; match! &nbsp;&nbsp; stack: [ { ( ]</div>
+        <div class="fragment">Read <code>)</code> &nbsp; &rarr; pop <code>(</code> &nbsp;&nbsp; match! &nbsp;&nbsp; stack: [ { ]</div>
+        <div class="fragment">Read <code>}</code> &nbsp; &rarr; pop <code>{</code> &nbsp;&nbsp; match! &nbsp;&nbsp; stack: []</div>
+        <div class="fragment" style="color:var(--success-color); font-weight:bold;">Stack empty at end &rarr; VALID</div>
+    </div>
+</section>
+
+<!-- Balanced brackets — code -->
+<section>
+    <h2>Balanced Brackets — Code</h2>
+
+    <pre><code class="language-c">int isMatching(char open, char close) {
+    return (open == '(' && close == ')') ||
+           (open == '[' && close == ']') ||
+           (open == '{' && close == '}');
+}
+
+int isBalanced(char *expr) {
+    // Still just push and pop — same two operations.
+
+    for (int i = 0; expr[i] != '\0'; i++) {
+        char c = expr[i];
+        if (c == '(' || c == '[' || c == '{') {
+            push(c);
+        } else if (c == ')' || c == ']' || c == '}') {
+            if (isEmpty()) return 0;            // nothing to match
+            if (!isMatching(pop(), c)) return 0;
+        }
+    }
+    return isEmpty();   // valid only if all opens were closed
+}</code></pre>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        O(n) time — one pass through the string. O(n) space — at most n/2 opens on the stack at once.
+        No nested loops. The stack eliminates the need to search backward.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     TRANSITION — NOW LET'S BUILD IT
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h2 style="margin-bottom:0.8em;">Three Problems, Two Operations</h2>
+
+    <div style="text-align:left; max-width:640px; margin:0 auto;">
+        <p>We solved all three problems using only <code>push</code> and <code>pop</code>.</p>
+        <p class="fragment" style="margin-top:0.5em;">We never asked <em>how</em> they work. We treated the stack as a black box — an <strong>abstraction</strong>.</p>
+        <p class="fragment" style="margin-top:0.5em;">Now let's build the box.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:1.5em;">
+        <p class="big-q">How do we implement push and pop?</p>
+        <p style="color:#7f8c8d;">The simplest answer: an array and an integer.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     ARRAY IMPLEMENTATION — STRUCT
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Implementing a Stack with an Array</h2>
+
+    <p>An array + an integer tracking the top index. That is all.</p>
+
+    <pre class="fragment"><code class="language-c">#define MAX 100
+
+struct Stack {
+    int data[MAX];
+    int top;        // index of the current top element; -1 means empty
+};</code></pre>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p>Visualizing <code>top</code> after pushing 10, 20, 30:</p>
+        <p class="mono">data: [ 10 | 20 | 30 | ?? | ?? | ... ]</p>
+        <p class="mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0 &nbsp;&nbsp; 1 &nbsp;&nbsp;&nbsp;2 &nbsp;&nbsp;&nbsp;3</p>
+        <p class="mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&uarr; top = 2</p>
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.6em;">
+        <strong>Initialization:</strong> <code>s.top = -1</code> means the stack is empty — no element at index 0 yet.
+        The condition <code>s.top == -1</code> is our <code>isEmpty</code> check.
+    </div>
+</section>
+
+<!-- Array implementation — operations -->
+<section>
+    <h2>Stack Operations — Code</h2>
+
+    <pre><code class="language-c">void init(struct Stack *s) {
+    s->top = -1;
+}
+
+int isEmpty(struct Stack *s) {
+    return s->top == -1;
+}
+
+int isFull(struct Stack *s) {
+    return s->top == MAX - 1;
+}
+
+void push(struct Stack *s, int x) {
+    if (isFull(s)) { printf("Stack overflow\n"); return; }
+    s->top++;
+    s->data[s->top] = x;
+}
+
+int pop(struct Stack *s) {
+    if (isEmpty(s)) { printf("Stack underflow\n"); return -1; }
+    int val = s->data[s->top];
+    s->top--;
+    return val;
+}
+
+int peek(struct Stack *s) {
+    if (isEmpty(s)) { printf("Empty stack\n"); return -1; }
+    return s->data[s->top];
+}</code></pre>
+</section>
+
+<!-- push/pop visualization -->
+<section>
+    <h2>Push and Pop — Under the Hood</h2>
+
+    <div class="two-col" style="margin-top:0.5em;">
+        <div>
+            <p><strong>push(10), push(20), push(30)</strong></p>
+            <div class="fragment" style="font-family:monospace; font-size:0.75em; line-height:2.2;">
+                <div>top=-1 (empty)</div>
+                <div>push(10): top++ &rarr; 0, data[0]=10</div>
+                <div>push(20): top++ &rarr; 1, data[1]=20</div>
+                <div>push(30): top++ &rarr; 2, data[2]=30</div>
+            </div>
         </div>
-        <div class="card">
-            <h4>Monotonic</h4>
-            <p>Next greater/smaller element, stock span, largest rectangle.</p>
-            <p class="small">Maintain a sorted invariant. Pop when it breaks.</p>
-        </div>
-        <div class="card">
-            <h4>Tracking State</h4>
-            <p>Undo/redo, browser history, function calls, DFS traversal.</p>
-            <p class="small">Push when entering. Pop when returning.</p>
+        <div>
+            <p><strong>pop(), pop(), pop()</strong></p>
+            <div class="fragment" style="font-family:monospace; font-size:0.75em; line-height:2.2;">
+                <div>pop(): val=data[2]=30, top-- &rarr; 1</div>
+                <div>pop(): val=data[1]=20, top-- &rarr; 0</div>
+                <div>pop(): val=data[0]=10, top-- &rarr; -1</div>
+            </div>
         </div>
     </div>
 
-    <div class="fragment key-point" style="margin-top:0.7em;">
-        <strong>Monotonic stack</strong> is the non-obvious one. Whenever a brute-force solution uses a nested loop to look backward or forward for a smaller/larger element, a monotonic stack can usually reduce it to O(n).
+    <div class="fragment key-point" style="margin-top:0.8em;">
+        <strong>Push</strong> = increment top, write. &nbsp; <strong>Pop</strong> = read, decrement top. &nbsp;
+        Both are O(1). Always.
+    </div>
+
+    <div class="fragment warning-box">
+        <strong>Overflow:</strong> push when full (<code>top == MAX-1</code>) — writes past the array. &nbsp;
+        <strong>Underflow:</strong> pop when empty (<code>top == -1</code>) — reads garbage. Always check.
     </div>
 </section>
 
@@ -608,9 +620,10 @@ int isBalanced(char *expr) {
     <div class="fragment" style="text-align:left; max-width:640px; margin:0 auto;">
         <ul>
             <li><strong>LIFO</strong> — the restriction is the point, not a limitation</li>
+            <li><strong>Reverse a string</strong> — push all, pop all. LIFO reverses for free.</li>
+            <li><strong>Next Greater Element</strong> — monotonic stack turns O(n&sup2;) into O(n)</li>
+            <li><strong>Balanced brackets</strong> — "most recent open" = top of stack</li>
             <li><strong>Array implementation</strong> — a struct with <code>data[]</code> and <code>top</code>. Push/pop are O(1).</li>
-            <li><strong>Balanced brackets</strong> — O(n) with a stack, because "most recent open" = top</li>
-            <li><strong>Monotonic stack</strong> — turns O(n²) nested-loop problems into O(n)</li>
         </ul>
     </div>
 
