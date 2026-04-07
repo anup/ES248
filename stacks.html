@@ -752,6 +752,88 @@ int peek(struct Stack *s) {
 </section>
 
 <!-- ═══════════════════════════════════════════════════
+     LINKED LIST IMPLEMENTATION
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>What If We Don't Know the Max Size?</h2>
+
+    <p>The array stack has a fixed capacity — <code>MAX</code>. What if we don't know how many elements we'll need?</p>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p>We already know a data structure that grows and shrinks dynamically: a <strong>linked list</strong>.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong>Idea:</strong> The top of the stack is the <strong>head</strong> of the linked list.</p>
+        <ul>
+            <li class="fragment"><code>push</code> = insert at head — O(1)</li>
+            <li class="fragment"><code>pop</code> = remove from head — O(1)</li>
+            <li class="fragment"><code>peek</code> = read head's data — O(1)</li>
+        </ul>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.7em;">
+        We always operate at the head — no traversal needed. Same O(1) as the array version, but no size limit.
+    </div>
+</section>
+
+<!-- Linked list stack — code -->
+<section>
+    <h2>Linked List Stack — Code</h2>
+
+    <pre><code class="language-c">struct Node {
+    int data;
+    struct Node *next;
+};
+
+struct Node *top = NULL;   // empty stack
+
+void push(int x) {
+    struct Node *newNode = malloc(sizeof(struct Node));
+    newNode->data = x;
+    newNode->next = top;   // new node points to old top
+    top = newNode;         // new node becomes the top
+}
+
+int pop() {
+    if (top == NULL) { printf("Stack underflow\n"); return -1; }
+    int val = top->data;
+    struct Node *temp = top;
+    top = top->next;       // move top down
+    free(temp);            // free the old top
+    return val;
+}
+
+int peek() {
+    if (top == NULL) { printf("Empty stack\n"); return -1; }
+    return top->data;
+}
+
+int isEmpty() {
+    return top == NULL;
+}</code></pre>
+</section>
+
+<!-- Array vs linked list comparison -->
+<section>
+    <h2>Array vs. Linked List Stack</h2>
+
+    <table style="margin-top:0.8em;">
+        <tr><th></th><th>Array</th><th>Linked List</th></tr>
+        <tr><td><strong>push / pop</strong></td><td>O(1)</td><td>O(1)</td></tr>
+        <tr><td><strong>Max size</strong></td><td>Fixed (MAX)</td><td>Limited only by memory</td></tr>
+        <tr><td><strong>Memory</strong></td><td>Pre-allocated, may waste space</td><td>Allocates per node, no waste</td></tr>
+        <tr><td><strong>Overhead per element</strong></td><td>Just the data</td><td>Data + pointer (extra 8 bytes)</td></tr>
+        <tr><td><strong>Cache performance</strong></td><td>Contiguous — cache friendly</td><td>Scattered — cache unfriendly</td></tr>
+        <tr><td><strong>Simplicity</strong></td><td>Simpler (no malloc/free)</td><td>Must manage memory</td></tr>
+    </table>
+
+    <div class="fragment info-box" style="margin-top:0.8em;">
+        <strong>Rule of thumb:</strong> If you know the maximum size, use an array. If you don't, or if the size varies wildly, use a linked list. The operations are the same — only the internals differ.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
      HOMEWORK
 ════════════════════════════════════════════════════ -->
 <section>
@@ -796,12 +878,8 @@ int peek(struct Stack *s) {
             <li><strong>Next Greater Element</strong> — monotonic stack turns O(n&sup2;) into O(n)</li>
             <li><strong>Balanced brackets</strong> — "most recent open" = top of stack</li>
             <li><strong>Array implementation</strong> — a struct with <code>data[]</code> and <code>top</code>. Push/pop are O(1).</li>
+            <li><strong>Linked list implementation</strong> — head = top. No size limit, same O(1) operations.</li>
         </ul>
-    </div>
-
-    <div class="fragment" style="margin-top:1.5em;">
-        <p class="big-q">Next: Queues</p>
-        <p style="color:#7f8c8d;">FIFO — the other side of the coin. Stacks and queues are two ends of the same idea.</p>
     </div>
 </section>
 
